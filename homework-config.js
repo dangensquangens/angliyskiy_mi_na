@@ -1,1 +1,1 @@
-globalThis.HOMEWORK_API_BASE = 'https://english-by-sounds-homework.graciousverbena4.chatgpt.site';
+globalThis.HOMEWORK_API_BASE = 'https://functions.yandexcloud.net/d4ehdkc7bggtsr32ir4k';
