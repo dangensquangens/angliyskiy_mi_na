@@ -4,6 +4,7 @@
   const $ = id => document.getElementById(id);
   const adminMode = new URLSearchParams(location.search).get('admin') === '1';
   const apiBase = typeof window.HOMEWORK_API_BASE === 'string' ? window.HOMEWORK_API_BASE.replace(/\/+$/, '') : '';
+  const functionRouting = apiBase.startsWith('https://functions.yandexcloud.net/');
   const tokenKey = 'english-homework-admin-token';
   const draftPrefix = 'english-homework-draft:';
   const symbols = ['ə', 'ʊ', 'ɪ', 'æ', 'ɒ', 'ʌ', 'ɑ', 'ɔ', 'ɜ', 'ʃ', 'ʒ', 'θ', 'ð', 'ŋ', 'ɡ', 'tʃ', 'dʒ', 'ː', 'ˈ', 'ˌ'];
@@ -47,10 +48,14 @@
     if (!apiBase) throw new Error('Сервис заданий ещё не подключён. Обратитесь к преподавателю.');
     const headers = { Accept: 'application/json' };
     if (body !== undefined) headers['Content-Type'] = 'application/json';
-    if (authenticated) headers.Authorization = `Bearer ${token}`;
+    if (authenticated) {
+      if (functionRouting) headers['X-Homework-Session'] = token;
+      else headers.Authorization = `Bearer ${token}`;
+    }
+    const url = functionRouting ? `${apiBase}?route=${encodeURIComponent(path)}` : `${apiBase}${path}`;
     let response;
     try {
-      response = await fetch(`${apiBase}${path}`, {
+      response = await fetch(url, {
         method, headers, body: body === undefined ? undefined : JSON.stringify(body),
         signal: AbortSignal.timeout(20000),
       });
