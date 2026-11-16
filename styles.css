@@ -138,6 +138,8 @@ p { text-wrap: pretty; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 24px; }
 .hero-source { margin: 0; color: var(--muted); font-size: 14px; line-height: 20px; }
 .hero-source strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.homework-entry { margin: 16px 0 0; color: var(--accent); font-size: 14px; line-height: 20px; font-weight: 600; }
+.homework-entry a { text-underline-offset: 4px; }
 
 .variant-card, .worksheet, .side-card, .word-groups-panel {
   border: 1px solid var(--border);
