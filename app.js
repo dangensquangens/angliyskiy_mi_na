@@ -443,7 +443,8 @@
     if (fromLink) {
       applyWorksheet(fromLink);
     } else if (!worksheet || /^v[123]\./.test(fragment)) {
-      applyWorksheet(generate(10, 'all'), 'replaceState');
+      const historyMethod = $(fragment) ? undefined : 'replaceState';
+      applyWorksheet(generate(10, 'all'), historyMethod);
       if (/^v[123]\./.test(fragment)) $('settings-note').textContent = 'Эта ссылка не открылась. Создан новый вариант.';
     }
   }
