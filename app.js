@@ -9,13 +9,15 @@
   const list = $('answer-list');
   const checkResult = $('check-result');
   const actionStatus = $('action-status');
+  const downloadResponses = $('download-responses');
   const baseLimit = Number(wordCount.max);
   const starterWords = globalThis.WORDS;
+  const catalog = globalThis.OXFORD_CATALOG;
   const levels = { all: 'A1 и A2', A1: 'A1', A2: 'A2' };
   const exercises = [
     {
       title: 'Запишите транскрипцию',
-      instructions: 'Прочитайте слово и запишите его британскую транскрипцию.',
+      instructions: 'Прочитайте слово и запишите его британскую транскрипцию. Косые черты можно опустить.',
       placeholder: 'Транскрипция',
     },
     {
@@ -40,7 +42,7 @@
     wh: 'wh · /w/', kn: 'kn · /n/', wr: 'wr · /r/', ph: 'ph · /f/',
     ng: 'ng · /ŋ/', ck: 'ck · /k/', tion: 'tion · /ʃən/',
     'other-short': 'Другие односложные слова', other: 'Другие многосложные слова',
-    phrases: 'Словосочетания', missing: 'Без транскрипции в Britfone',
+    phrases: 'Словосочетания',
   };
   const families = {
     'short-a': 'short', 'short-e': 'short', 'short-i': 'short',
@@ -56,8 +58,6 @@
   let draft;
   let activeInput;
   let renderedRows = [];
-  const catalogKey = `english-reading:${location.pathname}:catalog-v1`;
-  let imported = loadCatalog();
   const ipaSymbols = ['ə', 'ʊ', 'ɪ', 'æ', 'ɒ', 'ʌ', 'ɑ', 'ɔ', 'ɜ',
     'ʃ', 'ʒ', 'θ', 'ð', 'ŋ', 'ɡ', 'tʃ', 'dʒ', 'ː', 'ˈ', 'ˌ'];
 
@@ -76,29 +76,15 @@
     return (hash >>> 0).toString(36);
   }
 
-  const byId = new Map(starterWords.map(word => [idFor(word.word), word]));
+  const starterById = new Map(starterWords.map(word => [idFor(word.word), word]));
+  const catalogById = new Map(catalog.words.map(word => [idFor(word.word), word]));
 
   function hasLevel(word, level) {
     return level === 'all' || (word.levels ?? [word.level]).includes(level);
   }
 
-  function loadCatalog() {
-    try {
-      const value = JSON.parse(sessionStorage.getItem(catalogKey));
-      if (value?.words?.length >= 30 && Array.isArray(value.missing) && value.counts) return value;
-    } catch { /* The base collection can be used without session storage. */ }
-    return undefined;
-  }
-
-  function saveCatalog() {
-    try {
-      if (imported) sessionStorage.setItem(catalogKey, JSON.stringify(imported));
-      else sessionStorage.removeItem(catalogKey);
-    } catch { /* The imported list is still usable until the page is closed. */ }
-  }
-
   function poolFor(level) {
-    return (imported?.words ?? starterWords).filter(word => hasLevel(word, level));
+    return catalog.words.filter(word => hasLevel(word, level));
   }
 
   function availableCount(level) {
@@ -139,7 +125,7 @@
 
   function generate(count, level) {
     const remaining = shuffle([...poolFor(level)]);
-    return { level, edition: imported ? 'full' : 'starter', items: [draw(remaining, count, level), draw(remaining, count, level)] };
+    return { level, edition: 'catalog', items: [draw(remaining, count, level), draw(remaining, count, level)] };
   }
 
   function encode({ level, edition, items }) {
@@ -149,7 +135,8 @@
       const binary = Array.from(new TextEncoder().encode(JSON.stringify([level, packed])), byte => String.fromCharCode(byte)).join('');
       return `v2.${btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`;
     }
-    return `v1.${level}.${items.map(rows => rows.map(row => idFor(row.word)).join('-')).join('.')}`;
+    const version = edition === 'starter' ? 'v1' : 'v3';
+    return `${version}.${level}.${items.map(rows => rows.map(row => idFor(row.word)).join('-')).join('.')}`;
   }
 
   function decodeFull(token) {
@@ -174,14 +161,16 @@
 
   function decode(token) {
     if (token.startsWith('v2.')) return decodeFull(token);
-    if (!/^v1\.(all|A1|A2)\.[a-z0-9-]+\.[a-z0-9-]+$/.test(token) || token.length > 260) return;
-    const [, level, left, right] = token.split('.');
-    const items = [left, right].map(part => part.split('-').map(id => byId.get(id)));
+    if (!/^v[13]\.(all|A1|A2)\.[a-z0-9-]+\.[a-z0-9-]+$/.test(token) || token.length > 260) return;
+    const [version, level, left, right] = token.split('.');
+    const legacy = version === 'v1';
+    const words = legacy ? starterById : catalogById;
+    const items = [left, right].map(part => part.split('-').map(id => words.get(id)));
     const combined = items.flat();
     if (items[0].length !== items[1].length || items[0].length > availableCount(level)
       || new Set(combined).size !== combined.length
-      || combined.some(word => !word || (level !== 'all' && word.level !== level))) return;
-    return { level, edition: 'starter', items };
+      || combined.some(word => !word || !hasLevel(word, level))) return;
+    return { level, edition: legacy ? 'starter' : 'catalog', items };
   }
 
   function storageKey() {
@@ -215,12 +204,9 @@
     levelSelect.value = worksheet.level;
     wordCount.max = availableCount(worksheet.level);
     wordCount.value = worksheet.items[0].length;
-    const source = worksheet.edition === 'full' ? 'полный список' : 'базовая подборка';
-    $('worksheet-meta').textContent = `${levels[worksheet.level]} · ${worksheet.items[0].length} в каждом задании · ${source}`;
+    $('worksheet-meta').textContent = `${levels[worksheet.level]} · ${worksheet.items[0].length} в каждом задании`;
     $('settings-note').textContent = '';
     actionStatus.textContent = '';
-    $('answer-key').open = false;
-    renderKey();
     renderPrint();
     setMode(draft.mode);
   }
@@ -354,7 +340,8 @@
     $('instructions').textContent = exercise.instructions;
     const chosen = new Set(worksheet.items.flat().map(word => word.word));
     const example = starterWords.find(word => !chosen.has(word.word) && word.group.startsWith('short-'));
-    const [first, second] = [currentPrompt(example, mode), currentPrompt(example, 1 - mode)]
+    const exampleAnswer = mode === 0 ? example.ipa : currentPrompt(example, 0);
+    const [first, second] = [currentPrompt(example, mode), exampleAnswer]
       .map(value => element('strong', null, value));
     first.lang = second.lang = 'en';
     $('exercise-example').replaceChildren('Например, ', first, ' → ', second);
@@ -398,21 +385,20 @@
 
   function renderGroups() {
     const container = $('word-groups');
-    const entries = imported ? [...imported.words, ...imported.missing.map(word => ({ ...word, group: 'missing' }))] : starterWords;
+    const entries = catalog.words;
     const grouped = new Map();
     for (const entry of entries) {
       const group = Object.hasOwn(groups, entry.group) ? entry.group : 'other';
       if (!grouped.has(group)) grouped.set(group, []);
       grouped.get(group).push(entry);
     }
-    const note = imported
-      ? `A1: ${imported.counts.A1} · A2: ${imported.counts.A2}. Всего ${entries.length} разных написаний. В заданиях участвуют ${imported.words.length} записей с транскрипцией.`
-      : `${entries.length} слов в ${grouped.size} группах. В заданиях чередуются разные звуки и буквосочетания.`;
-    $('word-groups-note').textContent = note;
+    $('word-groups-note').textContent = `${entries.length.toLocaleString('ru-RU')} слов и выражений Oxford 3000 уровня A1–A2. Нажмите на группу, чтобы открыть список.`;
     container.replaceChildren();
     for (const [group, title] of Object.entries(groups)) {
       if (!grouped.has(group)) continue;
-      const section = element('section', 'word-group');
+      const section = element('details', 'word-group');
+      const heading = element('summary', null, title);
+      heading.append(element('small', null, String(grouped.get(group).length)));
       const items = element('ul', 'word-group-list');
       for (const word of grouped.get(group)) {
         const row = element('li', 'word-chip');
@@ -421,25 +407,9 @@
         row.append(label, element('small', null, (word.levels ?? [word.level]).join(' · ')));
         items.append(row);
       }
-      section.append(element('h3', null, title), items);
+      section.append(heading, items);
       container.append(section);
     }
-  }
-
-  function renderKey() {
-    const sections = worksheet.items.map((wordsForExercise, index) => {
-      const section = element('section');
-      const items = element('ol');
-      for (const word of wordsForExercise) {
-        const item = element('li');
-        addPrompt(item, word, index);
-        item.append(` → ${displayAnswer(word, index)}`);
-        items.append(item);
-      }
-      section.append(element('h3', null, `Задание ${index + 1}`), items);
-      return section;
-    });
-    $('key-list').replaceChildren(...sections);
   }
 
   function variantId() {
@@ -466,16 +436,21 @@
       ...sections);
   }
 
-  function report() {
-    const sections = worksheet.items.map((wordsForExercise, index) => {
-      const rows = wordsForExercise.map((word, row) => {
-        const response = draft.responses[index][row].trim() || '—';
-        const hint = promptHint(word, index);
-        return `${row + 1}. ${currentPrompt(word, index)}${hint ? ` (${hint})` : ''} → ${response}`;
-      });
-      return [`${index + 1}. ${exercises[index].title}`, ...rows].join('\n');
-    });
-    return [`Английский по звукам · вариант ${variantId()}`, worksheetUrl(), ...sections].join('\n\n');
+  function responseSheet() {
+    return {
+      title: 'Слова и звуки',
+      subtitle: `Ответы ученика · ${levels[worksheet.level]}`,
+      filename: `Ответы-${variantId()}.pdf`,
+      sections: worksheet.items.map((wordsForExercise, index) => ({
+        title: `${index + 1}. ${exercises[index].title}`,
+        instructions: exercises[index].instructions,
+        rows: wordsForExercise.map((word, row) => ({
+          prompt: currentPrompt(word, index),
+          hint: promptHint(word, index),
+          answer: draft.responses[index][row].trim(),
+        })),
+      })),
+    };
   }
 
   function worksheetUrl() {
@@ -504,48 +479,11 @@
     const fromLink = decode(fragment);
     if (fromLink) {
       applyWorksheet(fromLink);
-    } else if (!worksheet || /^v[12]\./.test(fragment)) {
+    } else if (!worksheet || /^v[123]\./.test(fragment)) {
       applyWorksheet(generate(10, 'all'), 'replaceState');
-      if (/^v[12]\./.test(fragment)) $('settings-note').textContent = 'Эта ссылка не открылась. Создан новый вариант.';
+      if (/^v[123]\./.test(fragment)) $('settings-note').textContent = 'Эта ссылка не открылась. Создан новый вариант.';
     }
   }
-
-  const oxfordFile = $('oxford-file');
-  const importStatus = $('import-status');
-  const resetOxford = $('reset-oxford');
-  const newVariant = settings.querySelector('[type=submit]');
-
-  function refreshCatalog() {
-    saveCatalog();
-    resetOxford.hidden = !imported;
-    renderGroups();
-    const count = Math.min(worksheet.items[0].length, availableCount(worksheet.level));
-    applyWorksheet(generate(count, worksheet.level), 'pushState');
-  }
-
-  oxfordFile.addEventListener('change', async () => {
-    const [file] = oxfordFile.files;
-    if (!file) return;
-    oxfordFile.disabled = newVariant.disabled = resetOxford.disabled = true;
-    try {
-      const next = await globalThis.importOxford(file, starterWords, status => { importStatus.textContent = status; });
-      if (next.words.length < 30) throw new Error('Для заданий найдено слишком мало транскрипций.');
-      imported = next;
-      refreshCatalog();
-      importStatus.textContent = `Список подключён. Слов с транскрипцией: ${imported.words.length}.`;
-    } catch (error) {
-      importStatus.textContent = /[а-яё]/i.test(error.message ?? '') ? error.message
-        : 'Импорт не удался. Проверьте файл и подключение к интернету.';
-    } finally {
-      oxfordFile.value = '';
-      oxfordFile.disabled = newVariant.disabled = resetOxford.disabled = false;
-    }
-  });
-  resetOxford.addEventListener('click', () => {
-    imported = undefined;
-    refreshCatalog();
-    importStatus.textContent = 'Базовая подборка снова активна.';
-  });
 
   settings.addEventListener('submit', event => {
     event.preventDefault();
@@ -575,12 +513,21 @@
 
   $('check-answers').addEventListener('click', grade);
   $('copy-link').addEventListener('click', () => copy(worksheetUrl(), 'Ссылка скопирована.', 'Ссылка на вариант'));
-  $('copy-responses').addEventListener('click', () => {
+  downloadResponses.addEventListener('click', async () => {
     if (!draft.responses.flat().some(response => response.trim())) {
       actionStatus.textContent = 'Запишите хотя бы один ответ.';
       return;
     }
-    void copy(report(), 'Ответы скопированы.', 'Ответы для репетитора');
+    downloadResponses.disabled = true;
+    actionStatus.textContent = 'Готовим PDF…';
+    try {
+      await globalThis.downloadWorksheetResponses(responseSheet());
+      actionStatus.textContent = 'PDF готов.';
+    } catch {
+      actionStatus.textContent = 'Не удалось скачать PDF. Проверьте подключение и попробуйте ещё раз.';
+    } finally {
+      downloadResponses.disabled = false;
+    }
   });
   $('print-worksheet').addEventListener('click', () => window.print());
   $('close-share').addEventListener('click', () => $('share-fallback').close());
@@ -590,7 +537,6 @@
   });
   window.addEventListener('hashchange', openLocation);
 
-  resetOxford.hidden = !imported;
   renderGroups();
   openLocation();
 })();

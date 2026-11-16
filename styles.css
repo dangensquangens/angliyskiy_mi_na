@@ -78,19 +78,14 @@ h1 { margin: 0; font-size: 48px; line-height: 1.1; font-weight: 600; letter-spac
 .sidebar { display: grid; gap: 16px; }
 .word-groups-panel { margin-top: 24px; padding: 24px; border: 1px solid #e6e2dd; border-radius: 16px; background: #fff; }
 .word-groups-panel > summary { color: #303252; font-size: 20px; line-height: 28px; font-weight: 600; }
-.word-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.word-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 16px; margin-top: 24px; }
 .word-group { min-width: 0; padding: 16px; border: 1px solid #eceaf0; border-radius: 8px; background: #faf9fb; }
-.word-group h3 { margin: 0 0 12px; color: #45445b; font-size: 14px; line-height: 20px; font-weight: 600; overflow-wrap: anywhere; }
-.word-group-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.word-group summary { color: #45445b; font-size: 14px; line-height: 20px; font-weight: 600; overflow-wrap: anywhere; }
+.word-group summary small { margin-left: 8px; color: #6d6a7d; font-weight: 400; }
+.word-group-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
 .word-chip { display: inline-flex; align-items: baseline; gap: 4px; padding: 4px 8px; border: 1px solid #e6e3ed; border-radius: 8px; background: #fff; color: #343650; font-size: 14px; line-height: 20px; }
 .word-chip small { color: #898697; font-size: 12px; line-height: 16px; }
-.import-panel { margin-top: 16px; padding: 12px 16px; border: 1px solid #e6e3ed; border-radius: 8px; }
-.import-panel summary { color: #45445b; font-size: 14px; line-height: 20px; font-weight: 600; }
-.import-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
-.import-actions .field-label { width: 100%; margin: 0; }
-#oxford-file { max-width: 100%; color: #49485f; font-size: 14px; }
-#oxford-file::file-selector-button { padding: 8px 12px; border: 1px solid #dcd9e1; border-radius: 8px; color: #34365e; background: #f7f6fa; cursor: pointer; }
-.button:disabled, #oxford-file:disabled { cursor: wait; opacity: .65; }
+.button:disabled { cursor: wait; opacity: .65; }
 .side-card { padding: 24px; }
 .side-card h2 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -.02em; }
 .muted { margin: 8px 0 0; color: #797785; font-size: 14px; line-height: 20px; }
@@ -103,12 +98,6 @@ h1 { margin: 0; font-size: 48px; line-height: 1.1; font-weight: 600; letter-spac
 .form-note { margin: 0; color: #666477; font-size: 12px; line-height: 16px; }
 .form-note:not(:empty) { margin-top: 8px; }
 .action-buttons { display: grid; gap: 8px; margin-top: 24px; }
-.answer-key { margin-top: 24px; padding-top: 16px; border-top: 1px solid #eceaf0; }
-.answer-key summary { color: #515064; font-size: 14px; line-height: 20px; font-weight: 600; }
-#key-list { color: #666477; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
-#key-list h3 { margin: 16px 0 8px; color: #3f3d50; font-size: 14px; line-height: 20px; }
-#key-list ol { margin: 0; padding-left: 24px; }
-#key-list li { padding: 4px 0; }
 .site-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px 0 40px; border-top: 1px solid #ddd9d1; color: #777583; font-size: 12px; line-height: 16px; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 24px; }
 .footer-links a { text-decoration-color: #c4bdc4; text-underline-offset: 4px; }

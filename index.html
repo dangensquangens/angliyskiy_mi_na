@@ -10,10 +10,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
   <script src="words.js" defer></script>
-  <script src="import-oxford.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="catalog.js" defer></script>
+  <script src="responses-pdf.js" defer></script>
+  <script src="app.js?v=2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#exercise-panel">К заданиям</a>
@@ -93,33 +94,19 @@
 
           <section class="side-card actions-card" aria-labelledby="actions-title">
             <h2 id="actions-title">Для занятий</h2>
-            <p class="muted">Отправьте вариант или свои ответы репетитору.</p>
+            <p class="muted">Скачайте ответы в PDF, чтобы отправить их репетитору.</p>
             <div class="action-buttons">
               <button id="copy-link" class="button button-outline" type="button"><span>Скопировать ссылку</span><span aria-hidden="true">↗</span></button>
-              <button id="copy-responses" class="button button-outline" type="button"><span>Скопировать ответы</span><span aria-hidden="true">↗</span></button>
+              <button id="download-responses" class="button button-outline" type="button"><span>Скачать ответы в PDF</span><span aria-hidden="true">↓</span></button>
               <button id="print-worksheet" class="button button-outline" type="button"><span>Распечатать задания</span><span aria-hidden="true">↗</span></button>
             </div>
             <p id="action-status" class="form-note" role="status" aria-live="polite"></p>
-            <details id="answer-key" class="answer-key">
-              <summary>Ответы для проверки</summary>
-              <div id="key-list"></div>
-            </details>
           </section>
         </aside>
       </div>
-      <details class="word-groups-panel">
+      <details class="word-groups-panel" open>
         <summary>Слова по группам</summary>
         <p id="word-groups-note" class="muted"></p>
-        <details class="import-panel">
-          <summary>Подключить полный список Oxford A1–A2</summary>
-          <p class="muted">Скачайте <a href="https://www.oxfordlearnersdictionaries.com/external/pdf/wordlists/oxford-3000-5000/The_Oxford_3000_by_CEFR_level.pdf" target="_blank" rel="noopener noreferrer">официальный PDF по уровням</a> и выберите файл. Он обрабатывается в браузере. Большинство дополнительных транскрипций берутся из <a href="https://github.com/JoseLlarena/Britfone" target="_blank" rel="noopener noreferrer">Britfone</a>. Знак ударения может стоять перед гласной. При проверке принимается и запись перед началом ударного слога.</p>
-          <div class="import-actions">
-            <label for="oxford-file" class="field-label">Файл Oxford 3000 по уровням</label>
-            <input id="oxford-file" type="file" accept=".pdf,application/pdf">
-            <button id="reset-oxford" class="button button-outline" type="button" hidden>Вернуть базовую подборку</button>
-          </div>
-          <p id="import-status" class="form-note" role="status"></p>
-        </details>
         <div id="word-groups" class="word-groups"></div>
       </details>
     </main>
