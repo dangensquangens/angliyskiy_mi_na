@@ -91,6 +91,16 @@
       && assignment.items.length === 2 && assignment.items.every(group => Array.isArray(group));
   }
 
+  function formatCounts(assignment) {
+    let counts = assignment.counts;
+    if (!Array.isArray(counts) && Array.isArray(assignment.items)) {
+      counts = assignment.items.map(group => Array.isArray(group) ? group.length : 0);
+    }
+    if (!Array.isArray(counts) && Number.isInteger(assignment.count)) counts = [assignment.count, assignment.count];
+    if (!Array.isArray(counts) || counts.length !== 2) return '';
+    return `Упражнение 1 — ${counts[0]}, упражнение 2 — ${counts[1]}`;
+  }
+
   function updateStudentUrl(code) {
     const url = new URL(location.href);
     url.search = '';
@@ -109,17 +119,18 @@
     $('code-panel').hidden = true;
     $('student-work').hidden = false;
     $('work-code').textContent = assignment.code;
-    $('work-meta').textContent = `${levels[assignment.level] || assignment.level || ''} · ${assignment.count || assignment.items[0].length} слов на упражнение`;
+    $('work-meta').textContent = `${levels[assignment.level] || assignment.level || ''} · ${formatCounts(assignment)}`;
     $('work-state').textContent = submitted ? 'Сдано' : 'В процессе';
     $('work-state').classList.toggle('done', submitted);
     $('result-summary').hidden = !submitted;
     $('result-summary').textContent = submitted ? `Результат: ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : '';
     $('submit-work').hidden = submitted;
     $('ipa-keyboard').hidden = submitted;
-    $('submit-note').textContent = submitted ? 'Ответы отправлены преподавателю.' : 'Ответы обоих упражнений отправятся одновременно.';
+    $('submit-note').textContent = submitted ? 'Ответы отправлены преподавателю.' : 'Все ответы отправятся одновременно.';
     activeInput = null;
 
     assignment.items.forEach((group, mode) => {
+      $(`exercise-${mode}`).hidden = group.length === 0;
       const list = $(`rows-${mode}`);
       list.replaceChildren();
       group.forEach((item, index) => {
@@ -285,7 +296,7 @@
       return;
     }
     assignment.items.forEach((group, mode) => {
-      if (!Array.isArray(group)) return;
+      if (!Array.isArray(group) || group.length === 0) return;
       container.append(element('h3', '', exerciseNames[mode] || 'Упражнение'));
       if (assignment.submittedAt) {
         const correct = assignment.grades?.[mode]?.filter(grade => grade === 'correct').length ?? 0;
@@ -318,7 +329,8 @@
       const description = element('div');
       description.append(element('p', 'assignment-code', `Код ${assignment.code}`));
       const created = formatDate(assignment.createdAt);
-      description.append(element('p', 'muted', `${levels[assignment.level] || assignment.level || ''} · ${assignment.count} слов на упражнение${created ? ` · ${created}` : ''}`));
+      const countText = formatCounts(assignment);
+      description.append(element('p', 'muted', `${levels[assignment.level] || assignment.level || ''}${countText ? ` · ${countText}` : ''}${created ? ` · ${created}` : ''}`));
       const submitted = Boolean(assignment.submittedAt);
       if (submitted) description.append(element('p', 'muted', `Сдано ${formatDate(assignment.submittedAt)}`));
       const badgeText = submitted ? `Сдано · ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : 'Ожидает ответа';
@@ -399,8 +411,11 @@
     button.disabled = true;
     status('admin-status', 'Создаём задание…', 'success');
     try {
-      const count = Number($('count').value);
-      const data = await request('/api/admin/assignments', { method: 'POST', authenticated: true, body: { count, level: $('level').value } });
+      const counts = [$('count-0'), $('count-1')].map(input => Number(input.value));
+      if (!counts.every(value => Number.isSafeInteger(value) && value >= 0) || counts.every(value => value === 0)) {
+        throw new Error('Укажите целое неотрицательное число для каждого упражнения. Хотя бы в одном упражнении должно быть слово.');
+      }
+      const data = await request('/api/admin/assignments', { method: 'POST', authenticated: true, body: { counts, level: $('level').value } });
       if (!data.assignment?.code) throw new Error('Сервис не подтвердил создание задания.');
       const refreshed = await refreshAssignments();
       if (refreshed) {

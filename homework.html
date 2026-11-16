@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="homework.css">
   <script src="homework-config.js?v=2" defer></script>
-  <script src="homework.js?v=2" defer></script>
+  <script src="homework.js?v=3" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -25,7 +25,7 @@
 
     <main id="main" tabindex="-1">
       <section id="student-view" hidden>
-        <div class="intro"><p class="eyebrow">ДОМАШНЕЕ ЗАДАНИЕ</p><h1>Слова и звуки</h1><p>Выполните оба упражнения и отправьте ответы на проверку.</p></div>
+        <div class="intro"><p class="eyebrow">ДОМАШНЕЕ ЗАДАНИЕ</p><h1>Слова и звуки</h1><p>Выполните задание и отправьте ответы на проверку.</p></div>
         <section id="code-panel" class="card narrow" aria-labelledby="code-title" hidden>
           <h2 id="code-title">Открыть задание</h2>
           <p class="muted">Введите код, который прислал преподаватель.</p>
@@ -38,16 +38,16 @@
         <div id="student-work" hidden>
           <div class="work-summary"><div><p class="eyebrow">ВАШ ВАРИАНТ</p><h2>Задание <span id="work-code"></span></h2><p id="work-meta" class="muted"></p></div><span id="work-state" class="state-badge">В процессе</span></div>
           <div id="result-summary" class="result-summary" role="status" tabindex="-1" hidden></div>
-          <section class="card exercise" aria-labelledby="exercise-one-title">
+          <section id="exercise-0" class="card exercise" aria-labelledby="exercise-one-title">
             <div class="exercise-heading"><div><p class="eyebrow">УПРАЖНЕНИЕ 1</p><h2 id="exercise-one-title">Слово → транскрипция</h2><p class="muted">Прочитайте слово и запишите британскую транскрипцию.</p></div></div>
             <div id="ipa-keyboard" class="keyboard"><div class="keyboard-header"><strong>Символы IPA</strong><span id="ipa-target">Выберите поле ответа</span></div><div id="ipa-keys" class="keys" aria-label="Символы транскрипции"></div></div>
             <ol id="rows-0" class="answer-list"></ol>
           </section>
-          <section class="card exercise" aria-labelledby="exercise-two-title">
+          <section id="exercise-1" class="card exercise" aria-labelledby="exercise-two-title">
             <div class="exercise-heading"><div><p class="eyebrow">УПРАЖНЕНИЕ 2</p><h2 id="exercise-two-title">Транскрипция → слово</h2><p class="muted">Прочитайте транскрипцию и запишите слово по-английски.</p></div></div>
             <ol id="rows-1" class="answer-list"></ol>
           </section>
-          <div class="submit-row"><button id="submit-work" class="button primary" type="button">Сдать и проверить <span aria-hidden="true">↗</span></button><p id="submit-note" class="muted">Ответы обоих упражнений отправятся одновременно.</p></div>
+          <div class="submit-row"><button id="submit-work" class="button primary" type="button">Сдать и проверить <span aria-hidden="true">↗</span></button><p id="submit-note" class="muted">Все ответы отправятся одновременно.</p></div>
         </div>
       </section>
 
@@ -60,9 +60,10 @@
         <p id="admin-status" class="status" role="status" aria-live="polite"></p>
         <div id="admin-work" hidden>
           <section class="card create-card" aria-labelledby="create-title">
-            <div><h2 id="create-title">Новое задание</h2><p class="muted">Каждое задание предназначено для одного ученика.</p></div>
+            <div><h2 id="create-title">Новое задание</h2><p class="muted">Каждое задание предназначено для одного ученика. Укажите 0, чтобы пропустить упражнение.</p></div>
             <form id="create-form" class="create-form">
-              <div class="field"><label for="count">Слов на упражнение</label><input id="count" type="number" min="1" max="15" value="10" required></div>
+              <div class="field"><label for="count-0">Слово → транскрипция</label><input id="count-0" type="number" min="0" step="1" value="10" required></div>
+              <div class="field"><label for="count-1">Транскрипция → слово</label><input id="count-1" type="number" min="0" step="1" value="10" required></div>
               <div class="field"><label for="level">Уровень</label><select id="level"><option value="all">A1 и A2</option><option value="A1">A1</option><option value="A2">A2</option></select></div>
               <button class="button primary" type="submit">Создать задание</button>
             </form>
