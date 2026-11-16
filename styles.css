@@ -96,13 +96,9 @@ p { text-wrap: pretty; }
 .site-nav a:hover { background: var(--sage-light); color: var(--accent-hover); }
 
 .page-content { padding: 40px 0 64px; }
-.page-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, .85fr);
-  align-items: center;
-  gap: 40px;
-  margin-bottom: 32px;
-}
+.page-heading { margin-bottom: 32px; text-align: center; }
+.page-heading .hero-copy h1, .page-heading .page-intro { margin-inline: auto; }
+.page-heading .hero-actions { justify-content: center; }
 
 .hero-context {
   margin: 0 0 16px;
@@ -143,45 +139,6 @@ p { text-wrap: pretty; }
 .hero-source { margin: 0; color: var(--muted); font-size: 14px; line-height: 20px; }
 .hero-source strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-.hero-example {
-  min-width: 0;
-  display: grid;
-  gap: 12px;
-  margin: 0;
-  padding: 12px;
-  border: 1px solid #c9ddcf;
-  border-radius: 24px;
-  background: var(--sage);
-}
-
-.hero-example figcaption {
-  padding: 8px 12px 0;
-  color: var(--accent);
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 600;
-}
-
-.example-pair {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border: 1px solid #cfdfd3;
-  border-radius: 12px;
-  background: var(--surface);
-  font-size: 30px;
-  line-height: 36px;
-  font-weight: 600;
-  letter-spacing: -.025em;
-  overflow-wrap: anywhere;
-}
-.example-pair span:nth-child(2) { color: var(--muted); font-size: 20px; line-height: 28px; }
-.example-pair span:last-child { color: var(--accent); text-align: right; }
-.hero-example p { margin: 0; padding: 0 12px 8px; color: var(--muted); font-size: 14px; line-height: 20px; }
-
-.practice { display: grid; gap: 16px; }
 .variant-card, .worksheet, .side-card, .word-groups-panel {
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -189,11 +146,10 @@ p { text-wrap: pretty; }
 }
 
 .variant-card {
+  grid-area: variant;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 16px 24px;
-  padding: 16px 24px;
+  gap: 16px;
+  padding: 24px;
 }
 
 .variant-card h2, .side-card h2 {
@@ -204,7 +160,7 @@ p { text-wrap: pretty; }
   letter-spacing: -.02em;
 }
 
-#settings { display: grid; grid-template-columns: minmax(144px, auto) minmax(132px, auto) auto; align-items: end; gap: 12px; }
+#settings { display: grid; align-items: end; gap: 12px; }
 .settings-field { min-width: 0; }
 .field-label {
   display: block;
@@ -215,8 +171,15 @@ p { text-wrap: pretty; }
   font-weight: 600;
 }
 
-.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
-.worksheet { min-width: 0; box-shadow: 0 12px 32px rgb(41 62 48 / 4%); }
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "worksheet variant" "worksheet actions";
+  gap: 16px;
+  align-items: start;
+}
+.worksheet { grid-area: worksheet; min-width: 0; box-shadow: 0 12px 32px rgb(41 62 48 / 4%); }
 .tabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -356,7 +319,7 @@ p { text-wrap: pretty; }
 .button-outline { color: var(--ink); background: var(--surface); border-color: var(--strong-border); }
 .button-outline:hover { background: var(--sage-light); border-color: var(--accent); }
 .side-card { padding: 24px; }
-.actions-card { position: sticky; top: 96px; }
+.actions-card { grid-area: actions; position: sticky; top: 96px; }
 .action-buttons { display: grid; gap: 8px; margin-top: 16px; }
 .muted { margin: 4px 0 0; color: var(--muted); font-size: 14px; line-height: 20px; }
 .form-note { margin: 0; color: var(--muted); font-size: 12px; line-height: 16px; }
@@ -441,12 +404,17 @@ p { text-wrap: pretty; }
 
 @media (max-width: 1060px) {
   .hero-copy h1 { font-size: 48px; line-height: 1; }
-  .page-heading { gap: 24px; }
 }
 
 @media (max-width: 900px) {
   .site-shell { padding: 0 24px; }
-  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "variant" "worksheet" "actions";
+  }
+  .variant-card { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  #settings { grid-template-columns: minmax(144px, auto) minmax(132px, auto) auto; }
   .actions-card { position: static; }
   .word-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -455,23 +423,17 @@ p { text-wrap: pretty; }
   .ipa-key { min-width: 32px; }
 }
 
-@media (min-width: 741px) and (max-width: 820px) {
-  .hero-copy h1 { font-size: 36px; line-height: 40px; }
-}
-
 @media (max-width: 740px) {
   .site-shell { padding: 0 16px; }
   .site-header { gap: 8px; margin-top: 12px; padding: 8px; }
   .brand { gap: 8px; }
   .site-nav a { padding: 8px; }
   .page-content { padding: 32px 0 48px; }
-  .page-heading { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-bottom: 24px; }
+  .page-heading { margin-bottom: 24px; }
   .hero-copy h1 { font-size: 36px; line-height: 40px; }
   .hero-context, .page-intro { margin-bottom: 8px; }
   .page-intro { margin-top: 12px; font-size: 16px; line-height: 24px; }
   .hero-actions { margin-top: 16px; }
-  .hero-example { max-width: 520px; }
-  .example-pair { font-size: 24px; line-height: 32px; }
   .variant-card { grid-template-columns: minmax(0, 1fr); padding: 16px; }
   .exercise-panel, .side-card { padding: 16px; }
   .study-tip { margin: 32px 0 24px; padding: 24px 16px; }
@@ -482,7 +444,7 @@ p { text-wrap: pretty; }
 @media (max-width: 480px) {
   .site-nav a, .brand { font-size: 12px; line-height: 16px; }
   .hero-copy h1 { letter-spacing: -.04em; }
-  .hero-actions { align-items: start; flex-direction: column; gap: 8px; }
+  .page-heading .hero-actions { flex-direction: column; gap: 8px; }
   #settings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #settings .button { grid-column: 1 / -1; }
   .tab { min-height: 48px; padding: 8px; font-size: 12px; line-height: 16px; }

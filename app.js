@@ -207,24 +207,8 @@
     $('worksheet-meta').textContent = `${levels[worksheet.level]} · ${worksheet.items[0].length} в каждом задании`;
     $('settings-note').textContent = '';
     actionStatus.textContent = '';
-    renderHeroExample();
     renderPrint();
     setMode(draft.mode);
-  }
-
-  function renderHeroExample() {
-    const pairs = [
-      [['ship', 'ʃɪp'], ['sheep', 'ʃiːp']],
-      [['sit', 'sɪt'], ['seat', 'siːt']],
-      [['bin', 'bɪn'], ['bean', 'biːn']],
-      [['bit', 'bɪt'], ['beat', 'biːt']],
-    ];
-    const prompts = new Set(worksheet.items.flat().map(word => word.word));
-    const [short, long] = pairs.find(pair => pair.every(([word]) => !prompts.has(word))) ?? pairs[0];
-    $('hero-short-word').textContent = short[0];
-    $('hero-short-ipa').textContent = `/${short[1]}/`;
-    $('hero-long-word').textContent = long[0];
-    $('hero-long-ipa').textContent = `/${long[1]}/`;
   }
 
   function revealStudyTip() {

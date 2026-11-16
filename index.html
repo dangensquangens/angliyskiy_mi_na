@@ -9,19 +9,19 @@
   <meta property="og:title" content="Английский по звукам">
   <meta property="og:description" content="Тренажёр чтения и британской транскрипции по словам Oxford 3000 для A1–A2.">
   <meta property="og:url" content="https://dangensquangens.github.io/angliyskiy_mi_na/">
-  <meta property="og:image" content="https://dangensquangens.github.io/angliyskiy_mi_na/share-preview.png">
-  <meta property="og:image:alt" content="Английский по звукам. Пример транскрипции ship и sheep.">
+  <meta property="og:image" content="https://dangensquangens.github.io/angliyskiy_mi_na/share-preview.png?v=4">
+  <meta property="og:image:alt" content="Английский по звукам. Тренажёр чтения и транскрипции для A1–A2.">
   <meta name="twitter:card" content="summary_large_image">
   <title>Английский по звукам</title>
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
   <script src="words.js" defer></script>
   <script src="catalog.js" defer></script>
   <script src="responses-pdf.js" defer></script>
-  <script src="app.js?v=3" defer></script>
+  <script src="app.js?v=4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#exercise-panel" data-section>К заданиям</a>
@@ -48,46 +48,32 @@
             <p class="hero-source"><strong>1&nbsp;693</strong> слова и выражения Oxford 3000</p>
           </div>
         </div>
-        <figure class="hero-example" aria-labelledby="hero-example-title">
-          <figcaption id="hero-example-title">Различайте близкие звуки</figcaption>
-          <div class="example-pair">
-            <span id="hero-short-word" lang="en">ship</span>
-            <span aria-hidden="true">→</span>
-            <span id="hero-short-ipa" lang="en-fonipa">/ʃɪp/</span>
-          </div>
-          <div class="example-pair">
-            <span id="hero-long-word" lang="en">sheep</span>
-            <span aria-hidden="true">→</span>
-            <span id="hero-long-ipa" lang="en-fonipa">/ʃiːp/</span>
-          </div>
-          <p id="hero-contrast"><span lang="en-fonipa">/ɪ/</span> короткий, <span lang="en-fonipa">/iː/</span> долгий</p>
-        </figure>
       </section>
 
       <section id="practice" class="practice" tabindex="-1" aria-label="Практика чтения и транскрипции">
-        <div class="variant-card">
-          <div>
-            <h2 id="settings-title">Ваш вариант</h2>
-            <p id="worksheet-meta" class="muted"></p>
-            <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
-          </div>
-          <form id="settings" aria-labelledby="settings-title">
-            <div class="settings-field">
-              <label class="field-label" for="word-count">Слов на упражнение</label>
-              <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
-            </div>
-            <div class="settings-field">
-              <label class="field-label" for="level">Уровень слов</label>
-              <select id="level" name="level">
-                <option value="all">A1 и A2</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-              </select>
-            </div>
-            <button class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
-          </form>
-        </div>
         <div class="workspace">
+          <section class="variant-card" aria-labelledby="settings-title">
+            <div>
+              <h2 id="settings-title">Ваш вариант</h2>
+              <p id="worksheet-meta" class="muted"></p>
+              <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
+            </div>
+            <form id="settings" aria-labelledby="settings-title">
+              <div class="settings-field">
+                <label class="field-label" for="word-count">Слов на упражнение</label>
+                <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
+              </div>
+              <div class="settings-field">
+                <label class="field-label" for="level">Уровень слов</label>
+                <select id="level" name="level">
+                  <option value="all">A1 и A2</option>
+                  <option value="A1">A1</option>
+                  <option value="A2">A2</option>
+                </select>
+              </div>
+              <button class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
+            </form>
+          </section>
           <section class="worksheet" aria-label="Упражнения">
             <div class="tabs" role="tablist" aria-label="Выберите упражнение">
               <button id="tab-0" class="tab" type="button" role="tab" data-mode="0" aria-controls="exercise-panel" aria-selected="true" tabindex="0">
