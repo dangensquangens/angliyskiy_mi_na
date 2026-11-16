@@ -207,8 +207,49 @@
     $('worksheet-meta').textContent = `${levels[worksheet.level]} · ${worksheet.items[0].length} в каждом задании`;
     $('settings-note').textContent = '';
     actionStatus.textContent = '';
+    renderHeroExample();
     renderPrint();
     setMode(draft.mode);
+  }
+
+  function renderHeroExample() {
+    const pairs = [
+      [['ship', 'ʃɪp'], ['sheep', 'ʃiːp']],
+      [['sit', 'sɪt'], ['seat', 'siːt']],
+      [['bin', 'bɪn'], ['bean', 'biːn']],
+      [['bit', 'bɪt'], ['beat', 'biːt']],
+    ];
+    const prompts = new Set(worksheet.items.flat().map(word => word.word));
+    const [short, long] = pairs.find(pair => pair.every(([word]) => !prompts.has(word))) ?? pairs[0];
+    $('hero-short-word').textContent = short[0];
+    $('hero-short-ipa').textContent = `/${short[1]}/`;
+    $('hero-long-word').textContent = long[0];
+    $('hero-long-ipa').textContent = `/${long[1]}/`;
+  }
+
+  function revealStudyTip() {
+    if (reducedMotion.matches || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(entries => {
+      for (const { target, isIntersecting } of entries) {
+        if (!isIntersecting) continue;
+        target.removeAttribute('data-pending');
+        observer.unobserve(target);
+      }
+    }, { rootMargin: '0px 0px -12% 0px' });
+    let position = 0;
+    for (const line of document.querySelectorAll('.tip-line')) {
+      const words = line.textContent.trim().split(/\s+/);
+      line.replaceChildren();
+      for (const [index, word] of words.entries()) {
+        if (index > 0) line.append(' ');
+        const span = element('span', 'tip-word', word);
+        span.dataset.pending = '';
+        span.style.transitionDelay = `${position * 32}ms`;
+        position += 1;
+        line.append(span);
+        observer.observe(span);
+      }
+    }
   }
 
   function currentPrompt(word, index) {
@@ -531,12 +572,21 @@
   });
   $('print-worksheet').addEventListener('click', () => window.print());
   $('close-share').addEventListener('click', () => $('share-fallback').close());
-  document.querySelector('.skip-link').addEventListener('click', event => {
-    event.preventDefault();
-    $('exercise-panel').focus();
-  });
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  for (const link of document.querySelectorAll('[data-section]')) {
+    link.addEventListener('click', event => {
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      const target = $(link.hash.slice(1));
+      event.preventDefault();
+      if (target instanceof HTMLDetailsElement) target.open = true;
+      target.focus({ preventScroll: true });
+      const instant = reducedMotion.matches || link.classList.contains('skip-link');
+      target.scrollIntoView({ behavior: instant ? 'auto' : 'smooth' });
+    });
+  }
   window.addEventListener('hashchange', openLocation);
 
   renderGroups();
   openLocation();
+  revealStudyTip();
 })();

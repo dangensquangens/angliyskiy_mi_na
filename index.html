@@ -3,108 +3,145 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Практика английской транскрипции и правил чтения для начинающих.">
-  <meta name="theme-color" content="#f5f2ec">
+  <meta name="description" content="Тренажёр британской транскрипции для A1–A2. Два упражнения по словам Oxford 3000, клавиатура IPA и PDF с ответами.">
+  <meta name="theme-color" content="#f6f6ef">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Английский по звукам">
+  <meta property="og:description" content="Тренажёр чтения и британской транскрипции по словам Oxford 3000 для A1–A2.">
+  <meta property="og:url" content="https://dangensquangens.github.io/angliyskiy_mi_na/">
+  <meta property="og:image" content="https://dangensquangens.github.io/angliyskiy_mi_na/share-preview.png">
+  <meta property="og:image:alt" content="Английский по звукам. Пример транскрипции ship и sheep.">
+  <meta name="twitter:card" content="summary_large_image">
   <title>Английский по звукам</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
   <script src="words.js" defer></script>
   <script src="catalog.js" defer></script>
   <script src="responses-pdf.js" defer></script>
-  <script src="app.js?v=2" defer></script>
+  <script src="app.js?v=3" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#exercise-panel">К заданиям</a>
-  <div class="site-shell">
+  <a class="skip-link" href="#exercise-panel" data-section>К заданиям</a>
+  <div id="site-top" class="site-shell" tabindex="-1">
     <header class="site-header">
-      <a class="brand" href="./" aria-label="Английский по звукам — главная">
+      <a class="brand" href="#site-top" data-section aria-label="Английский по звукам, к началу страницы">
         <span class="brand-mark" aria-hidden="true">Aa</span>
-        <span>Английский<br>по звукам</span>
+        <span>Английский по звукам</span>
       </a>
-      <span class="header-caption">Практика чтения и транскрипции</span>
+      <nav class="site-nav" aria-label="По разделам">
+        <a href="#practice" data-section>Практика</a>
+        <a href="#dictionary" data-section>Словарь</a>
+      </nav>
     </header>
 
     <main class="page-content">
-      <div class="page-heading">
-        <div>
-          <h1>Слова и звуки</h1>
-          <p class="page-intro">Потренируйтесь читать слова и записывать их британскую транскрипцию.</p>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="hero-context">A1–A2 <span aria-hidden="true">·</span> Британский английский</p>
+          <h1 id="page-title">Читайте английский<br>по транскрипции</h1>
+          <p class="page-intro">Записывайте звуки по слову и учитесь узнавать слово по его транскрипции.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#practice" data-section>К упражнениям <span aria-hidden="true">↓</span></a>
+            <p class="hero-source"><strong>1&nbsp;693</strong> слова и выражения Oxford 3000</p>
+          </div>
         </div>
-        <span class="level-pill">A1 · A2</span>
-      </div>
-
-      <div class="workspace">
-        <section class="worksheet" aria-label="Упражнения">
-          <div class="tabs" role="tablist" aria-label="Выберите упражнение">
-            <button id="tab-0" class="tab" type="button" role="tab" data-mode="0" aria-controls="exercise-panel" aria-selected="true" tabindex="0">
-              <span class="tab-number">01</span><span>Слово <span aria-hidden="true">→</span> транскрипция</span>
-            </button>
-            <button id="tab-1" class="tab" type="button" role="tab" data-mode="1" aria-controls="exercise-panel" aria-selected="false" tabindex="-1">
-              <span class="tab-number">02</span><span>Транскрипция <span aria-hidden="true">→</span> слово</span>
-            </button>
+        <figure class="hero-example" aria-labelledby="hero-example-title">
+          <figcaption id="hero-example-title">Различайте близкие звуки</figcaption>
+          <div class="example-pair">
+            <span id="hero-short-word" lang="en">ship</span>
+            <span aria-hidden="true">→</span>
+            <span id="hero-short-ipa" lang="en-fonipa">/ʃɪp/</span>
           </div>
-
-          <div id="exercise-panel" class="exercise-panel" role="tabpanel" aria-labelledby="tab-0" tabindex="0">
-            <div class="exercise-heading">
-              <div>
-                <p class="section-label">УПРАЖНЕНИЕ</p>
-                <h2 id="exercise-title">Запишите транскрипцию</h2>
-                <p id="instructions" class="instructions">Прочитайте слово и запишите его транскрипцию.</p>
-              </div>
-              <p id="answer-progress" class="progress" aria-live="polite"></p>
-            </div>
-            <p id="exercise-example" class="example"></p>
-
-            <section id="ipa-keyboard" class="keyboard" aria-labelledby="ipa-heading">
-              <div class="keyboard-heading">
-                <h3 id="ipa-heading">IPA клавиатура</h3>
-                <span id="ipa-target">Символы вставляются в строку 1</span>
-              </div>
-              <div id="ipa-keys" class="ipa-keys" role="group" aria-label="Символы транскрипции"></div>
-            </section>
-
-            <ol id="answer-list" class="answer-list" aria-label="Слова для упражнения"></ol>
-            <div class="check-bar">
-              <button id="check-answers" class="button button-primary" type="button">Проверить ответы <span aria-hidden="true">↗</span></button>
-              <p id="check-result" class="check-result" role="status" aria-live="polite"></p>
-            </div>
+          <div class="example-pair">
+            <span id="hero-long-word" lang="en">sheep</span>
+            <span aria-hidden="true">→</span>
+            <span id="hero-long-ipa" lang="en-fonipa">/ʃiːp/</span>
           </div>
-        </section>
+          <p id="hero-contrast"><span lang="en-fonipa">/ɪ/</span> короткий, <span lang="en-fonipa">/iː/</span> долгий</p>
+        </figure>
+      </section>
 
-        <aside class="sidebar" aria-label="Настройки и действия">
-          <section class="side-card settings-card" aria-labelledby="settings-title">
+      <section id="practice" class="practice" tabindex="-1" aria-label="Практика чтения и транскрипции">
+        <div class="variant-card">
+          <div>
             <h2 id="settings-title">Ваш вариант</h2>
             <p id="worksheet-meta" class="muted"></p>
-            <form id="settings">
-              <label class="field-label" for="word-count">Слов в каждом упражнении</label>
+            <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
+          </div>
+          <form id="settings" aria-labelledby="settings-title">
+            <div class="settings-field">
+              <label class="field-label" for="word-count">Слов на упражнение</label>
               <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
+            </div>
+            <div class="settings-field">
               <label class="field-label" for="level">Уровень слов</label>
               <select id="level" name="level">
                 <option value="all">A1 и A2</option>
                 <option value="A1">A1</option>
                 <option value="A2">A2</option>
               </select>
-              <button class="button button-dark full-width" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
-              <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
-            </form>
+            </div>
+            <button class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
+          </form>
+        </div>
+        <div class="workspace">
+          <section class="worksheet" aria-label="Упражнения">
+            <div class="tabs" role="tablist" aria-label="Выберите упражнение">
+              <button id="tab-0" class="tab" type="button" role="tab" data-mode="0" aria-controls="exercise-panel" aria-selected="true" tabindex="0">
+                <span>Слово <span aria-hidden="true">→</span> транскрипция</span>
+              </button>
+              <button id="tab-1" class="tab" type="button" role="tab" data-mode="1" aria-controls="exercise-panel" aria-selected="false" tabindex="-1">
+                <span>Транскрипция <span aria-hidden="true">→</span> слово</span>
+              </button>
+            </div>
+
+            <div id="exercise-panel" class="exercise-panel" role="tabpanel" aria-labelledby="tab-0" tabindex="0">
+              <div class="exercise-heading">
+                <div>
+                  <h2 id="exercise-title">Запишите транскрипцию</h2>
+                  <p id="instructions" class="instructions">Прочитайте слово и запишите его транскрипцию.</p>
+                </div>
+                <p id="answer-progress" class="progress" aria-live="polite"></p>
+              </div>
+              <p id="exercise-example" class="example"></p>
+
+              <section id="ipa-keyboard" class="keyboard" aria-labelledby="ipa-heading">
+                <div class="keyboard-heading">
+                  <h3 id="ipa-heading">Символы IPA</h3>
+                  <span id="ipa-target">Символы вставляются в строку 1</span>
+                </div>
+                <div id="ipa-keys" class="ipa-keys" role="group" aria-label="Символы транскрипции"></div>
+              </section>
+
+              <ol id="answer-list" class="answer-list" aria-label="Слова для упражнения"></ol>
+              <div class="check-bar">
+                <button id="check-answers" class="button button-primary" type="button">Проверить ответы</button>
+                <p id="check-result" class="check-result" role="status" aria-live="polite"></p>
+              </div>
+            </div>
           </section>
 
-          <section class="side-card actions-card" aria-labelledby="actions-title">
-            <h2 id="actions-title">Для занятий</h2>
-            <p class="muted">Скачайте ответы в PDF, чтобы отправить их репетитору.</p>
+          <aside class="side-card actions-card" aria-labelledby="actions-title">
+            <h2 id="actions-title">Вариант и ответы</h2>
+            <p class="muted">В PDF будут оба упражнения и введённые ответы.</p>
             <div class="action-buttons">
-              <button id="copy-link" class="button button-outline" type="button"><span>Скопировать ссылку</span><span aria-hidden="true">↗</span></button>
-              <button id="download-responses" class="button button-outline" type="button"><span>Скачать ответы в PDF</span><span aria-hidden="true">↓</span></button>
-              <button id="print-worksheet" class="button button-outline" type="button"><span>Распечатать задания</span><span aria-hidden="true">↗</span></button>
+              <button id="download-responses" class="button button-secondary" type="button">Скачать ответы в PDF <span aria-hidden="true">↓</span></button>
+              <button id="print-worksheet" class="button button-outline" type="button">Распечатать задания</button>
+              <button id="copy-link" class="button button-outline" type="button">Скопировать ссылку</button>
             </div>
             <p id="action-status" class="form-note" role="status" aria-live="polite"></p>
-          </section>
-        </aside>
+          </aside>
+        </div>
+      </section>
+
+      <div class="study-tip">
+        <p><span class="tip-line">Если сомневаетесь в звуке,</span> <span class="tip-line">сравните слова из одной группы.</span></p>
       </div>
-      <details class="word-groups-panel" open>
+
+      <details id="dictionary" class="word-groups-panel" tabindex="-1" open>
         <summary>Слова по группам</summary>
         <p id="word-groups-note" class="muted"></p>
         <div id="word-groups" class="word-groups"></div>
@@ -126,7 +163,7 @@
       <h2 id="share-title">Скопируйте текст</h2>
       <p>Выделите текст и скопируйте его.</p>
       <textarea id="share-value" rows="7" aria-label="Текст для копирования" readonly></textarea>
-      <button id="close-share" class="button button-dark" type="button">Закрыть</button>
+      <button id="close-share" class="button button-primary" type="button">Закрыть</button>
     </div>
   </dialog>
   <div id="print-work" aria-label="Версия для печати"></div>
