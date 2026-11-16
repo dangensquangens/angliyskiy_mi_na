@@ -85,6 +85,20 @@ textarea { resize: vertical; }
 .section-actions { display: flex; align-items: center; gap: 8px; }
 .assignment-list { display: grid; gap: 12px; }
 #admin-work:not([hidden]) { display: grid; gap: 16px; }
+.admin-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #e8efe8; border: 1px solid #d9e2da; border-radius: 12px; }
+.admin-tabs [role="tab"] { min-height: 44px; padding: 8px 12px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #315a4a; font-size: 14px; line-height: 20px; font-weight: 600; }
+.admin-tabs [role="tab"]:hover { background: #f6f6ef; }
+.admin-tabs [role="tab"]:active { transform: scale(.98); }
+.admin-tabs [aria-selected="true"] { background: #fff; border-color: #b8cabe; color: #163e34; }
+.admin-tabs [role="tab"]:focus-visible { outline-offset: -2px; }
+.admin-panel { display: grid; gap: 16px; }
+#saved-assignments-title { margin-bottom: 12px; }
+@media (max-width: 520px) {
+  .admin-toolbar { align-items: stretch; flex-direction: column; }
+  .admin-toolbar .section-actions { align-self: flex-end; }
+  .admin-tabs [role="tab"] { padding-inline: 4px; }
+}
 #student-login-panel + .card, #student-dashboard + .card { margin-top: 16px; }
 [hidden] + #student-dashboard, [hidden] + #code-panel { margin-top: 0; }
 .student-options { display: grid; gap: 8px; margin: 0; padding: 12px; border: 1px solid #d9e2da; border-radius: 8px; min-width: 0; }

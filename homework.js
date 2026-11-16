@@ -280,6 +280,35 @@
     $('admin-work').hidden = !loggedIn;
   }
 
+  function prepareAdminTabs() {
+    const tabs = [...$('admin-work').querySelectorAll('[role="tab"]')];
+    function selectTab(selected) {
+      for (const tab of tabs) {
+        const active = tab === selected;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        $(tab.getAttribute('aria-controls')).hidden = !active;
+      }
+    }
+
+    for (const [index, tab] of tabs.entries()) {
+      tab.addEventListener('click', () => selectTab(tab));
+      tab.addEventListener('keydown', event => {
+        let nextIndex;
+        switch (event.key) {
+          case 'ArrowRight': nextIndex = (index + 1) % tabs.length; break;
+          case 'ArrowLeft': nextIndex = (index - 1 + tabs.length) % tabs.length; break;
+          case 'Home': nextIndex = 0; break;
+          case 'End': nextIndex = tabs.length - 1; break;
+          default: return;
+        }
+        event.preventDefault();
+        selectTab(tabs[nextIndex]);
+        tabs[nextIndex].focus();
+      });
+    }
+  }
+
   function logout(message = '') {
     token = '';
     adminAssignments = [];
@@ -821,6 +850,7 @@
   if (adminMode) {
     $('admin-view').hidden = false;
     $('admin-link').hidden = true;
+    prepareAdminTabs();
     if (token) { showAdmin(true); refreshAssignments().then(refreshProfiles); }
     const refreshIfVisible = () => {
       if (token && !document.hidden) refreshAssignments({ quiet: true });
