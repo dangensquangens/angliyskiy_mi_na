@@ -21,6 +21,8 @@
   let latestRefresh = 0;
   let assignmentToDelete = '';
   let previewDraft = null;
+  let studentToken = readStorage(sessionStorage, 'student-token') || '';
+  let draftTimer, draftPromise = Promise.resolve(), draftDirty = false, draftBlocked = false;
 
   function readStorage(storage, key) {
     try { return storage.getItem(key); } catch { return null; }
@@ -47,13 +49,17 @@
     target.dataset.kind = kind;
   }
 
-  async function request(path, { method = 'GET', body, authenticated = false } = {}) {
+  async function request(path, { method = 'GET', body, authenticated = false, student = false } = {}) {
     if (!apiBase) throw new Error('Сервис заданий ещё не подключён. Обратитесь к преподавателю.');
     const headers = { Accept: 'application/json' };
     if (body !== undefined) headers['Content-Type'] = 'application/json';
     if (authenticated) {
       if (functionRouting) headers['X-Homework-Session'] = token;
       else headers.Authorization = `Bearer ${token}`;
+    }
+    if (student) {
+      if (functionRouting) headers['X-Homework-Session'] = studentToken;
+      else headers.Authorization = `Bearer ${studentToken}`;
     }
     const url = functionRouting ? `${apiBase}?route=${encodeURIComponent(path)}` : `${apiBase}${path}`;
     let response;
@@ -84,6 +90,12 @@
 
   function persistDraft() {
     if (!currentAssignment || currentAssignment.submittedAt) return;
+    if (currentAssignment.id) {
+      draftDirty = true;
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(() => saveStudentDraft().catch(() => {}), 700);
+      return;
+    }
     if (!writeStorage(localStorage, draftPrefix + currentAssignment.code, JSON.stringify(answers))) {
       $('submit-note').textContent = 'Автоматически сохранить черновик на этом устройстве не удалось.';
     }
@@ -115,15 +127,15 @@
     if (!validAssignment(assignment)) throw new Error('Задание получено не полностью. Попробуйте открыть его ещё раз.');
     currentAssignment = assignment;
     const submitted = Boolean(assignment.submittedAt);
-    answers = submitted && Array.isArray(assignment.answers)
+    answers = (submitted || assignment.id) && Array.isArray(assignment.answers)
       ? assignment.items.map((group, mode) => group.map((_, index) => String(assignment.answers?.[mode]?.[index] ?? '')))
-      : getDraft(assignment.code, assignment.items);
-    if (submitted) removeStorage(localStorage, draftPrefix + assignment.code);
+      : assignment.id ? assignment.items.map(group => group.map(() => '')) : getDraft(assignment.code, assignment.items);
+    if (submitted && !assignment.id) removeStorage(localStorage, draftPrefix + assignment.code);
     $('code-panel').hidden = true;
     $('student-work').hidden = false;
     $('work-code').textContent = assignment.code;
     $('work-meta').textContent = `${levels[assignment.level] || assignment.level || ''} · ${formatCounts(assignment)}`;
-    $('work-state').textContent = submitted ? 'Сдано' : 'В процессе';
+    $('work-state').textContent = assignment.id ? stateLabel(assignment) : submitted ? 'Сдано' : 'В процессе';
     $('work-state').classList.toggle('done', submitted);
     $('result-summary').hidden = !submitted;
     $('result-summary').textContent = submitted ? `Результат: ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : '';
@@ -210,6 +222,15 @@
     status('student-status', 'Отправляем ответы…', 'success');
     const code = currentAssignment.code;
     try {
+      if (currentAssignment.id) {
+        $('student-back').disabled = true;
+        clearTimeout(draftTimer);
+        await saveStudentDraft();
+        const data = await request(`/api/student/assignments/${encodeURIComponent(currentAssignment.id)}/submit`, { method: 'POST', student: true, body: { answers, revision: currentAssignment.revision, attempt: currentAssignment.attempt } });
+        drawStudent(data.assignment);
+        status('student-status', 'Ответы отправлены.', 'success');
+        return;
+      }
       const data = await request(`/api/assignments/${encodeURIComponent(code)}/submit`, { method: 'POST', body: { answers } });
       if (!data.assignment?.submittedAt) throw new Error('Сервис не подтвердил отправку. Попробуйте ещё раз.');
       drawStudent(data.assignment);
@@ -218,8 +239,10 @@
     } catch (error) {
       // A lost response can follow a successful submission. Check before allowing another attempt.
       try {
-        const data = await request(`/api/assignments/${encodeURIComponent(code)}`);
-        if (data.assignment?.submittedAt) {
+        const data = currentAssignment.id
+          ? await request(`/api/student/assignments/${encodeURIComponent(currentAssignment.id)}`, { student: true })
+          : await request(`/api/assignments/${encodeURIComponent(code)}`);
+        if (data.assignment?.submittedAt && data.assignment.attempt === currentAssignment.attempt) {
           drawStudent(data.assignment);
           status('student-status', 'Ответы успешно отправлены.', 'success');
           return;
@@ -229,6 +252,7 @@
     } finally {
       submitting = false;
       $('submit-work').disabled = false;
+      $('student-back').disabled = false;
     }
   }
 
@@ -339,7 +363,7 @@
       description.append(element('p', 'muted', `${levels[assignment.level] || assignment.level || ''}${countText ? ` · ${countText}` : ''}${created ? ` · ${created}` : ''}`));
       const submitted = Boolean(assignment.submittedAt);
       if (submitted) description.append(element('p', 'muted', `Сдано ${formatDate(assignment.submittedAt)}`));
-      const badgeText = submitted ? `Сдано · ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : 'Ожидает ответа';
+      const badgeText = assignment.private ? 'Сохранено' : submitted ? `Сдано · ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : 'Ожидает ответа';
       top.append(description, element('span', `assignment-badge${submitted ? ' done' : ''}`, badgeText));
       card.append(top);
       const actions = element('div', 'assignment-actions');
@@ -351,11 +375,14 @@
       remove.setAttribute('aria-label', `Удалить задание ${assignment.code}`);
       remove.addEventListener('click', () => {
         assignmentToDelete = assignment.code;
-        $('delete-warning').textContent = `Задание ${assignment.code} и ответы ученика будут удалены без возможности восстановления. Ссылка перестанет работать.`;
+        $('delete-warning').textContent = assignment.private
+          ? `Вариант ${assignment.code} больше нельзя будет назначить. Уже выданные работы останутся у учеников.`
+          : `Работа по коду ${assignment.code} и её ответы будут удалены. Ссылка перестанет работать.`;
         status('delete-status', '');
         $('delete-dialog').showModal();
       });
-      actions.append(copy, remove);
+      if (!assignment.private) actions.append(copy);
+      actions.append(remove);
       card.append(actions);
       {
         const details = element('details');
@@ -368,7 +395,9 @@
           try {
             const complete = Array.isArray(assignment.items)
               ? assignment
-              : (await request(`/api/assignments/${encodeURIComponent(assignment.code)}`)).assignment;
+              : (await (assignment.private
+                ? request('/api/admin/assignments', { method: 'POST', authenticated: true, body: { action: 'view', code: assignment.code } })
+                : request(`/api/assignments/${encodeURIComponent(assignment.code)}`))).assignment;
             drawReview(content, complete);
             content.dataset.loaded = 'true';
           } catch (error) { content.textContent = `${error.message} Закройте и откройте ответы ещё раз.`; }
@@ -418,6 +447,7 @@
       latestRefresh++;
       dialog.close();
       drawAssignments(adminAssignments.filter(assignment => assignment.code !== code));
+      await refreshProfiles();
       $('refresh-list').disabled = false;
       $('refresh-list').focus();
       status('admin-status', `Задание ${code} удалено.`, 'success');
@@ -502,6 +532,185 @@
     }));
   }
 
+  async function saveStudentDraft() {
+    draftPromise = draftPromise.then(async () => {
+      if (draftBlocked) throw new Error('Черновик изменён на другом устройстве. Вернитесь к списку и откройте задание снова.');
+      while (draftDirty) {
+        draftDirty = false;
+        const snapshot = answers.map(group => [...group]);
+        try {
+          const data = await request(`/api/student/assignments/${encodeURIComponent(currentAssignment.id)}/draft`, { method: 'POST', student: true, body: { answers: snapshot, revision: currentAssignment.revision, attempt: currentAssignment.attempt } });
+          currentAssignment.revision = data.assignment.revision;
+          $('work-state').textContent = stateLabel(data.assignment);
+          status('student-status', 'Черновик сохранён.', 'success');
+        } catch (error) {
+          draftDirty = true;
+          if (error.status === 409) draftBlocked = true;
+          status('student-status', draftBlocked ? 'Черновик изменён на другом устройстве. Вернитесь к списку и откройте задание снова.' : `Черновик не сохранён. ${error.message}`);
+          throw error;
+        }
+      }
+    });
+    const pending = draftPromise;
+    draftPromise = pending.catch(() => {});
+    return pending;
+  }
+
+  const stateLabel = assignment => ({ assigned: 'Назначено', in_progress: 'В работе', submitted: 'Сдано' }[assignment.status] || 'Назначено');
+
+  async function showStudentDashboard() {
+    const data = await request('/api/student/assignments', { student: true });
+    $('student-name').textContent = data.student.name;
+    $('student-login-panel').hidden = true;
+    $('code-panel').hidden = true;
+    $('student-dashboard').hidden = false;
+    $('student-work').hidden = true;
+    $('student-back').hidden = true;
+    $('student-list').replaceChildren();
+    for (const assignment of data.assignments) {
+      const item = element('div', 'assignment');
+      item.append(element('p', '', `${assignment.code} · ${stateLabel(assignment)}${assignment.status === 'submitted' ? ` · ${assignment.score} из ${assignment.total}` : ''}`));
+      const button = element('button', 'button secondary', 'Открыть');
+      button.type = 'button';
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const result = await request(`/api/student/assignments/${encodeURIComponent(assignment.id)}`, { student: true });
+          draftDirty = false; draftBlocked = false;
+          $('student-dashboard').hidden = true;
+          $('student-back').hidden = false;
+          drawStudent(result.assignment);
+          status('student-status', '');
+        } catch (error) { status('student-status', error.message); }
+        finally { button.disabled = false; }
+      });
+      item.append(button); $('student-list').append(item);
+    }
+    if (!data.assignments.length) $('student-list').append(element('p', 'muted', 'Пока нет назначенных заданий.'));
+  }
+
+  async function refreshProfiles() {
+    if (!token) return;
+    try {
+      const [profiles, assigned] = await Promise.all([request('/api/admin/students', { authenticated: true }), request('/api/admin/student-assignments', { authenticated: true })]);
+      $('admin-students').replaceChildren(...profiles.students.map(student => element('p', '', `${student.name} · ${student.login}`)));
+      const fieldset = $('assign-students');
+      const checked = new Set([...fieldset.querySelectorAll('input:checked')].map(input => input.value));
+      const activeCode = $('assign-code').value;
+      fieldset.replaceChildren(element('legend', '', 'Ученики'));
+      for (const student of profiles.students) {
+        const label = element('label');
+        const box = element('input'); box.type = 'checkbox'; box.value = student.id; box.checked = checked.has(student.id);
+        label.append(box, document.createTextNode(` ${student.name} `)); fieldset.append(label);
+      }
+      $('assign-code').replaceChildren(...adminAssignments.map(assignment => {
+        const option = element('option', '', `${assignment.code} · ${formatCounts(assignment)}`); option.value = assignment.code; return option;
+      }));
+      if (adminAssignments.some(assignment => assignment.code === activeCode)) $('assign-code').value = activeCode;
+      updateImportOption();
+      $('assigned-list').replaceChildren();
+      if (!assigned.assignments.length) $('assigned-list').append(element('p', 'muted', 'Пока нет назначенных заданий.'));
+      for (const assignment of assigned.assignments) {
+        const item = element('div', 'assignment');
+        item.append(element('p', '', `${assignment.studentName} · ${assignment.code} · ${stateLabel(assignment)}${assignment.status === 'submitted' ? ` · ${assignment.score} из ${assignment.total}` : ''}`));
+        if (assignment.status === 'submitted') {
+          const details = element('details');
+          const content = element('div', 'assignment-details');
+          details.append(element('summary', '', 'Ответы ученика'), content);
+          details.addEventListener('toggle', async () => {
+            if (!details.open || content.dataset.loaded) return;
+            try {
+              const result = await request(`/api/admin/student-assignments/${encodeURIComponent(assignment.id)}`, { authenticated: true });
+              drawReview(content, result.assignment);
+              content.dataset.loaded = 'true';
+            } catch (error) { content.textContent = error.message; }
+          });
+          item.append(details);
+          const button = element('button', 'button secondary', 'Разрешить повторную попытку'); button.type = 'button';
+          button.addEventListener('click', async () => { try { button.disabled = true; await request(`/api/admin/student-assignments/${encodeURIComponent(assignment.id)}/retry`, { method: 'POST', authenticated: true }); await refreshProfiles(); } catch (error) { status('admin-status', error.message); button.disabled = false; } });
+          item.append(button);
+        }
+        $('assigned-list').append(item);
+      }
+    } catch (error) { status('admin-status', error.message); }
+  }
+
+  function updateImportOption() {
+    const selected = adminAssignments.find(assignment => assignment.code === $('assign-code').value);
+    const available = Boolean(selected?.submittedAt && !selected.private);
+    $('import-result-option').hidden = !available;
+    if (!available) $('import-result').checked = false;
+    $('assign-form').querySelector('button').textContent = available && $('import-result').checked
+      ? 'Перенести результат' : 'Назначить';
+  }
+
+  $('student-login').addEventListener('submit', async event => {
+    event.preventDefault();
+    try { const data = await request('/api/student/login', { method: 'POST', body: { login: $('student-login-name').value, password: $('student-password').value } }); studentToken = data.token; writeStorage(sessionStorage, 'student-token', studentToken); $('student-password').value = ''; await showStudentDashboard(); status('student-status', ''); } catch (error) { status('student-status', error.message); }
+  });
+  $('student-logout').addEventListener('click', async () => {
+    await request('/api/student/logout', { method: 'POST', student: true }).catch(() => {});
+    studentToken = '';
+    removeStorage(sessionStorage, 'student-token');
+    $('student-dashboard').hidden = true;
+    $('student-login-panel').hidden = false;
+    $('code-panel').hidden = false;
+  });
+  $('student-back').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+      clearTimeout(draftTimer);
+      if (!draftBlocked) await saveStudentDraft();
+      await showStudentDashboard();
+      currentAssignment = null;
+      status('student-status', '');
+    } catch (error) { status('student-status', error.message); }
+    finally { button.disabled = false; }
+  });
+  $('student-create').addEventListener('submit', async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = form.querySelector('button');
+    button.disabled = true;
+    try {
+      await request('/api/admin/students', {
+        method: 'POST', authenticated: true,
+        body: { name: $('new-name').value, login: $('new-login').value, password: $('new-password').value },
+      });
+      form.reset();
+      await refreshProfiles();
+      status('admin-status', 'Профиль создан.', 'success');
+    } catch (error) { status('admin-status', error.message); }
+    finally { button.disabled = false; }
+  });
+  $('assign-code').addEventListener('change', () => {
+    $('import-result').checked = false;
+    updateImportOption();
+  });
+  $('import-result').addEventListener('change', updateImportOption);
+  $('assign-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = form.querySelector('button');
+    const studentIds = [...$('assign-students').querySelectorAll('input:checked')].map(input => input.value);
+    const importResult = $('import-result').checked;
+    if (studentIds.length === 0 || (importResult && studentIds.length !== 1)) {
+      status('admin-status', importResult ? 'Для переноса результата выберите одного ученика.' : 'Выберите ученика.');
+      return;
+    }
+    button.disabled = true;
+    try {
+      await request('/api/admin/student-assignments', {
+        method: 'POST', authenticated: true, body: { code: $('assign-code').value, studentIds, importResult },
+      });
+      $('assign-students').querySelectorAll('input:checked').forEach(input => { input.checked = false; });
+      $('import-result').checked = false;
+      await refreshProfiles();
+      status('admin-status', importResult ? 'Результат перенесён в профиль ученика.' : 'Задание назначено.', 'success');
+    } catch (error) { status('admin-status', error.message); }
+    finally { button.disabled = false; }
+  });
   $('code-form').addEventListener('submit', event => { event.preventDefault(); openAssignment($('code-input').value); });
   $('submit-work').addEventListener('click', submitWork);
   $('login-form').addEventListener('submit', async event => {
@@ -517,6 +726,7 @@
       $('password').value = '';
       showAdmin(true);
       await refreshAssignments();
+      await refreshProfiles();
     } catch (error) { status('admin-status', error.message); }
     finally { button.disabled = false; }
   });
@@ -570,20 +780,21 @@
     try {
       const data = await request('/api/admin/assignments', {
         method: 'POST', authenticated: true,
-        body: { action: 'create-preview', settings: draft.settings, revision: draft.revision, selections },
+        body: { action: 'create-preview', private: true, settings: draft.settings, revision: draft.revision, selections },
       });
       if (currentToken !== token) return;
       if (!data.assignment?.code) throw new Error('Сервис не подтвердил создание задания.');
       clearPreview();
       const refreshed = await refreshAssignments();
+      await refreshProfiles();
       if (currentToken !== token) return;
       if (refreshed) {
-        status('admin-status', `Задание ${data.assignment.code} создано. Скопируйте ссылку ниже.`, 'success');
+        status('admin-status', `Задание ${data.assignment.code} сохранено. Его можно назначить ученикам.`, 'success');
       } else if (token) {
         if (!adminAssignments.some(assignment => assignment.code === data.assignment.code)) {
           drawAssignments([data.assignment, ...adminAssignments]);
         }
-        status('admin-status', 'Задание создано. Ссылку можно скопировать в списке.', 'success');
+        status('admin-status', 'Задание сохранено. Обновите список перед назначением.', 'success');
       }
     } catch (error) {
       if (currentToken !== token) return;
@@ -593,7 +804,9 @@
       controls.forEach(control => { control.disabled = false; });
     }
   });
-  $('refresh-list').addEventListener('click', refreshAssignments);
+  $('refresh-list').addEventListener('click', async () => {
+    if (await refreshAssignments()) await refreshProfiles();
+  });
   $('logout').addEventListener('click', () => {
     request('/api/admin/logout', { method: 'POST', authenticated: true }).catch(() => {});
     logout();
@@ -608,7 +821,7 @@
   if (adminMode) {
     $('admin-view').hidden = false;
     $('admin-link').hidden = true;
-    if (token) { showAdmin(true); refreshAssignments(); }
+    if (token) { showAdmin(true); refreshAssignments().then(refreshProfiles); }
     const refreshIfVisible = () => {
       if (token && !document.hidden) refreshAssignments({ quiet: true });
     };
@@ -618,5 +831,14 @@
     $('student-view').hidden = false;
     prepareKeyboard();
     openAssignment(new URLSearchParams(location.search).get('code') || '');
+    if (studentToken && !new URLSearchParams(location.search).get('code')) {
+      showStudentDashboard().catch(error => {
+        if (error.status === 401) {
+          studentToken = '';
+          removeStorage(sessionStorage, 'student-token');
+        }
+        status('student-status', error.message);
+      });
+    }
   }
 })();

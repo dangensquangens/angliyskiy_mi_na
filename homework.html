@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="homework.css?v=3">
+  <link rel="stylesheet" href="homework.css?v=4">
   <script src="homework-config.js?v=2" defer></script>
-  <script src="homework.js?v=5" defer></script>
+  <script src="homework.js?v=6" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -26,6 +26,8 @@
     <main id="main" tabindex="-1">
       <section id="student-view" hidden>
         <div class="intro"><p class="eyebrow">ДОМАШНЕЕ ЗАДАНИЕ</p><h1>Слова и звуки</h1><p>Выполните задание и отправьте ответы на проверку.</p></div>
+        <section id="student-login-panel" class="card narrow"><h2>Вход ученика</h2><form id="student-login" class="stack-form"><div class="field"><label for="student-login-name">Логин</label><input id="student-login-name" autocomplete="username" required></div><div class="field"><label for="student-password">Пароль</label><input id="student-password" type="password" autocomplete="current-password" required></div><button class="button primary">Войти</button></form></section>
+        <section id="student-dashboard" class="card" hidden><div class="section-row"><h2 id="student-name"></h2><button type="button" id="student-logout" class="text-button">Выйти</button></div><div id="student-list" class="assignment-list"></div></section>
         <section id="code-panel" class="card narrow" aria-labelledby="code-title" hidden>
           <h2 id="code-title">Открыть задание</h2>
           <p class="muted">Введите код, который прислал преподаватель.</p>
@@ -36,6 +38,7 @@
         </section>
         <p id="student-status" class="status" role="status" aria-live="polite"></p>
         <div id="student-work" hidden>
+          <button type="button" id="student-back" class="text-button" hidden>К моим заданиям</button>
           <div class="work-summary"><div><p class="eyebrow">ВАШ ВАРИАНТ</p><h2>Задание <span id="work-code"></span></h2><p id="work-meta" class="muted"></p></div><span id="work-state" class="state-badge">В процессе</span></div>
           <div id="result-summary" class="result-summary" role="status" tabindex="-1" hidden></div>
           <section id="exercise-0" class="card exercise" aria-labelledby="exercise-one-title">
@@ -59,8 +62,11 @@
         </section>
         <p id="admin-status" class="status" role="status" aria-live="polite"></p>
         <div id="admin-work" hidden>
+          <section class="card"><h2>Ученики</h2><form id="student-create" class="stack-form"><div class="field"><label for="new-name">Имя</label><input id="new-name" maxlength="100" required></div><div class="field"><label for="new-login">Логин</label><input id="new-login" maxlength="64" pattern="[A-Za-z0-9_.\-]+" aria-describedby="login-hint" required><p id="login-hint" class="muted">Латинские буквы, цифры, точка, дефис и подчёркивание.</p></div><div class="field"><label for="new-password">Начальный пароль</label><input id="new-password" type="password" autocomplete="new-password" maxlength="256" required></div><button class="button primary">Создать профиль</button></form><div id="admin-students"></div></section>
+          <section class="card"><h2>Назначить задание</h2><form id="assign-form" class="stack-form"><div class="field"><label for="assign-code">Задание</label><select id="assign-code" required></select></div><fieldset id="assign-students" class="student-options"><legend>Ученики</legend></fieldset><label id="import-result-option" class="checkbox-label" hidden><input id="import-result" type="checkbox"> Перенести сданную работу и её результат выбранному ученику</label><button class="button primary">Назначить</button></form></section>
+          <section class="card"><h2>Назначенные задания</h2><div id="assigned-list" class="assignment-list"></div></section>
           <section class="card create-card" aria-labelledby="create-title">
-            <div><h2 id="create-title">Новое задание</h2><p class="muted">Каждое задание предназначено для одного ученика. Укажите 0, чтобы пропустить упражнение.</p></div>
+            <div><h2 id="create-title">Новое задание</h2><p class="muted">Сохраните вариант, чтобы назначить его ученикам. Укажите 0, чтобы пропустить упражнение.</p></div>
             <form id="create-form" class="create-form">
               <div class="field"><label for="count-0">Слово → транскрипция</label><input id="count-0" type="number" min="0" step="1" value="10" required></div>
               <div class="field"><label for="count-1">Транскрипция → слово</label><input id="count-1" type="number" min="0" step="1" value="10" required></div>
@@ -73,10 +79,10 @@
               <datalist id="preview-choices"></datalist>
               <div id="preview-groups" class="preview-groups"></div>
               <p id="preview-status" class="status" role="status"></p>
-              <button id="publish-assignment" class="button primary" type="button">Создать задание</button>
+              <button id="publish-assignment" class="button primary" type="button">Сохранить задание</button>
             </section>
           </section>
-          <div class="section-row"><h2>Задания учеников</h2><div class="section-actions"><button id="refresh-list" class="button secondary" type="button">Обновить</button><button id="logout" class="text-button" type="button">Выйти</button></div></div>
+          <div class="section-row"><h2>Сохранённые задания</h2><div class="section-actions"><button id="refresh-list" class="button secondary" type="button">Обновить</button><button id="logout" class="text-button" type="button">Выйти</button></div></div>
           <div id="assignment-list" class="assignment-list"></div>
         </div>
       </section>

@@ -84,6 +84,13 @@ textarea { resize: vertical; }
 .section-row h2 { font-size: 20px; line-height: 28px; }
 .section-actions { display: flex; align-items: center; gap: 8px; }
 .assignment-list { display: grid; gap: 12px; }
+#admin-work:not([hidden]) { display: grid; gap: 16px; }
+#student-login-panel + .card, #student-dashboard + .card { margin-top: 16px; }
+[hidden] + #student-dashboard, [hidden] + #code-panel { margin-top: 0; }
+.student-options { display: grid; gap: 8px; margin: 0; padding: 12px; border: 1px solid #d9e2da; border-radius: 8px; min-width: 0; }
+.student-options label, .checkbox-label:not([hidden]) { display: flex; gap: 8px; align-items: center; overflow-wrap: anywhere; }
+#student-back { margin-bottom: 12px; }
+#admin-students:not(:empty) { margin-top: 16px; }
 .assignment { padding: 24px; border: 1px solid #d9e2da; border-radius: 12px; background: #fff; }
 .assignment-top { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .assignment-code { margin: 0; color: #22372c; font-size: 18px; line-height: 28px; font-weight: 600; overflow-wrap: anywhere; }
