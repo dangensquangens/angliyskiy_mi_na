@@ -20,6 +20,7 @@
   let adminAssignments = [];
   let latestRefresh = 0;
   let assignmentToDelete = '';
+  let previewDraft = null;
 
   function readStorage(storage, key) {
     try { return storage.getItem(key); } catch { return null; }
@@ -259,6 +260,7 @@
     token = '';
     adminAssignments = [];
     $('delete-dialog').close();
+    clearPreview();
     removeStorage(sessionStorage, tokenKey);
     $('password').value = '';
     $('assignment-list').replaceChildren();
@@ -428,6 +430,78 @@
     }
   }
 
+  function clearPreview() {
+    previewDraft = null;
+    $('assignment-preview').hidden = true;
+    $('preview-choices').replaceChildren();
+    $('preview-groups').replaceChildren();
+    status('preview-status', '');
+  }
+
+  function renderPreview(settings, preview) {
+    const byId = new Map(preview.choices.map(choice => [choice.id, choice]));
+    const choices = [...preview.choices].sort((left, right) => left.display.localeCompare(right.display, 'en'));
+    const byName = new Map(choices.map(choice => [choice.display.toLowerCase(), choice]));
+    const findChoice = input => byName.get(input.value.trim().toLowerCase());
+    $('preview-choices').replaceChildren(...choices.map(choice => {
+      const option = element('option');
+      option.value = choice.display;
+      return option;
+    }));
+    const groups = $('preview-groups');
+    const inputs = preview.selections.map((selection, mode) => {
+      if (selection.length === 0) return [];
+      const group = element('section');
+      const list = element('ol', 'preview-words');
+      group.append(element('h3', '', exerciseNames[mode]), list);
+      groups.append(group);
+      return selection.map((id, index) => {
+        const choice = byId.get(id);
+        const row = element('li');
+        const fields = element('div', 'preview-word');
+        const input = element('input');
+        input.type = 'text';
+        input.lang = 'en';
+        input.value = choice.display;
+        input.autocomplete = 'off';
+        input.spellcheck = false;
+        input.setAttribute('list', 'preview-choices');
+        input.setAttribute('aria-label', `Упражнение ${mode + 1}, слово ${index + 1}`);
+        const ipa = element('span', 'preview-ipa', `/${choice.ipa}/`);
+        input.addEventListener('input', () => {
+          const replacement = findChoice(input);
+          ipa.textContent = replacement ? `/${replacement.ipa}/` : '';
+          input.removeAttribute('aria-invalid');
+          status('preview-status', '');
+        });
+        fields.append(input, ipa);
+        row.append(fields);
+        list.append(row);
+        return input;
+      });
+    });
+    previewDraft = { settings, revision: preview.revision, inputs, findChoice };
+    $('assignment-preview').hidden = false;
+    $('preview-title').focus();
+  }
+
+  function collectSelections(draft) {
+    const seen = new Set();
+    return draft.inputs.map(group => group.map(input => {
+      const choice = draft.findChoice(input);
+      const error = !choice ? 'Выберите слово из словаря.' :
+        seen.has(choice.id) ? `Слово ${choice.display} уже есть в задании.` : '';
+      if (error) {
+        input.setAttribute('aria-invalid', 'true');
+        input.focus();
+        throw new Error(error);
+      }
+      input.removeAttribute('aria-invalid');
+      seen.add(choice.id);
+      return choice.id;
+    }));
+  }
+
   $('code-form').addEventListener('submit', event => { event.preventDefault(); openAssignment($('code-input').value); });
   $('submit-work').addEventListener('click', submitWork);
   $('login-form').addEventListener('submit', async event => {
@@ -448,17 +522,61 @@
   });
   $('create-form').addEventListener('submit', async event => {
     event.preventDefault();
+    const controls = [$('count-0'), $('count-1'), $('level')];
     const button = event.currentTarget.querySelector('button');
+    if (button.disabled || !token) return;
+    const currentToken = token;
+    const counts = controls.slice(0, 2).map(input => input.valueAsNumber);
+    const settings = { counts, level: $('level').value };
+    if (!counts.every(value => Number.isSafeInteger(value) && value >= 0) || counts.every(value => value === 0)) {
+      status('admin-status', 'Укажите целое неотрицательное число для каждого упражнения. Хотя бы в одном упражнении должно быть слово.');
+      return;
+    }
+    clearPreview();
     button.disabled = true;
-    status('admin-status', 'Создаём задание…', 'success');
+    controls.forEach(control => { control.disabled = true; });
+    status('admin-status', 'Подбираем слова…', 'success');
     try {
-      const counts = [$('count-0'), $('count-1')].map(input => Number(input.value));
-      if (!counts.every(value => Number.isSafeInteger(value) && value >= 0) || counts.every(value => value === 0)) {
-        throw new Error('Укажите целое неотрицательное число для каждого упражнения. Хотя бы в одном упражнении должно быть слово.');
-      }
-      const data = await request('/api/admin/assignments', { method: 'POST', authenticated: true, body: { counts, level: $('level').value } });
+      const data = await request('/api/admin/assignments', {
+        method: 'POST', authenticated: true, body: { action: 'preview', settings },
+      });
+      if (currentToken !== token) return;
+      if (!data.preview) throw new Error('Не удалось получить список слов. Попробуйте ещё раз.');
+      renderPreview(settings, data.preview);
+      status('admin-status', '');
+    } catch (error) { if (currentToken === token) adminError(error); }
+    finally {
+      button.disabled = false;
+      controls.forEach(control => { control.disabled = false; });
+    }
+  });
+  $('create-form').addEventListener('input', () => {
+    if (!previewDraft) return;
+    clearPreview();
+    status('admin-status', 'Параметры изменились. Нажмите «Подобрать слова», чтобы обновить список.');
+  });
+  $('publish-assignment').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    const draft = previewDraft;
+    if (!draft || button.disabled || !token) return;
+    let selections;
+    try { selections = collectSelections(draft); }
+    catch (error) { status('preview-status', error.message); return; }
+
+    const currentToken = token;
+    const controls = [...$('create-form').elements, ...draft.inputs.flat(), button];
+    controls.forEach(control => { control.disabled = true; });
+    status('preview-status', 'Создаём задание…', 'success');
+    try {
+      const data = await request('/api/admin/assignments', {
+        method: 'POST', authenticated: true,
+        body: { action: 'create-preview', settings: draft.settings, revision: draft.revision, selections },
+      });
+      if (currentToken !== token) return;
       if (!data.assignment?.code) throw new Error('Сервис не подтвердил создание задания.');
+      clearPreview();
       const refreshed = await refreshAssignments();
+      if (currentToken !== token) return;
       if (refreshed) {
         status('admin-status', `Задание ${data.assignment.code} создано. Скопируйте ссылку ниже.`, 'success');
       } else if (token) {
@@ -467,8 +585,13 @@
         }
         status('admin-status', 'Задание создано. Ссылку можно скопировать в списке.', 'success');
       }
-    } catch (error) { adminError(error); }
-    finally { button.disabled = false; }
+    } catch (error) {
+      if (currentToken !== token) return;
+      if (error.status === 401) adminError(error);
+      else status('preview-status', error.message);
+    } finally {
+      controls.forEach(control => { control.disabled = false; });
+    }
   });
   $('refresh-list').addEventListener('click', refreshAssignments);
   $('logout').addEventListener('click', () => {
