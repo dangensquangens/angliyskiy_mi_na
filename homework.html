@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="homework.css">
+  <link rel="stylesheet" href="homework.css?v=2">
   <script src="homework-config.js?v=2" defer></script>
-  <script src="homework.js?v=3" defer></script>
+  <script src="homework.js?v=4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -76,5 +76,16 @@
     <footer class="footer"><span>Английский по звукам</span><a id="admin-link" href="homework.html?admin=1">Кабинет репетитора</a></footer>
   </div>
   <dialog id="copy-dialog" class="dialog" aria-labelledby="copy-title"><div class="dialog-inner"><h2 id="copy-title">Скопируйте ссылку</h2><p class="muted">Выделите ссылку и скопируйте её.</p><textarea id="copy-value" rows="3" readonly aria-label="Ссылка на задание"></textarea><button id="copy-close" class="button secondary" type="button">Закрыть</button></div></dialog>
+  <dialog id="delete-dialog" class="dialog" aria-labelledby="delete-title" aria-describedby="delete-warning">
+    <form id="delete-form" class="dialog-inner">
+      <h2 id="delete-title">Удалить задание?</h2>
+      <p id="delete-warning" class="muted"></p>
+      <p id="delete-status" class="status" role="status"></p>
+      <div class="dialog-actions">
+        <button id="delete-cancel" class="button secondary" type="button" autofocus>Отмена</button>
+        <button id="delete-confirm" class="button danger" type="submit">Удалить задание</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>

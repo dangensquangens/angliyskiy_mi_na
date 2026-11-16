@@ -17,7 +17,9 @@
   let activeInput = null;
   let studentLoading = false;
   let submitting = false;
-  let assignmentSnapshot = '';
+  let adminAssignments = [];
+  let latestRefresh = 0;
+  let assignmentToDelete = '';
 
   function readStorage(storage, key) {
     try { return storage.getItem(key); } catch { return null; }
@@ -255,7 +257,8 @@
 
   function logout(message = '') {
     token = '';
-    assignmentSnapshot = '';
+    adminAssignments = [];
+    $('delete-dialog').close();
     removeStorage(sessionStorage, tokenKey);
     $('password').value = '';
     $('assignment-list').replaceChildren();
@@ -317,6 +320,7 @@
   }
 
   function drawAssignments(assignments) {
+    adminAssignments = assignments;
     const list = $('assignment-list');
     list.replaceChildren();
     if (!assignments.length) {
@@ -340,7 +344,16 @@
       const copy = element('button', 'button secondary', 'Скопировать ссылку');
       copy.type = 'button';
       copy.addEventListener('click', () => copyLink(assignment.code));
-      actions.append(copy);
+      const remove = element('button', 'button delete', 'Удалить');
+      remove.type = 'button';
+      remove.setAttribute('aria-label', `Удалить задание ${assignment.code}`);
+      remove.addEventListener('click', () => {
+        assignmentToDelete = assignment.code;
+        $('delete-warning').textContent = `Задание ${assignment.code} и ответы ученика будут удалены без возможности восстановления. Ссылка перестанет работать.`;
+        status('delete-status', '');
+        $('delete-dialog').showModal();
+      });
+      actions.append(copy, remove);
       card.append(actions);
       {
         const details = element('details');
@@ -367,24 +380,52 @@
   async function refreshAssignments({ quiet = false } = {}) {
     const button = $('refresh-list');
     if (quiet && button.disabled) return false;
+    const refresh = ++latestRefresh;
     const currentToken = token;
     button.disabled = true;
     try {
       const data = await request('/api/admin/assignments', { authenticated: true });
-      if (currentToken !== token) return false;
+      if (currentToken !== token || refresh !== latestRefresh) return false;
       if (!Array.isArray(data.assignments)) throw new Error('Не удалось получить список заданий.');
-      const snapshot = JSON.stringify(data.assignments);
-      if (snapshot !== assignmentSnapshot) {
-        drawAssignments(data.assignments);
-        assignmentSnapshot = snapshot;
-      }
+      if (JSON.stringify(data.assignments) !== JSON.stringify(adminAssignments)) drawAssignments(data.assignments);
       if (!quiet) status('admin-status', '');
       return true;
     } catch (error) {
-      if (currentToken === token && (!quiet || error.status === 401)) adminError(error);
+      if (currentToken === token && refresh === latestRefresh && (!quiet || error.status === 401)) adminError(error);
       return false;
     }
-    finally { button.disabled = false; }
+    finally { if (refresh === latestRefresh) button.disabled = false; }
+  }
+
+  async function confirmDeletion(event) {
+    event.preventDefault();
+    const dialog = $('delete-dialog');
+    const confirm = $('delete-confirm');
+    const cancel = $('delete-cancel');
+    if (!dialog.open || confirm.disabled || !token) return;
+    const currentToken = token;
+    const code = assignmentToDelete;
+    confirm.disabled = cancel.disabled = true;
+    status('delete-status', 'Удаляем задание…', 'success');
+    try {
+      const data = await request('/api/admin/assignments', {
+        method: 'POST', authenticated: true, body: { action: 'delete', code },
+      });
+      if (currentToken !== token) return;
+      if (data.deleted !== true || data.code !== code) throw new Error('Сервис не подтвердил удаление. Попробуйте ещё раз.');
+      latestRefresh++;
+      dialog.close();
+      drawAssignments(adminAssignments.filter(assignment => assignment.code !== code));
+      $('refresh-list').disabled = false;
+      $('refresh-list').focus();
+      status('admin-status', `Задание ${code} удалено.`, 'success');
+    } catch (error) {
+      if (currentToken !== token) return;
+      if (error.status === 401) adminError(error);
+      else status('delete-status', error.message);
+    } finally {
+      confirm.disabled = cancel.disabled = false;
+    }
   }
 
   $('code-form').addEventListener('submit', event => { event.preventDefault(); openAssignment($('code-input').value); });
@@ -421,8 +462,10 @@
       if (refreshed) {
         status('admin-status', `Задание ${data.assignment.code} создано. Скопируйте ссылку ниже.`, 'success');
       } else if (token) {
-        drawAssignments([data.assignment]);
-        status('admin-status', 'Задание создано. Список целиком загрузить не удалось, но ссылку на новое задание можно скопировать ниже.');
+        if (!adminAssignments.some(assignment => assignment.code === data.assignment.code)) {
+          drawAssignments([data.assignment, ...adminAssignments]);
+        }
+        status('admin-status', 'Задание создано. Ссылку можно скопировать в списке.', 'success');
       }
     } catch (error) { adminError(error); }
     finally { button.disabled = false; }
@@ -433,6 +476,11 @@
     logout();
   });
   $('copy-close').addEventListener('click', () => $('copy-dialog').close());
+  $('delete-form').addEventListener('submit', confirmDeletion);
+  $('delete-cancel').addEventListener('click', () => $('delete-dialog').close());
+  $('delete-dialog').addEventListener('cancel', event => {
+    if ($('delete-confirm').disabled) event.preventDefault();
+  });
 
   if (adminMode) {
     $('admin-view').hidden = false;

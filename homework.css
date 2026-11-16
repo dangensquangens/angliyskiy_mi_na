@@ -95,6 +95,11 @@ textarea { resize: vertical; }
 .dialog::backdrop { background: rgb(25 43 32 / 50%); }
 .dialog-inner { padding: 24px; }
 .dialog textarea { margin: 16px 0; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.button.delete { color: #943c33; background: transparent; }
+.button.delete:hover { background: #fbefeb; }
+.button.danger { color: #fff; background: #943c33; }
+.button.danger:hover { background: #7d3028; }
 .footer { display: flex; justify-content: space-between; gap: 16px; padding: 24px 0 40px; border-top: 1px solid #d9e2da; color: #6b7b70; font-size: 12px; line-height: 16px; }
 @media (max-width: 760px) { .shell { padding: 0 16px; } main { padding: 48px 0 64px; } .create-card { grid-template-columns: 1fr; } .intro { margin-bottom: 24px; } h1 { font-size: 36px; line-height: 40px; } }
 @media (max-width: 520px) { .brand span:last-child { max-width: 130px; } .back-link { font-size: 12px; line-height: 16px; text-align: right; } .card { padding: 24px 16px; } .answer-row { grid-template-columns: 24px 1fr; gap: 8px; } .answer-cell { grid-column: 2; } .prompt { font-size: 16px; line-height: 24px; } .section-row { align-items: start; flex-direction: column; } .inline-form .button, .create-form .button { width: 100%; } }
