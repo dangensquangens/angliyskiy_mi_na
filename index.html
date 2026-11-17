@@ -17,12 +17,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=10">
   <script src="words.js" defer></script>
   <script src="catalog.js" defer></script>
-  <script src="reading-rules.js" defer></script>
+  <script src="reading-rules.js?v=3" defer></script>
   <script src="responses-pdf.js?v=2" defer></script>
-  <script src="app.js?v=8" defer></script>
+  <script src="app.js?v=12" defer></script>
+  <script src="sound-pairs.js?v=2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#exercise-panel" data-section>К заданиям</a>
@@ -48,7 +49,7 @@
             <a class="button button-primary" href="#practice" data-section>К упражнениям <span aria-hidden="true">↓</span></a>
             <p class="hero-source"><strong>1&nbsp;693</strong> слова и выражения Oxford 3000</p>
           </div>
-          <p class="homework-entry"><a href="homework.html">Открыть домашнее задание</a></p>
+          <p class="homework-entry"><a href="homework.html?v=10">Открыть домашнее задание</a></p>
         </div>
       </section>
 
@@ -59,6 +60,7 @@
               <h2 id="settings-title">Настройки варианта</h2>
               <p id="worksheet-meta" class="muted"></p>
               <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
+              <a class="pair-jump" href="#sound-pairs" data-section>К сложным парам <span aria-hidden="true">↓</span></a>
             </div>
             <form id="settings" aria-labelledby="settings-title">
               <div class="settings-field">
@@ -73,7 +75,20 @@
                   <option value="A2">A2</option>
                 </select>
               </div>
-              <button class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
+              <details id="sound-filters" class="sound-filters">
+                <summary>Фильтр по звукам</summary>
+                <div class="settings-field">
+                  <label class="field-label" for="phoneme">Звук IPA</label>
+                  <select id="phoneme"><option value="">Не выбран</option></select>
+                </div>
+                <fieldset id="sound-groups" class="sound-groups">
+                  <legend class="field-label">Группы звуков</legend>
+                  <label><input id="all-sound-groups" type="checkbox"> Все группы</label>
+                </fieldset>
+                <p class="muted sound-help">Подойдут слова, в которых есть хотя бы один выбранный звук.</p>
+              </details>
+              <p id="available-prompts" class="muted" role="status"></p>
+              <button id="generate-worksheet" class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
             </form>
           </section>
           <section class="worksheet" aria-label="Упражнения">
@@ -89,25 +104,29 @@
             <div id="exercise-panel" class="exercise-panel" role="tabpanel" aria-labelledby="tab-0" tabindex="0">
               <div class="exercise-heading">
                 <div>
-                  <h2 id="exercise-title">Запишите транскрипцию</h2>
+                  <h2 id="exercise-title" tabindex="-1">Запишите транскрипцию</h2>
                   <p id="instructions" class="instructions">Запишите британскую транскрипцию слова. Косые черты можно опустить.</p>
                 </div>
                 <p id="answer-progress" class="progress" aria-live="polite"></p>
               </div>
               <p id="exercise-example" class="example"></p>
 
-              <section id="ipa-keyboard" class="keyboard" aria-labelledby="ipa-heading">
-                <div class="keyboard-heading">
-                  <h3 id="ipa-heading">Символы IPA</h3>
-                  <span id="ipa-target">Строка 1</span>
-                </div>
-                <div id="ipa-keys" class="ipa-keys" role="group" aria-label="Символы транскрипции"></div>
-              </section>
+              <div id="ipa-keyboard-home">
+                <section id="ipa-keyboard" class="keyboard" aria-labelledby="ipa-heading">
+                  <div class="keyboard-heading">
+                    <h3 id="ipa-heading">Символы IPA</h3>
+                    <span id="ipa-target">Строка 1</span>
+                  </div>
+                  <div id="ipa-keys" class="ipa-keys" role="group" aria-label="Символы транскрипции"></div>
+                </section>
+              </div>
 
               <ol id="answer-list" class="answer-list" aria-label="Список заданий"></ol>
               <div class="check-bar">
                 <button id="check-answers" class="button button-primary" type="button">Проверить ответы</button>
-                <p id="check-result" class="check-result" role="status" aria-live="polite"></p>
+                <button id="repeat-errors" class="button button-secondary" type="button" hidden>Повторить ошибки</button>
+                <button id="return-from-review" class="button button-outline" type="button" hidden>К исходному упражнению</button>
+                <p id="check-result" class="check-result" role="status" aria-live="polite" tabindex="-1"></p>
               </div>
             </div>
           </section>
@@ -123,6 +142,25 @@
             <p id="action-status" class="form-note" role="status" aria-live="polite"></p>
           </aside>
         </div>
+        <details id="sound-pairs" class="side-card sound-pairs" tabindex="-1">
+          <summary>Сложные пары</summary>
+          <p class="muted">Выберите слово для каждой транскрипции.</p>
+          <form id="sound-pair-settings" class="pair-settings" aria-label="Настройки сложных пар">
+            <div class="settings-field">
+              <label class="field-label" for="sound-pair-contrast">Пара звуков</label>
+              <select id="sound-pair-contrast"></select>
+            </div>
+            <button class="button button-secondary" type="submit">Начать тренировку</button>
+          </form>
+          <form id="sound-pair-quiz" class="pair-quiz" aria-labelledby="sound-pair-title" hidden>
+            <h3 id="sound-pair-title" tabindex="-1"></h3>
+            <div id="sound-pair-questions" class="pair-questions"></div>
+            <div class="check-bar">
+              <button class="button button-primary" type="submit">Проверить ответы</button>
+              <p id="sound-pair-result" class="check-result" role="status"></p>
+            </div>
+          </form>
+        </details>
       </section>
 
       <div class="study-tip">
@@ -131,7 +169,22 @@
 
       <details id="dictionary" class="word-groups-panel" tabindex="-1" open>
         <summary>Слова по группам</summary>
-        <p id="word-groups-note" class="muted"></p>
+        <div class="dictionary-controls" role="group" aria-label="Поиск по словарю">
+          <div class="settings-field">
+            <label class="field-label" for="dictionary-search">Слово или транскрипция</label>
+            <input id="dictionary-search" type="search" spellcheck="false" autocomplete="off" autocapitalize="none" autocorrect="off">
+          </div>
+          <div class="settings-field">
+            <label class="field-label" for="dictionary-level">Уровень</label>
+            <select id="dictionary-level">
+              <option value="all">A1 и A2</option>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+            </select>
+          </div>
+          <button id="dictionary-reset" class="button button-outline" type="button">Сбросить фильтры</button>
+        </div>
+        <p id="word-groups-note" class="muted" role="status"></p>
         <div id="word-groups" class="word-groups"></div>
       </details>
     </main>

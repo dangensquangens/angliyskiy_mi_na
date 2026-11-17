@@ -5,9 +5,17 @@
   const settings = $('settings');
   const wordCount = $('word-count');
   const levelSelect = $('level');
+  const phonemeSelect = $('phoneme');
+  const allSoundGroups = $('all-sound-groups');
   const tabs = [...document.querySelectorAll('[data-mode]')];
   const list = $('answer-list');
   const checkResult = $('check-result');
+  const checkAnswers = $('check-answers');
+  const repeatErrors = $('repeat-errors');
+  const returnFromReview = $('return-from-review');
+  const mobileLayout = matchMedia('(max-width: 740px)');
+  const keyboard = $('ipa-keyboard');
+  const keyboardHome = $('ipa-keyboard-home');
   const actionStatus = $('action-status');
   const downloadResponses = $('download-responses');
   const baseLimit = Number(wordCount.max);
@@ -44,12 +52,16 @@
     'other-short': 'Другие односложные слова', other: 'Другие многосложные слова',
     phrases: 'Словосочетания',
   };
-  const { choose, hasLevel, isCorrect } = globalThis.READING_RULES;
+  const { choose, hasLevel, isCorrect, ipaSearchKey, ipaTokens } = globalThis.READING_RULES;
+  const soundGroups = [['θ', 'ð'], ['ɪ', 'iː'], ['æ', 'e'], ['ʃ', 'tʃ'], ['ʊ', 'uː']];
+  const soundGroupControls = new Map();
 
   let worksheet;
   let mode = 0;
   let draft;
+  let reviewDrafts;
   let activeInput;
+  let openIpaToggle;
   let renderedRows = [];
   const ipaSymbols = ['ə', 'ʊ', 'ɪ', 'æ', 'ɒ', 'ʌ', 'ɑ', 'ɔ', 'ɜ',
     'ʃ', 'ʒ', 'θ', 'ð', 'ŋ', 'ɡ', 'tʃ', 'dʒ', 'ː', 'ˈ', 'ˌ'];
@@ -71,17 +83,57 @@
 
   const starterById = new Map(starterWords.map(word => [idFor(word.word), word]));
   const catalogById = new Map(catalog.words.map(word => [idFor(word.word), word]));
+  const soundsByWord = new Map(catalog.words.map(word => [word, new Set(ipaTokens(word.ipa))]));
+  const exerciseLimit = size => Math.min(baseLimit, Math.floor(size / 2));
 
-  function poolFor(level) {
-    return catalog.words.filter(word => hasLevel(word, level));
+  function setupSoundFilters() {
+    const phonemes = new Set([...soundsByWord.values()].flatMap(sounds => [...sounds]));
+    for (const sound of [...phonemes].sort((a, b) => a.localeCompare(b, 'en'))) {
+      const option = element('option', null, `/${sound}/`);
+      option.value = sound;
+      phonemeSelect.append(option);
+    }
+    for (const sounds of soundGroups) {
+      const label = element('label');
+      const input = element('input');
+      input.type = 'checkbox';
+      label.append(input, sounds.map(sound => `/${sound}/`).join(' и '));
+      $('sound-groups').append(label);
+      soundGroupControls.set(input, sounds);
+    }
   }
 
-  function availableCount(level) {
-    return Math.min(baseLimit, Math.floor(poolFor(level).length / 2));
+  function clearSoundFilters() {
+    phonemeSelect.value = '';
+    for (const input of soundGroupControls.keys()) input.checked = false;
   }
 
-  function generate(count, level) {
-    return { level, edition: 'catalog', items: choose(catalog.words, count, level) };
+  function eligibleWords(level) {
+    const phonemes = new Set(phonemeSelect.value ? [phonemeSelect.value] : []);
+    for (const [input, sounds] of soundGroupControls) {
+      if (input.checked) for (const sound of sounds) phonemes.add(sound);
+    }
+    const selected = [...phonemes];
+    return catalog.words.filter(word => hasLevel(word, level) &&
+      (!selected.length || selected.some(sound => soundsByWord.get(word).has(sound))));
+  }
+
+  function updateVariantSettings() {
+    const checked = [...soundGroupControls.keys()].filter(input => input.checked).length;
+    allSoundGroups.checked = checked === soundGroupControls.size;
+    allSoundGroups.indeterminate = checked > 0 && !allSoundGroups.checked;
+    const size = eligibleWords(levelSelect.value).length;
+    const limit = exerciseLimit(size);
+    wordCount.max = Math.max(1, limit);
+    wordCount.disabled = limit === 0;
+    $('generate-worksheet').disabled = limit === 0;
+    if (limit && wordCount.valueAsNumber > limit) wordCount.value = limit;
+    $('available-prompts').textContent = `Слов в подборке — ${size.toLocaleString('ru-RU')}. ` + (limit
+      ? `В каждом упражнении до ${limit} заданий.` : 'Нужно хотя бы два разных слова.');
+  }
+
+  function generate(count, level, pool = catalog.words) {
+    return { level, edition: 'catalog', items: choose(pool, count, level) };
   }
 
   function encode({ level, edition, items }) {
@@ -123,7 +175,8 @@
     const words = legacy ? starterById : catalogById;
     const items = [left, right].map(part => part.split('-').map(id => words.get(id)));
     const combined = items.flat();
-    if (items[0].length !== items[1].length || items[0].length > availableCount(level)
+    const limit = exerciseLimit(catalog.words.filter(word => hasLevel(word, level)).length);
+    if (items[0].length !== items[1].length || items[0].length > limit
       || new Set(combined).size !== combined.length
       || combined.some(word => !word || !hasLevel(word, level))) return;
     return { level, edition: legacy ? 'starter' : 'catalog', items };
@@ -153,18 +206,80 @@
     catch { /* The draft is still kept in memory. */ }
   }
 
+  const reviewFallback = new Map();
+  const reviewStore = {
+    read(key) {
+      try {
+        const saved = reviewFallback.get(key) ?? localStorage.getItem(key);
+        return saved === null ? undefined : JSON.parse(saved);
+      } catch { return undefined; }
+    },
+    write(key, review) {
+      const saved = JSON.stringify(review);
+      try {
+        localStorage.setItem(key, saved);
+        reviewFallback.delete(key);
+      } catch { reviewFallback.set(key, saved); }
+    },
+  };
+
+  function reviewKey(index) {
+    const sitePath = new URL('./', location.href).pathname;
+    return `english-reading-mistakes:v1:${sitePath}:${encode(worksheet)}:${index}`;
+  }
+
+  function newReview(indices) {
+    return { indices, responses: indices.map(() => ''), checked: false };
+  }
+
+  function readReview(words, index) {
+    const record = reviewStore.read(reviewKey(index));
+    if (record === null) return null;
+    if (Array.isArray(record?.indices) && record.indices.length > 0
+      && new Set(record.indices).size === record.indices.length
+      && record.indices.every(position => Number.isInteger(position) && position >= 0 && position < words.length)
+      && Array.isArray(record.responses) && record.responses.length === record.indices.length
+      && record.responses.every(answer => typeof answer === 'string' && answer.length <= 64)
+      && typeof record.checked === 'boolean') return record;
+
+    if (!draft.checked[index]) return null;
+    const indices = words.flatMap((word, position) => {
+      const answer = draft.responses[index][position];
+      return answer.trim() && !isCorrect(answer, word, index) ? [position] : [];
+    });
+    const review = indices.length ? newReview(indices) : null;
+    reviewStore.write(reviewKey(index), review);
+    return review;
+  }
+
+  function saveReview(review) {
+    reviewDrafts[mode] = review;
+    reviewStore.write(reviewKey(mode), review);
+  }
+
+  function remainingMistakes() {
+    const review = reviewDrafts[mode];
+    if (!review) return [];
+    if (!review.checked) return review.indices;
+    return review.indices.filter((index, position) => {
+      const answer = review.responses[position];
+      return !answer.trim() || !isCorrect(answer, worksheet.items[mode][index], mode);
+    });
+  }
+
   function applyWorksheet(value, historyMethod) {
     worksheet = value;
     if (historyMethod) history[historyMethod](null, '', `#${encode(worksheet)}`);
     draft = readDraft();
+    reviewDrafts = worksheet.items.map(readReview);
     levelSelect.value = worksheet.level;
-    wordCount.max = availableCount(worksheet.level);
     wordCount.value = worksheet.items[0].length;
+    updateVariantSettings();
     $('worksheet-meta').textContent = `${levels[worksheet.level]} · по ${worksheet.items[0].length} в каждом упражнении`;
     $('settings-note').textContent = '';
     actionStatus.textContent = '';
     renderPrint();
-    setMode(draft.mode);
+    setMode(draft.mode, draft.reviewing === true);
   }
 
   function revealStudyTip() {
@@ -217,32 +332,80 @@
   }
 
   function renderProgress() {
-    const answered = draft.responses[mode].filter(answer => answer.trim()).length;
+    const answered = renderedRows.filter(({ input }) => input.value.trim()).length;
     const progress = $('answer-progress');
     const message = `Заполнено ${answered} из ${renderedRows.length}`;
     if (progress.textContent !== message) progress.textContent = message;
   }
 
-  function grade() {
+  function renderGrade() {
     let correct = 0;
     let missing = 0;
-    renderedRows.forEach(({ item, input, feedback, word }) => {
+    const incorrect = [];
+    renderedRows.forEach(({ item, input, feedback, word }, index) => {
       const blank = !input.value.trim();
       const matched = !blank && isCorrect(input.value, word, mode);
       correct += Number(matched);
       missing += Number(blank);
+      if (!blank && !matched) incorrect.push(index);
       item.dataset.result = blank ? 'empty' : matched ? 'correct' : 'incorrect';
       input.setAttribute('aria-invalid', String(!blank && !matched));
       feedback.hidden = false;
       feedback.textContent = blank ? 'Без ответа' : matched ? 'Верно' : `Ответ: ${displayAnswer(word, mode)}`;
     });
-    const missingText = missing ? ` Без ответа: ${missing}.` : '';
-    checkResult.textContent = `Верно ${correct} из ${renderedRows.length}.${missingText}`;
-    draft.checked[mode] = true;
-    saveDraft();
+    const missingText = missing ? ` Без ответа — ${missing}.` : '';
+    const success = correct === renderedRows.length
+      ? draft.reviewing ? ' Все ошибки исправлены.' : ' Все ответы верны.' : '';
+    checkResult.textContent = `Верно ${correct} из ${renderedRows.length}. Ошибок — ${incorrect.length}.${missingText}${success}`;
+    return incorrect;
+  }
+
+  function updateReviewActions() {
+    const reviewed = draft.reviewing && reviewDrafts[mode].checked;
+    repeatErrors.hidden = (draft.reviewing && !reviewed) || remainingMistakes().length === 0;
+    returnFromReview.hidden = !draft.reviewing;
+    checkAnswers.hidden = reviewed;
+    if (reviewed) closeInlineKeyboard();
+    keyboard.hidden = mode === 1 || reviewed;
+    for (const { input, ipaToggle } of renderedRows) {
+      input.readOnly = reviewed;
+      if (ipaToggle) ipaToggle.hidden = reviewed;
+    }
+  }
+
+  function grade() {
+    const incorrect = renderGrade();
+    if (draft.reviewing) {
+      const review = reviewDrafts[mode];
+      review.checked = true;
+      saveReview(review);
+    } else {
+      if (!draft.checked[mode]) {
+        const previous = remainingMistakes();
+        const wrong = new Set(incorrect);
+        const unresolved = new Set(previous);
+        const next = renderedRows.flatMap(({ input }, index) =>
+          wrong.has(index) || (!input.value.trim() && unresolved.has(index)) ? [index] : []);
+        if (next.length !== previous.length || next.some((index, position) => index !== previous[position])) {
+          saveReview(next.length ? newReview(next) : null);
+        }
+      }
+      draft.checked[mode] = true;
+      saveDraft();
+      if (!/^#v[123]\./.test(location.hash)) history.replaceState(history.state, '', `#${encode(worksheet)}`);
+    }
+    updateReviewActions();
+    if (draft.reviewing) checkResult.focus({ preventScroll: true });
   }
 
   function inputChanged(index, input) {
+    if (draft.reviewing) {
+      const review = reviewDrafts[mode];
+      review.responses[index] = input.value;
+      saveReview(review);
+      renderProgress();
+      return;
+    }
     draft.responses[mode][index] = input.value;
     if (draft.checked[mode]) {
       draft.checked[mode] = false;
@@ -257,12 +420,26 @@
     renderProgress();
   }
 
-  function renderRow(word, index) {
+  function closeInlineKeyboard() {
+    if (!openIpaToggle) return;
+    openIpaToggle.setAttribute('aria-expanded', 'false');
+    openIpaToggle = undefined;
+    keyboardHome.append(keyboard);
+  }
+
+  function selectAnswerInput(input, index) {
+    if (activeInput !== input) closeInlineKeyboard();
+    activeInput = input;
+    $('ipa-target').textContent = `Строка ${index + 1}`;
+  }
+
+  function renderRow(word, index, answer) {
     const item = element('li', 'question-row');
     const number = element('span', 'question-index', String(index + 1).padStart(2, '0'));
     number.setAttribute('aria-hidden', 'true');
     const label = element('label', 'question-prompt');
     const cell = element('div', 'answer-cell');
+    const controls = element('div', 'answer-controls');
     const input = element('input', 'answer-input');
     const feedback = element('p', 'answer-feedback');
     input.id = `answer-${index + 1}`;
@@ -274,32 +451,53 @@
     input.setAttribute('autocapitalize', 'none');
     input.setAttribute('autocorrect', 'off');
     input.placeholder = exercises[mode].placeholder;
-    input.value = draft.responses[mode][index];
+    input.value = answer;
     feedback.id = `${input.id}-feedback`;
     feedback.hidden = true;
     input.setAttribute('aria-describedby', feedback.id);
     label.htmlFor = input.id;
     addPrompt(label, word, mode);
-    input.addEventListener('focus', () => {
-      activeInput = input;
-      $('ipa-target').textContent = `Строка ${index + 1}`;
-    });
+    input.addEventListener('focus', () => selectAnswerInput(input, index));
     input.addEventListener('input', () => inputChanged(index, input));
-    cell.append(input, feedback);
+    controls.append(input);
+    let ipaToggle;
+    if (mode === 0) {
+      ipaToggle = element('button', 'button button-outline answer-ipa-toggle', 'IPA');
+      ipaToggle.type = 'button';
+      ipaToggle.setAttribute('aria-label', `Символы IPA для строки ${index + 1}`);
+      ipaToggle.setAttribute('aria-controls', keyboard.id);
+      ipaToggle.setAttribute('aria-expanded', 'false');
+      ipaToggle.addEventListener('click', () => {
+        const wasOpen = openIpaToggle === ipaToggle;
+        closeInlineKeyboard();
+        if (wasOpen) return;
+        selectAnswerInput(input, index);
+        openIpaToggle = ipaToggle;
+        ipaToggle.setAttribute('aria-expanded', 'true');
+        ipaToggle.focus({ preventScroll: true });
+        item.append(keyboard);
+        keyboard.scrollIntoView({ block: 'nearest' });
+      });
+      controls.append(ipaToggle);
+    }
+    cell.append(controls, feedback);
     item.append(number, label, cell);
-    return { item, input, feedback, word };
+    return { item, input, feedback, word, ipaToggle };
   }
 
-  function setMode(index) {
+  function setMode(index, reviewing = false) {
+    closeInlineKeyboard();
     mode = index;
     draft.mode = index;
+    const review = reviewDrafts[mode];
+    draft.reviewing = reviewing && Boolean(review);
     for (const [tabIndex, tab] of tabs.entries()) {
       tab.setAttribute('aria-selected', String(tabIndex === mode));
       tab.tabIndex = tabIndex === mode ? 0 : -1;
     }
     $('exercise-panel').setAttribute('aria-labelledby', tabs[mode].id);
     const exercise = exercises[mode];
-    $('exercise-title').textContent = exercise.title;
+    $('exercise-title').textContent = draft.reviewing ? 'Работа над ошибками' : exercise.title;
     $('instructions').textContent = exercise.instructions;
     const chosen = new Set(worksheet.items.flat().map(word => word.word));
     const example = starterWords.find(word => !chosen.has(word.word) && word.group.startsWith('short-'));
@@ -308,22 +506,24 @@
       .map(value => element('strong', null, value));
     first.lang = second.lang = 'en';
     $('exercise-example').replaceChildren('Например, ', first, ' → ', second);
-    $('ipa-keyboard').hidden = mode === 1;
     $('ipa-target').textContent = 'Строка 1';
     activeInput = undefined;
     checkResult.textContent = '';
-    renderedRows = worksheet.items[mode].map(renderRow);
+    const words = draft.reviewing ? review.indices.map(position => worksheet.items[mode][position]) : worksheet.items[mode];
+    const responses = draft.reviewing ? review.responses : draft.responses[mode];
+    renderedRows = words.map((word, position) => renderRow(word, position, responses[position]));
     list.replaceChildren(...renderedRows.map(row => row.item));
     if (mode === 0) addKeyboard();
     renderProgress();
-    if (draft.checked[mode]) grade();
+    if (draft.reviewing ? review.checked : draft.checked[mode]) renderGrade();
+    updateReviewActions();
     saveDraft();
   }
 
   function addKeyboard() {
     const keys = $('ipa-keys');
     const symbols = new Set(ipaSymbols);
-    for (const word of worksheet.items[0]) {
+    for (const { word } of renderedRows) {
       for (const symbol of [word.ipa, ...(word.alternatives ?? [])].join('')) {
         if (/[^\x00-\x7F]/.test(symbol)) symbols.add(symbol);
       }
@@ -333,12 +533,14 @@
       const button = element('button', 'ipa-key', symbol);
       button.type = 'button';
       button.setAttribute('aria-label', `Вставить ${symbol}`);
-      button.addEventListener('mousedown', event => event.preventDefault());
+      button.addEventListener('mousedown', event => {
+        if (!openIpaToggle) event.preventDefault();
+      });
       button.addEventListener('click', () => {
         const input = activeInput ?? renderedRows[0].input;
         const { selectionStart, selectionEnd } = input;
-        if (input.value.length - (selectionEnd - selectionStart) + symbol.length > input.maxLength) return;
-        input.focus({ preventScroll: true });
+        if (input.readOnly || input.value.length - (selectionEnd - selectionStart) + symbol.length > input.maxLength) return;
+        if (!openIpaToggle) input.focus({ preventScroll: true });
         input.setRangeText(symbol, selectionStart, selectionEnd, 'end');
         input.dispatchEvent(new Event('input', { bubbles: true }));
       });
@@ -346,33 +548,81 @@
     }
   }
 
-  function renderGroups() {
+  function setupDictionary() {
     const container = $('word-groups');
-    const entries = catalog.words;
     const grouped = new Map();
-    for (const entry of entries) {
+    for (const entry of catalog.words) {
       const group = Object.hasOwn(groups, entry.group) ? entry.group : 'other';
       if (!grouped.has(group)) grouped.set(group, []);
       grouped.get(group).push(entry);
     }
-    $('word-groups-note').textContent = `${entries.length.toLocaleString('ru-RU')} слов и выражений Oxford 3000 уровня A1–A2. Откройте группу, чтобы посмотреть слова.`;
-    container.replaceChildren();
+    const spellingKey = text => text.toLowerCase().normalize('NFC').trim().replace(/’/g, "'").replace(/\s+/g, ' ');
+    const resultGroups = [];
     for (const [group, title] of Object.entries(groups)) {
       if (!grouped.has(group)) continue;
       const section = element('details', 'word-group');
       const heading = element('summary', null, title);
-      heading.append(element('small', null, String(grouped.get(group).length)));
+      const count = element('small');
+      heading.append(count);
       const items = element('ul', 'word-group-list');
-      for (const word of grouped.get(group)) {
+      const entries = grouped.get(group).map(word => {
+        const variants = [word.ipa, ...(word.alternatives ?? [])];
+        const display = word.display ?? word.word;
         const row = element('li', 'word-chip');
-        const label = element('span', null, word.display ?? word.word);
+        const label = element('span', null, display);
         label.lang = 'en';
-        row.append(label, element('small', null, (word.levels ?? [word.level]).join(' · ')));
+        row.append(label, element('span', 'word-chip-ipa', variants.map(ipa => `/${ipa}/`).join(' · ')),
+          element('small', null, (word.levels ?? [word.level]).join(' · ')));
         items.append(row);
-      }
+        return { row, word, spellings: [word.word, display].map(spellingKey), pronunciations: variants.map(ipaSearchKey) };
+      });
       section.append(heading, items);
-      container.append(section);
+      resultGroups.push({ section, count, entries });
     }
+    container.replaceChildren(...resultGroups.map(({ section }) => section));
+
+    const search = $('dictionary-search');
+    const level = $('dictionary-level');
+    const total = catalog.words.length.toLocaleString('ru-RU');
+    let openBeforeSearch;
+
+    function updateResults() {
+      const spelling = spellingKey(search.value);
+      const ipa = ipaSearchKey(search.value);
+      if (spelling && !openBeforeSearch) {
+        openBeforeSearch = new Set(resultGroups.filter(group => group.section.open));
+      }
+      let totalMatches = 0;
+      for (const group of resultGroups) {
+        let matches = 0;
+        for (const { word, row, spellings, pronunciations } of group.entries) {
+          const visible = hasLevel(word, level.value) && (!spelling
+            || spellings.some(key => key.includes(spelling))
+            || (ipa && pronunciations.some(key => key.includes(ipa))));
+          row.hidden = !visible;
+          if (visible) matches += 1;
+        }
+        group.count.textContent = String(matches);
+        group.section.hidden = matches === 0;
+        if (spelling) group.section.open = matches > 0;
+        else if (openBeforeSearch) group.section.open = openBeforeSearch.has(group);
+        totalMatches += matches;
+      }
+      if (!spelling) openBeforeSearch = undefined;
+      $('word-groups-note').textContent = totalMatches
+        ? `Найдено ${totalMatches.toLocaleString('ru-RU')} из ${total}.`
+        : 'Найдено 0 слов. Попробуйте изменить запрос или уровень.';
+    }
+
+    search.addEventListener('input', updateResults);
+    level.addEventListener('change', updateResults);
+    $('dictionary-reset').addEventListener('click', () => {
+      search.value = '';
+      level.value = 'all';
+      updateResults();
+      search.focus();
+    });
+    updateResults();
   }
 
   function variantId() {
@@ -441,8 +691,10 @@
     const fragment = location.hash.slice(1);
     const fromLink = decode(fragment);
     if (fromLink) {
+      clearSoundFilters();
       applyWorksheet(fromLink);
     } else if (!worksheet || /^v[123]\./.test(fragment)) {
+      clearSoundFilters();
       const historyMethod = $(fragment) ? undefined : 'replaceState';
       applyWorksheet(generate(10, 'all'), historyMethod);
       if (/^v[123]\./.test(fragment)) $('settings-note').textContent = 'Не удалось открыть вариант по ссылке. Вместо него открыт новый вариант.';
@@ -453,29 +705,52 @@
     event.preventDefault();
     const level = levelSelect.value;
     const count = wordCount.valueAsNumber;
-    if (!Number.isInteger(count) || count < 1 || count > availableCount(level)) return;
-    applyWorksheet(generate(count, level), 'pushState');
+    const pool = eligibleWords(level);
+    if (!Number.isInteger(count) || count < 1 || count > exerciseLimit(pool.length)) return;
+    applyWorksheet(generate(count, level, pool), 'pushState');
     $('settings-note').textContent = 'Новый вариант готов.';
   });
 
-  levelSelect.addEventListener('change', () => {
-    wordCount.max = availableCount(levelSelect.value);
-    if (wordCount.valueAsNumber > Number(wordCount.max)) wordCount.value = wordCount.max;
+  settings.addEventListener('change', event => {
+    if (event.target === wordCount) return;
+    if (event.target === allSoundGroups) {
+      for (const input of soundGroupControls.keys()) input.checked = allSoundGroups.checked;
+    }
+    updateVariantSettings();
     $('settings-note').textContent = '';
   });
 
+  function switchExercise(index) {
+    if (index === mode) return;
+    setMode(index);
+    if (mobileLayout.matches) tabs[index].closest('.worksheet').scrollIntoView({ block: 'start' });
+  }
+
+  mobileLayout.addEventListener('change', closeInlineKeyboard);
   for (const [index, tab] of tabs.entries()) {
-    tab.addEventListener('click', () => { if (index !== mode) setMode(index); });
+    tab.addEventListener('click', () => switchExercise(index));
     tab.addEventListener('keydown', event => {
       const next = { ArrowLeft: 1 - index, ArrowRight: 1 - index, Home: 0, End: 1 }[event.key];
       if (next === undefined) return;
       event.preventDefault();
-      if (next !== mode) setMode(next);
-      tabs[next].focus();
+      switchExercise(next);
+      tabs[next].focus({ preventScroll: mobileLayout.matches });
     });
   }
 
-  $('check-answers').addEventListener('click', grade);
+  checkAnswers.addEventListener('click', grade);
+  repeatErrors.addEventListener('click', () => {
+    const indices = remainingMistakes();
+    if (!indices.length) return;
+    if (reviewDrafts[mode].checked) saveReview(newReview(indices));
+    if (!/^#v[123]\./.test(location.hash)) history.replaceState(history.state, '', `#${encode(worksheet)}`);
+    setMode(mode, true);
+    $('exercise-title').focus();
+  });
+  returnFromReview.addEventListener('click', () => {
+    setMode(mode);
+    $('exercise-title').focus();
+  });
   $('copy-link').addEventListener('click', () => copy(worksheetUrl(), 'Ссылка скопирована.', 'Ссылка на вариант'));
   downloadResponses.addEventListener('click', async () => {
     if (!draft.responses.flat().some(response => response.trim())) {
@@ -509,7 +784,8 @@
   }
   window.addEventListener('hashchange', openLocation);
 
-  renderGroups();
+  setupDictionary();
+  setupSoundFilters();
   openLocation();
   revealStudyTip();
 })();

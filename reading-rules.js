@@ -57,6 +57,16 @@
       .replace(/([ˈˌ])([^aeiouæɑɒɔʊʌɜəɪˈˌ]+)(?=[aeiouæɑɒɔʊʌɜəɪ])/g, '$2$1');
   }
 
+  function ipaSearchKey(value) {
+    return ipaKey(value.toLowerCase(), 'Britfone').replace(/[()ˈˌ]/gu, '');
+  }
+
+  function ipaTokens(value) {
+    const notation = value.normalize('NFC').replace(/[͜͡]/gu, '').replace(/g/g, 'ɡ').replace(/:/g, 'ː');
+    // Match affricates and diphthongs first, without joining across stress marks or word boundaries.
+    return notation.match(/tʃ|dʒ|[eaɔ]ɪ|[əa]ʊ|[ɪeʊ]ə|\p{Ll}ː?/gu) ?? [];
+  }
+
   function isCorrect(answer, word, index) {
     if (index === 1) {
       const normalizeSpelling = spelling => spelling.trim().toLowerCase().normalize('NFC').replace(/’/g, "'").replace(/\s+/g, ' ');
@@ -67,5 +77,5 @@
     return [word.ipa, ...(word.alternatives ?? [])].some(ipa => entered === ipaKey(ipa, word.source));
   }
 
-  globalThis.READING_RULES = Object.freeze({ choose, hasLevel, isCorrect });
+  globalThis.READING_RULES = Object.freeze({ choose, hasLevel, isCorrect, ipaSearchKey, ipaTokens, shuffle });
 })();

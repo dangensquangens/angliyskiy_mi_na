@@ -26,12 +26,23 @@ h3 { margin: 0; font-size: 16px; line-height: 24px; }
 .muted { margin: 8px 0 0; color: #536158; font-size: 14px; line-height: 20px; }
 .card { padding: 32px; border: 1px solid #d9e2da; border-radius: 16px; background: #fff; }
 .narrow { max-width: 520px; }
+.student-entry { display: grid; align-items: start; gap: 16px; max-width: 520px; }
+@media (min-width: 761px) {
+  .student-entry { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; max-width: none; }
+}
 .inline-form, .create-form { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-top: 24px; }
 .stack-form { display: grid; gap: 16px; margin-top: 24px; }
 .stack-form .button { justify-self: start; }
 .field { display: grid; flex: 1; min-width: 145px; gap: 8px; }
 .field label { color: #394b40; font-size: 14px; line-height: 20px; font-weight: 600; }
 input, select, textarea { width: 100%; min-height: 48px; padding: 8px 12px; border: 1px solid #bdcdc1; border-radius: 8px; color: #222c25; background: #fff; }
+.password-field { position: relative; }
+.password-field input { padding-inline-end: 48px; }
+.password-field input::-ms-reveal { display: none; }
+.password-toggle { position: absolute; inset-block-start: 2px; inset-inline-end: 2px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 6px; color: #315a4a; background: transparent; }
+.password-toggle:hover { background: #f0f5ef; }
+.password-toggle:focus-visible { outline-offset: -2px; }
+.password-toggle[aria-pressed="true"] .password-slash { display: none; }
 input:disabled { color: #344239; background: #f3f6f2; opacity: 1; }
 textarea { resize: vertical; }
 .button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; padding: 8px 16px; border: 1px solid transparent; border-radius: 8px; font-size: 14px; line-height: 20px; font-weight: 600; transition: background-color .3s cubic-bezier(.22,1,.36,1); }
@@ -99,8 +110,6 @@ textarea { resize: vertical; }
   .admin-toolbar .section-actions { align-self: flex-end; }
   .admin-tabs [role="tab"] { padding-inline: 4px; }
 }
-#student-login-panel + .card, #student-dashboard + .card { margin-top: 16px; }
-[hidden] + #student-dashboard, [hidden] + #code-panel { margin-top: 0; }
 .student-options { display: grid; gap: 8px; margin: 0; padding: 12px; border: 1px solid #d9e2da; border-radius: 8px; min-width: 0; }
 .student-options label, .checkbox-label:not([hidden]) { display: flex; gap: 8px; align-items: center; overflow-wrap: anywhere; }
 #student-back { margin-bottom: 12px; }
@@ -118,6 +127,7 @@ textarea { resize: vertical; }
 .review-grade { margin-left: 8px; font-size: 12px; }
 .review-grade.correct { color: #26704c; }
 .review-grade.incorrect, .review-grade.empty { color: #a34d40; }
+.review-correction { margin: 4px 0 0; padding: 4px 8px; border-radius: 6px; color: #234c40; background: #edf5ef; }
 .empty { color: #536158; font-size: 14px; line-height: 20px; }
 .dialog { width: min(480px, calc(100% - 32px)); padding: 0; border: 1px solid #d9e2da; border-radius: 16px; color: #222c25; }
 .dialog::backdrop { background: rgb(25 43 32 / 50%); }

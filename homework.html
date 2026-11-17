@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="homework.css?v=6">
+  <link rel="stylesheet" href="homework.css?v=7">
   <script src="homework-config.js?v=2" defer></script>
-  <script src="homework.js?v=8" defer></script>
+  <script src="homework.js?v=10" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -29,16 +29,33 @@
     <main id="main" tabindex="-1">
       <section id="student-view" hidden>
         <div class="intro"><p class="eyebrow">ДОМАШНЕЕ ЗАДАНИЕ</p><h1>Слова и звуки</h1><p>Войдите, чтобы посмотреть свои задания, или откройте задание по коду.</p></div>
-        <section id="student-login-panel" class="card narrow"><h2>Войти в профиль</h2><form id="student-login" class="stack-form"><div class="field"><label for="student-login-name">Логин</label><input id="student-login-name" autocomplete="username" required></div><div class="field"><label for="student-password">Пароль</label><input id="student-password" type="password" autocomplete="current-password" required></div><button class="button primary">Войти</button></form></section>
+        <div class="student-entry">
+          <section id="student-login-panel" class="card" aria-labelledby="student-login-title">
+            <h2 id="student-login-title">Войти в профиль</h2>
+            <form id="student-login" class="stack-form">
+              <div class="field"><label for="student-login-name">Логин</label><input id="student-login-name" autocomplete="username" required></div>
+              <div class="field">
+                <label for="student-password">Пароль</label>
+                <div class="password-field">
+                  <input id="student-password" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+                  <button class="password-toggle" type="button" aria-label="Показывать пароль" aria-controls="student-password" aria-pressed="false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="password-slash" d="m4 4 16 16"/></svg>
+                  </button>
+                </div>
+              </div>
+              <button class="button primary" type="submit">Войти</button>
+            </form>
+          </section>
+          <section id="code-panel" class="card" aria-labelledby="code-title" hidden>
+            <h2 id="code-title">Открыть задание</h2>
+            <p class="muted">Введите код, который прислал преподаватель.</p>
+            <form id="code-form" class="inline-form">
+              <div class="field"><label for="code-input">Код задания</label><input id="code-input" autocomplete="off" required></div>
+              <button class="button primary" type="submit">Открыть</button>
+            </form>
+          </section>
+        </div>
         <section id="student-dashboard" class="card" hidden><div class="section-row"><h2 id="student-name"></h2><button type="button" id="student-logout" class="text-button">Выйти</button></div><div id="student-list" class="assignment-list"></div></section>
-        <section id="code-panel" class="card narrow" aria-labelledby="code-title" hidden>
-          <h2 id="code-title">Открыть задание</h2>
-          <p class="muted">Введите код, который прислал преподаватель.</p>
-          <form id="code-form" class="inline-form">
-            <div class="field"><label for="code-input">Код задания</label><input id="code-input" autocomplete="off" required></div>
-            <button class="button primary" type="submit">Открыть</button>
-          </form>
-        </section>
         <p id="student-status" class="status" role="status" aria-live="polite"></p>
         <div id="student-work" hidden>
           <button type="button" id="student-back" class="text-button" hidden>К моим заданиям</button>
@@ -61,7 +78,18 @@
         <div class="intro"><p class="eyebrow">КАБИНЕТ ПРЕПОДАВАТЕЛЯ</p><h1>Домашние задания</h1><p>Создавайте задания и смотрите ответы учеников.</p></div>
         <section id="login-panel" class="card narrow" aria-labelledby="login-title">
           <h2 id="login-title">Вход</h2><p class="muted">Введите пароль преподавателя.</p>
-          <form id="login-form" class="stack-form"><div class="field"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required></div><button class="button primary" type="submit">Войти</button></form>
+          <form id="login-form" class="stack-form">
+            <div class="field">
+              <label for="password">Пароль</label>
+              <div class="password-field">
+                <input id="password" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+                <button class="password-toggle" type="button" aria-label="Показывать пароль" aria-controls="password" aria-pressed="false">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="password-slash" d="m4 4 16 16"/></svg>
+                </button>
+              </div>
+            </div>
+            <button class="button primary" type="submit">Войти</button>
+          </form>
         </section>
         <p id="admin-status" class="status" role="status" aria-live="polite"></p>
         <div id="admin-work" hidden>
@@ -109,7 +137,7 @@
         </div>
       </section>
     </main>
-    <footer class="footer"><span>Миролюбова Анастасия</span><a id="admin-link" href="homework.html?admin=1">Кабинет преподавателя</a></footer>
+    <footer class="footer"><span>Миролюбова Анастасия</span><a id="admin-link" href="homework.html?admin=1&amp;v=10">Кабинет преподавателя</a></footer>
   </div>
   <dialog id="copy-dialog" class="dialog" aria-labelledby="copy-title"><div class="dialog-inner"><h2 id="copy-title">Скопируйте ссылку</h2><textarea id="copy-value" rows="3" readonly aria-label="Ссылка на задание"></textarea><button id="copy-close" class="button secondary" type="button">Закрыть</button></div></dialog>
   <dialog id="delete-dialog" class="dialog" aria-labelledby="delete-title" aria-describedby="delete-warning">

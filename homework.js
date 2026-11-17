@@ -280,6 +280,17 @@
     $('admin-work').hidden = !loggedIn;
   }
 
+  function setPasswordVisibility(input, visible) {
+    input.type = visible ? 'text' : 'password';
+    input.parentElement.querySelector('.password-toggle').setAttribute('aria-pressed', String(visible));
+  }
+
+  function clearPassword(id) {
+    const input = $(id);
+    input.value = '';
+    setPasswordVisibility(input, false);
+  }
+
   function prepareAdminTabs() {
     const tabs = [...$('admin-work').querySelectorAll('[role="tab"]')];
     function selectTab(selected) {
@@ -315,7 +326,7 @@
     $('delete-dialog').close();
     clearPreview();
     removeStorage(sessionStorage, tokenKey);
-    $('password').value = '';
+    clearPassword('password');
     $('assignment-list').replaceChildren();
     showAdmin(false);
     status('admin-status', message);
@@ -366,8 +377,17 @@
         const grade = assignment.grades?.[mode]?.[index];
         const row = element('li');
         const prompt = `${item.prompt || ''}${item.hint ? ` (${item.hint})` : ''}`;
-        row.append(element('span', '', assignment.submittedAt ? `${prompt} — ${answer || 'нет ответа'}` : prompt));
+        const choices = assignment.correctAnswers?.[mode]?.[index];
+        const showCorrection = assignment.submittedAt && (grade === 'incorrect' || grade === 'empty') && choices?.length;
+        const response = answer && showCorrection ? `Ответ ученика — ${answer}` : answer;
+        const separator = showCorrection ? ' · ' : ' — ';
+        row.append(element('span', '', assignment.submittedAt && response ? `${prompt}${separator}${response}` : prompt));
         if (gradeLabels[grade]) row.append(element('span', `review-grade ${grade}`, gradeLabels[grade]));
+        if (showCorrection) {
+          const variants = mode === 0 ? choices.map(ipa => `/${ipa}/`) : choices;
+          const label = variants.length === 1 ? 'Правильный ответ' : 'Правильные варианты';
+          row.append(element('p', 'review-correction', `${label} — ${variants.join(' · ')}`));
+        }
         list.append(row);
       });
       container.append(list);
@@ -422,11 +442,9 @@
           if (!details.open || content.dataset.loaded === 'true') return;
           content.textContent = 'Загружаем ответы…';
           try {
-            const complete = Array.isArray(assignment.items)
-              ? assignment
-              : (await (assignment.private
-                ? request('/api/admin/assignments', { method: 'POST', authenticated: true, body: { action: 'view', code: assignment.code } })
-                : request(`/api/assignments/${encodeURIComponent(assignment.code)}`))).assignment;
+            const { assignment: complete } = await request('/api/admin/assignments', {
+              method: 'POST', authenticated: true, body: { action: 'view', code: assignment.code },
+            });
             drawReview(content, complete);
             content.dataset.loaded = 'true';
           } catch (error) { content.textContent = `${error.message} Закройте и откройте ответы ещё раз.`; }
@@ -673,9 +691,20 @@
       ? 'Перенести результат' : 'Назначить';
   }
 
+  for (const button of document.querySelectorAll('.password-toggle')) {
+    const input = $(button.getAttribute('aria-controls'));
+    button.addEventListener('click', () => setPasswordVisibility(input, input.type === 'password'));
+  }
   $('student-login').addEventListener('submit', async event => {
     event.preventDefault();
-    try { const data = await request('/api/student/login', { method: 'POST', body: { login: $('student-login-name').value, password: $('student-password').value } }); studentToken = data.token; writeStorage(sessionStorage, 'student-token', studentToken); $('student-password').value = ''; await showStudentDashboard(); status('student-status', ''); } catch (error) { status('student-status', error.message); }
+    try {
+      const data = await request('/api/student/login', { method: 'POST', body: { login: $('student-login-name').value, password: $('student-password').value } });
+      studentToken = data.token;
+      writeStorage(sessionStorage, 'student-token', studentToken);
+      clearPassword('student-password');
+      await showStudentDashboard();
+      status('student-status', '');
+    } catch (error) { status('student-status', error.message); }
   });
   $('student-logout').addEventListener('click', async () => {
     await request('/api/student/logout', { method: 'POST', student: true }).catch(() => {});
@@ -744,7 +773,7 @@
   $('submit-work').addEventListener('click', submitWork);
   $('login-form').addEventListener('submit', async event => {
     event.preventDefault();
-    const button = event.currentTarget.querySelector('button');
+    const button = event.currentTarget.querySelector('[type="submit"]');
     button.disabled = true;
     status('admin-status', 'Проверяем пароль…', 'success');
     try {
@@ -752,7 +781,7 @@
       if (typeof data.token !== 'string' || !data.token) throw new Error('Не удалось войти. Попробуйте ещё раз.');
       token = data.token;
       writeStorage(sessionStorage, tokenKey, token);
-      $('password').value = '';
+      clearPassword('password');
       showAdmin(true);
       await refreshAssignments();
       await refreshProfiles();
