@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M3 12h17m-7-7 7 7-7 7"/></symbol>
+  <symbol id="chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7l10-5Zm10 10-10 5L2 12m20 5-10 5L2 17"/></symbol>
+  <symbol id="headphones" viewBox="0 0 24 24"><path d="M3 14v-2a9 9 0 1 1 18 0v2"/><rect x="3" y="13" width="5" height="8" rx="2"/><rect x="16" y="13" width="5" height="8" rx="2"/></symbol>
+  <symbol id="book" viewBox="0 0 24 24"><path d="M12 6C9.5 3.5 5.5 3 2 4.5V20c3.5-1.5 7.5-1 10 1.5C14.5 19 18.5 18.5 22 20V4.5C18.5 3 14.5 3.5 12 6Zm0 0v15.5"/></symbol>
+  <symbol id="clipboard" viewBox="0 0 24 24"><path d="M8 5H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3M8 15l3 3 5-6"/><rect x="8" y="2" width="8" height="6" rx="2"/></symbol>
+  <symbol id="cap" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5-10-5Zm4.5 2.5v5a9 9 0 0 0 11 0v-5M22 9v7"/></symbol>
+  <symbol id="board" viewBox="0 0 24 24"><path d="M2 4h20M5 4v11h14V4M2 15h20m-10 0v7m0-7-6 7m6-7 6 7M9 11l2-2 2 1 3-3"/></symbol>
+  <symbol id="home" viewBox="0 0 24 24"><path d="m2 10 10-8 10 8M5 9v12h5v-6h4v6h5V9"/></symbol>
+  <symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2M17 4a4 4 0 0 1 0 7m2 3a5 5 0 0 1 3 5v2"/></symbol>
+  <symbol id="file" viewBox="0 0 24 24"><path d="M5 2h9l5 5v15H5V2Zm9 0v5h5M8 12h8m-8 4h8"/></symbol>
+  <symbol id="folder" viewBox="0 0 24 24"><path d="M3 5h6l2 3h10v12H3z"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+  <symbol id="logout" viewBox="0 0 24 24"><path d="M10 4H4v16h6m4-12 4 4-4 4m-4-4h11"/></symbol>
+</svg>

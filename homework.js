@@ -332,7 +332,16 @@
   }
 
   function showAdmin(loggedIn) {
-    $('login-panel').hidden = loggedIn;
+    const login = $('login-panel');
+    const intro = $('admin-intro');
+    const notice = $('admin-status');
+    if (loggedIn) {
+      $('admin-main').prepend(intro, notice);
+    } else {
+      login.before(intro);
+      login.after(notice);
+    }
+    login.hidden = loggedIn;
     $('admin-work').hidden = !loggedIn;
   }
 
@@ -363,6 +372,14 @@
       }
     }
 
+    $('admin-work').addEventListener('click', event => {
+      const button = event.target.closest('button[data-admin-jump]');
+      if (!button) return;
+      const heading = $(button.dataset.adminJump);
+      selectTab($(heading.closest('[role="tabpanel"]').getAttribute('aria-labelledby')));
+      heading.focus();
+    });
+
     for (const [index, tab] of tabs.entries()) {
       tab.addEventListener('click', () => selectTab(tab));
       tab.addEventListener('keydown', event => {
@@ -392,6 +409,18 @@
     removeStorage(sessionStorage, tokenKey);
     clearPassword('password');
     $('assignment-list').replaceChildren();
+    for (const metric of $('panel-overview').querySelectorAll('.admin-metric')) {
+      metric.hidden = true;
+      metric.querySelector('.admin-metric-value').textContent = '';
+    }
+    $('recent-works').hidden = true;
+    $('recent-works-body').replaceChildren();
+    $('recent-works-note').hidden = false;
+    $('recent-works-note').textContent = 'Загружаем задания…';
+    $('recent-submissions').hidden = true;
+    $('recent-submissions').replaceChildren();
+    $('recent-submissions-note').hidden = false;
+    $('recent-submissions-note').textContent = 'Загружаем работы…';
     showAdmin(false);
     status('admin-status', message);
   }
@@ -460,6 +489,7 @@
 
   function drawAssignments(assignments) {
     adminAssignments = assignments;
+    drawRecentWorks(assignments);
     const list = $('assignment-list');
     list.replaceChildren();
     if (!assignments.length) {
@@ -519,6 +549,54 @@
     }
   }
 
+  function setOverviewMetric(name, value) {
+    const metric = $(`metric-${name}`);
+    metric.querySelector('.admin-metric-value').textContent = value;
+    metric.hidden = false;
+  }
+
+  function drawRecentWorks(assignments) {
+    setOverviewMetric('works', assignments.length);
+    const rows = [...assignments]
+      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+      .slice(0, 5)
+      .map(work => {
+        const submitted = Boolean(work.submittedAt);
+        const state = work.private ? 'Сохранено' : submitted ? 'Сдано' : 'Ждёт ответа';
+        const row = element('tr');
+        const cell = element('td');
+        cell.append(element('span', `assignment-badge${submitted ? ' done' : ''}`, state));
+        row.append(element('th', '', work.code), element('td', '', levels[work.level] || work.level || '—'), cell);
+        row.firstElementChild.scope = 'row';
+        return row;
+      });
+    $('recent-works-body').replaceChildren(...rows);
+    $('recent-works').hidden = !rows.length;
+    $('recent-works-note').hidden = Boolean(rows.length);
+    $('recent-works-note').textContent = 'Здесь появятся сохранённые задания.';
+  }
+
+  function drawRecentSubmissions(students, assignments) {
+    const submitted = assignments.filter(work => work.status === 'submitted');
+    setOverviewMetric('students', students.length);
+    setOverviewMetric('assigned', assignments.length);
+    setOverviewMetric('submitted', submitted.length);
+    const items = submitted
+      .sort((a, b) => Date.parse(b.submittedAt) - Date.parse(a.submittedAt))
+      .slice(0, 4)
+      .map(work => {
+        const item = element('li', 'admin-submission');
+        const details = element('div');
+        details.append(element('strong', '', work.studentName), element('span', 'muted', work.code));
+        item.append(details, element('span', 'assignment-badge done', `${work.score ?? '—'} из ${work.total ?? '—'}`));
+        return item;
+      });
+    $('recent-submissions').replaceChildren(...items);
+    $('recent-submissions').hidden = !items.length;
+    $('recent-submissions-note').hidden = Boolean(items.length);
+    $('recent-submissions-note').textContent = 'Здесь появятся сданные работы учеников.';
+  }
+
   async function refreshAssignments({ quiet = false } = {}) {
     const button = $('refresh-list');
     if (quiet && button.disabled) return false;
@@ -529,11 +607,16 @@
       const data = await request('/api/admin/assignments', { authenticated: true });
       if (currentToken !== token || refresh !== latestRefresh) return false;
       if (!Array.isArray(data.assignments)) throw new Error('Не удалось получить список заданий.');
-      if (JSON.stringify(data.assignments) !== JSON.stringify(adminAssignments)) drawAssignments(data.assignments);
+      if (JSON.stringify(data.assignments) !== JSON.stringify(adminAssignments) || $('metric-works').hidden) {
+        drawAssignments(data.assignments);
+      }
       if (!quiet) status('admin-status', '');
       return true;
     } catch (error) {
-      if (currentToken === token && refresh === latestRefresh && (!quiet || error.status === 401)) adminError(error);
+      if (currentToken === token && refresh === latestRefresh && (!quiet || error.status === 401)) {
+        if ($('metric-works').hidden) $('recent-works-note').textContent = 'Не удалось загрузить задания. Нажмите «Обновить».';
+        adminError(error);
+      }
       return false;
     }
     finally { if (refresh === latestRefresh) button.disabled = false; }
@@ -707,9 +790,12 @@
   }
 
   async function refreshProfiles() {
-    if (!token) return;
+    const currentToken = token;
+    if (!currentToken) return;
     try {
       const [profiles, assigned] = await Promise.all([request('/api/admin/students', { authenticated: true }), request('/api/admin/student-assignments', { authenticated: true })]);
+      if (currentToken !== token) return;
+      drawRecentSubmissions(profiles.students, assigned.assignments);
       $('admin-students').replaceChildren(...profiles.students.map(student => {
         const profile = element('tr');
         profile.append(element('td', '', student.name), element('td', '', student.login));
@@ -759,6 +845,8 @@
         $('assigned-list').append(item);
       }
     } catch (error) {
+      if (currentToken !== token) return;
+      if ($('metric-submitted').hidden) $('recent-submissions-note').textContent = 'Не удалось загрузить работы. Нажмите «Обновить».';
       if ($('students-table').hidden) $('students-empty').textContent = 'Не удалось загрузить список. Нажмите «Обновить».';
       status('admin-status', error.message);
     }

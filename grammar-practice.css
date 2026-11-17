@@ -3,6 +3,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--card-shadow);
 }
 
 .trainer-panel h2, .trainer-session-heading h2, .trainer-result h3 {

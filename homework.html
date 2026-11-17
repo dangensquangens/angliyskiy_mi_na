@@ -6,18 +6,18 @@
   <meta name="description" content="Откройте домашнее задание по коду или войдите в кабинет ученика или преподавателя.">
   <meta name="robots" content="noindex">
   <meta name="referrer" content="same-origin">
-  <meta name="theme-color" content="#f8f7f3">
+  <meta name="theme-color" content="#F7F8F3">
   <title>Домашнее задание · Миролюбова Анастасия</title>
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=1">
-  <link rel="stylesheet" href="homework.css?v=9">
-  <link rel="stylesheet" href="site-nav.css?v=4">
-  <script src="site-nav.js?v=3" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css?v=2">
+  <link rel="stylesheet" href="homework.css?v=10">
+  <link rel="stylesheet" href="site-nav.css?v=5">
+  <script src="site-nav.js?v=4" defer></script>
   <script src="homework-config.js?v=2" defer></script>
-  <script src="homework.js?v=12" defer></script>
+  <script src="homework.js?v=13" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -27,16 +27,21 @@
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
         <span>Анастасия Миролюбова</span>
       </a>
-      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden><span class="site-menu-icon" aria-hidden="true"></span><span class="visually-hidden">Меню</span></button>
       <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
         <a href="./">Главная</a>
-        <a href="learning.html">Обучение</a>
-        <a href="grammar.html">Грамматика</a>
-        <a href="phonetics.html">Фонетика</a>
-        <a href="dictionary.html">Словарь</a>
+        <details class="nav-learning">
+          <summary>Обучение</summary>
+          <div class="nav-learning-links">
+            <a href="learning.html">Все разделы обучения</a>
+            <a href="grammar.html">Грамматика</a>
+            <a href="phonetics.html">Фонетика</a>
+            <a href="dictionary.html">Словарь</a>
+          </div>
+        </details>
         <a href="about.html">О преподавателе</a>
         <a href="contacts.html">Контакты</a>
-        <a href="homework.html?v=12" aria-current="page" class="nav-work">Домашние задания</a>
+        <a href="homework.html?v=12" aria-current="page" class="nav-work"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#cap"></use></svg>Домашние задания</a>
       </nav>
     </header>
 
@@ -116,7 +121,7 @@
       </section>
 
       <section id="admin-view" hidden>
-        <div class="intro"><h1>Кабинет преподавателя</h1><p>Создавайте задания и смотрите ответы учеников.</p></div>
+        <div id="admin-intro" class="intro"><h1>Кабинет преподавателя</h1><p>Добавляйте учеников, назначайте задания и проверяйте ответы.</p></div>
         <section id="login-panel" class="card narrow" aria-labelledby="login-title">
           <h2 id="login-title" tabindex="-1">Вход</h2><p class="muted">Введите пароль преподавателя.</p>
           <form id="login-form" class="stack-form">
@@ -133,82 +138,127 @@
           </form>
         </section>
         <p id="admin-status" class="status" role="status" aria-live="polite"></p>
-        <div id="admin-work" class="cabinet-layout" hidden>
+        <div id="admin-work" class="cabinet-layout admin-dashboard" hidden>
           <div class="cabinet-sidebar admin-toolbar">
             <div id="admin-tabs" class="admin-tabs" role="tablist" aria-label="Разделы кабинета">
-              <button id="tab-students" type="button" role="tab" aria-selected="true" aria-controls="panel-students">Ученики</button>
-              <button id="tab-works" type="button" role="tab" aria-selected="false" aria-controls="panel-works" tabindex="-1">Задания</button>
-              <button id="tab-assignments" type="button" role="tab" aria-selected="false" aria-controls="panel-assignments" tabindex="-1">Задания учеников</button>
+              <button id="tab-overview" type="button" role="tab" aria-selected="true" aria-controls="panel-overview"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#home"></use></svg><span>Кабинет</span></button>
+              <button id="tab-students" type="button" role="tab" aria-selected="false" aria-controls="panel-students" tabindex="-1"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#users"></use></svg><span>Ученики</span></button>
+              <button id="tab-works" type="button" role="tab" aria-selected="false" aria-controls="panel-works" tabindex="-1"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#file"></use></svg><span>Задания</span></button>
+              <button id="tab-assignments" type="button" role="tab" aria-selected="false" aria-controls="panel-assignments" tabindex="-1"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#clipboard"></use></svg><span>Задания учеников</span></button>
             </div>
+            <nav class="admin-subnav" aria-label="Работа с заданиями">
+              <button type="button" class="text-button" data-admin-jump="create-title">Создать задание</button>
+              <button type="button" class="text-button" data-admin-jump="saved-assignments-title">Сохранённые задания</button>
+              <button type="button" class="text-button" data-admin-jump="assign-title">Назначить задание</button>
+              <button type="button" class="text-button" data-admin-jump="assigned-list-title">Результаты и проверка</button>
+            </nav>
             <div class="section-actions">
               <button id="refresh-list" class="button secondary" type="button">Обновить</button>
               <button id="logout" class="text-button" type="button">Выйти</button>
             </div>
           </div>
-          <div id="panel-students" class="admin-panel admin-profiles" role="tabpanel" aria-labelledby="tab-students" tabindex="0">
-            <section class="card" aria-labelledby="new-student-title">
-              <h2 id="new-student-title">Новый ученик</h2>
-              <form id="student-create" class="stack-form">
-                <div class="field"><label for="new-name">Имя</label><input id="new-name" maxlength="100" required></div>
-                <div class="field">
-                  <label for="new-login">Логин</label>
-                  <input id="new-login" maxlength="64" pattern="[A-Za-z0-9_.\-]+" aria-describedby="login-hint" required>
-                  <p id="login-hint" class="muted">Можно использовать латинские буквы, цифры, точку, дефис и нижнее подчёркивание.</p>
+          <div id="admin-main" class="admin-main">
+            <div id="panel-overview" class="admin-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+              <ul class="admin-metrics" aria-label="Сводка кабинета" role="list">
+                <li id="metric-students" class="admin-metric card" hidden><span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#users"></use></svg></span><div><strong class="admin-metric-value"></strong><span class="admin-metric-label">Учеников</span></div></li>
+                <li id="metric-works" class="admin-metric card" hidden><span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#file"></use></svg></span><div><strong class="admin-metric-value"></strong><span class="admin-metric-label">Заданий</span></div></li>
+                <li id="metric-assigned" class="admin-metric card" hidden><span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#clipboard"></use></svg></span><div><strong class="admin-metric-value"></strong><span class="admin-metric-label">Назначено</span></div></li>
+                <li id="metric-submitted" class="admin-metric card" hidden><span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#check"></use></svg></span><div><strong class="admin-metric-value"></strong><span class="admin-metric-label">Сдано работ</span></div></li>
+              </ul>
+              <section class="card admin-quick" aria-labelledby="admin-quick-title">
+                <h2 id="admin-quick-title">Быстрые действия</h2>
+                <div class="admin-quick-actions">
+                  <button type="button" class="button primary" data-admin-jump="create-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#plus"></use></svg>Создать задание</button>
+                  <button type="button" class="button secondary" data-admin-jump="new-student-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#users"></use></svg>Добавить ученика</button>
+                  <button type="button" class="button secondary" data-admin-jump="assign-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#clipboard"></use></svg>Назначить задание</button>
+                  <button type="button" class="button secondary" data-admin-jump="saved-assignments-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#folder"></use></svg>Открыть сохранённые</button>
                 </div>
-                <div class="field"><label for="new-password">Начальный пароль</label><input id="new-password" type="password" autocomplete="new-password" maxlength="256" required></div>
-                <button class="button primary" type="submit">Создать профиль</button>
-              </form>
-            </section>
-            <section class="card" aria-labelledby="admin-students-title">
-              <h2 id="admin-students-title">Список учеников</h2>
-              <p id="students-empty" class="empty-message" role="status">Загружаем список учеников…</p>
-              <table id="students-table" class="data-table" aria-labelledby="admin-students-title" hidden>
-                <thead><tr><th scope="col">Имя</th><th scope="col">Логин</th></tr></thead>
-                <tbody id="admin-students"></tbody>
-              </table>
-            </section>
-          </div>
-          <div id="panel-works" class="admin-panel" role="tabpanel" aria-labelledby="tab-works" tabindex="0" hidden>
-            <section class="card create-card" aria-labelledby="create-title">
-              <div><h2 id="create-title">Новое задание</h2><p class="muted">Укажите, сколько слов нужно в каждом упражнении. Если упражнение не нужно, поставьте 0.</p></div>
-              <form id="create-form" class="create-form">
-                <div class="field"><label for="count-0">Слово → транскрипция</label><input id="count-0" type="number" min="0" step="1" value="10" required></div>
-                <div class="field"><label for="count-1">Транскрипция → слово</label><input id="count-1" type="number" min="0" step="1" value="10" required></div>
-                <div class="field"><label for="level">Уровень</label><select id="level"><option value="all">A1 и A2</option><option value="A1">A1</option><option value="A2">A2</option></select></div>
-                <button class="button primary" type="submit">Подобрать слова</button>
-              </form>
-              <section id="assignment-preview" class="assignment-preview" aria-labelledby="preview-title" hidden>
-                <h3 id="preview-title" tabindex="-1">Слова для задания</h3>
-                <p class="muted">Чтобы заменить слово, начните вводить новое и выберите его из списка.</p>
-                <datalist id="preview-choices"></datalist>
-                <div id="preview-groups" class="preview-groups"></div>
-                <p id="preview-status" class="status" role="status"></p>
-                <button id="publish-assignment" class="button primary" type="button">Сохранить задание</button>
               </section>
-            </section>
-            <section aria-labelledby="saved-assignments-title">
-              <h2 id="saved-assignments-title">Сохранённые задания</h2>
-              <div id="assignment-list" class="assignment-list"></div>
-            </section>
-          </div>
-          <div id="panel-assignments" class="admin-panel admin-assignments" role="tabpanel" aria-labelledby="tab-assignments" tabindex="0" hidden>
-            <section class="card" aria-labelledby="assign-title">
-              <h2 id="assign-title">Назначить задание</h2>
-              <form id="assign-form" class="stack-form">
-                <div class="field">
-                  <label for="assign-code">Задание</label>
-                  <select id="assign-code" aria-describedby="assign-meta" required></select>
-                  <p id="assign-meta" class="muted"></p>
+              <section class="card admin-recent" aria-labelledby="recent-works-title">
+                <div class="admin-card-heading">
+                  <h2 id="recent-works-title">Последние задания</h2>
+                  <button type="button" class="text-button" data-admin-jump="saved-assignments-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#arrow"></use></svg>Все задания</button>
                 </div>
-                <fieldset id="assign-students" class="student-options"><legend>Ученики</legend></fieldset>
-                <label id="import-result-option" class="checkbox-label" hidden><input id="import-result" type="checkbox"> Перенести сданную работу с результатом в профиль ученика</label>
-                <button class="button primary" type="submit">Назначить</button>
-              </form>
-            </section>
-            <section aria-labelledby="assigned-list-title">
-              <h2 id="assigned-list-title">Назначенные задания</h2>
-              <div id="assigned-list" class="assignment-list"></div>
-            </section>
+                <p id="recent-works-note" class="empty-message" role="status">Загружаем задания…</p>
+                <table id="recent-works" class="data-table admin-works-table" aria-labelledby="recent-works-title" hidden>
+                  <thead><tr><th scope="col">Код</th><th scope="col">Уровень</th><th scope="col">Статус</th></tr></thead>
+                  <tbody id="recent-works-body"></tbody>
+                </table>
+              </section>
+              <section class="card admin-submitted" aria-labelledby="recent-submissions-title">
+                <div class="admin-card-heading">
+                  <h2 id="recent-submissions-title">Сданные работы</h2>
+                  <button type="button" class="text-button" data-admin-jump="assigned-list-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#arrow"></use></svg>Все результаты</button>
+                </div>
+                <p id="recent-submissions-note" class="empty-message" role="status">Загружаем работы…</p>
+                <ul id="recent-submissions" class="admin-submission-list" hidden></ul>
+              </section>
+            </div>
+            <div id="panel-students" class="admin-panel admin-profiles" role="tabpanel" aria-labelledby="tab-students" tabindex="0" hidden>
+              <section class="card" aria-labelledby="new-student-title">
+                <h2 id="new-student-title" tabindex="-1">Новый ученик</h2>
+                <form id="student-create" class="stack-form">
+                  <div class="field"><label for="new-name">Имя</label><input id="new-name" maxlength="100" required></div>
+                  <div class="field">
+                    <label for="new-login">Логин</label>
+                    <input id="new-login" maxlength="64" pattern="[A-Za-z0-9_.\-]+" aria-describedby="login-hint" required>
+                    <p id="login-hint" class="muted">Можно использовать латинские буквы, цифры, точку, дефис и нижнее подчёркивание.</p>
+                  </div>
+                  <div class="field"><label for="new-password">Начальный пароль</label><input id="new-password" type="password" autocomplete="new-password" maxlength="256" required></div>
+                  <button class="button primary" type="submit">Создать профиль</button>
+                </form>
+              </section>
+              <section class="card" aria-labelledby="admin-students-title">
+                <h2 id="admin-students-title">Список учеников</h2>
+                <p id="students-empty" class="empty-message" role="status">Загружаем список учеников…</p>
+                <table id="students-table" class="data-table" aria-labelledby="admin-students-title" hidden>
+                  <thead><tr><th scope="col">Имя</th><th scope="col">Логин</th></tr></thead>
+                  <tbody id="admin-students"></tbody>
+                </table>
+              </section>
+            </div>
+            <div id="panel-works" class="admin-panel" role="tabpanel" aria-labelledby="tab-works" tabindex="0" hidden>
+              <section class="card create-card" aria-labelledby="create-title">
+                <div><h2 id="create-title" tabindex="-1">Новое задание</h2><p class="muted">Укажите, сколько слов нужно в каждом упражнении. Если упражнение не нужно, поставьте 0.</p></div>
+                <form id="create-form" class="create-form">
+                  <div class="field"><label for="count-0">Слово → транскрипция</label><input id="count-0" type="number" min="0" step="1" value="10" required></div>
+                  <div class="field"><label for="count-1">Транскрипция → слово</label><input id="count-1" type="number" min="0" step="1" value="10" required></div>
+                  <div class="field"><label for="level">Уровень</label><select id="level"><option value="all">A1 и A2</option><option value="A1">A1</option><option value="A2">A2</option></select></div>
+                  <button class="button primary" type="submit">Подобрать слова</button>
+                </form>
+                <section id="assignment-preview" class="assignment-preview" aria-labelledby="preview-title" hidden>
+                  <h3 id="preview-title" tabindex="-1">Слова для задания</h3>
+                  <p class="muted">Чтобы заменить слово, начните вводить новое и выберите его из списка.</p>
+                  <datalist id="preview-choices"></datalist>
+                  <div id="preview-groups" class="preview-groups"></div>
+                  <p id="preview-status" class="status" role="status"></p>
+                  <button id="publish-assignment" class="button primary" type="button">Сохранить задание</button>
+                </section>
+              </section>
+              <section aria-labelledby="saved-assignments-title">
+                <h2 id="saved-assignments-title" tabindex="-1">Сохранённые задания</h2>
+                <div id="assignment-list" class="assignment-list"></div>
+              </section>
+            </div>
+            <div id="panel-assignments" class="admin-panel admin-assignments" role="tabpanel" aria-labelledby="tab-assignments" tabindex="0" hidden>
+              <section class="card" aria-labelledby="assign-title">
+                <h2 id="assign-title" tabindex="-1">Назначить задание</h2>
+                <form id="assign-form" class="stack-form">
+                  <div class="field">
+                    <label for="assign-code">Задание</label>
+                    <select id="assign-code" aria-describedby="assign-meta" required></select>
+                    <p id="assign-meta" class="muted"></p>
+                  </div>
+                  <fieldset id="assign-students" class="student-options"><legend>Ученики</legend></fieldset>
+                  <label id="import-result-option" class="checkbox-label" hidden><input id="import-result" type="checkbox"> Перенести сданную работу с результатом в профиль ученика</label>
+                  <button class="button primary" type="submit">Назначить</button>
+                </form>
+              </section>
+              <section aria-labelledby="assigned-list-title">
+                <h2 id="assigned-list-title" tabindex="-1">Назначенные задания</h2>
+                <div id="assigned-list" class="assignment-list"></div>
+              </section>
+            </div>
           </div>
         </div>
       </section>

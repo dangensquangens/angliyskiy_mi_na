@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Словарь Oxford 3000 для уровней A1 и A2. Поиск по английским словам и британской транскрипции.">
-  <meta name="theme-color" content="#f8f7f3">
+  <meta name="theme-color" content="#F7F8F3">
   <title>Словарь Oxford 3000 · Миролюбова Анастасия</title>
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=1">
-  <link rel="stylesheet" href="styles.css?v=13">
-  <link rel="stylesheet" href="site-nav.css?v=4">
-  <script src="site-nav.js?v=3" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="site-nav.css?v=5">
+  <script src="site-nav.js?v=4" defer></script>
   <script src="catalog.js" defer></script>
   <script src="reading-rules.js?v=3" defer></script>
   <script src="dictionary.js" defer></script>
@@ -26,16 +26,21 @@
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
         <span>Анастасия Миролюбова</span>
       </a>
-      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden><span class="site-menu-icon" aria-hidden="true"></span><span class="visually-hidden">Меню</span></button>
       <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
         <a href="./">Главная</a>
-        <a href="learning.html">Обучение</a>
-        <a href="grammar.html">Грамматика</a>
-        <a href="phonetics.html">Фонетика</a>
-        <a href="dictionary.html" aria-current="page">Словарь</a>
+        <details class="nav-learning nav-current">
+          <summary>Обучение</summary>
+          <div class="nav-learning-links">
+            <a href="learning.html">Все разделы обучения</a>
+            <a href="grammar.html">Грамматика</a>
+            <a href="phonetics.html">Фонетика</a>
+            <a href="dictionary.html" aria-current="page">Словарь</a>
+          </div>
+        </details>
         <a href="about.html">О преподавателе</a>
         <a href="contacts.html">Контакты</a>
-        <a href="homework.html?v=12" class="nav-work">Домашние задания</a>
+        <a href="homework.html?v=12" class="nav-work"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#cap"></use></svg>Домашние задания</a>
       </nav>
     </header>
 
