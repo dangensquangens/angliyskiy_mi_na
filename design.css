@@ -2,20 +2,17 @@
   color-scheme: light;
   font-family: "Source Sans 3", system-ui, sans-serif;
   --display: "PT Serif", Georgia, serif;
-  --paper: #f8f7f3;
-  --surface: #ffffff;
-  --ink: #202941;
-  --muted: #505d74;
-  --border: #d9deea;
-  --strong-border: #77839d;
-  --accent: #27458b;
-  --accent-hover: #1a326e;
-  --tint: #e9effd;
-  --wash: #f2f5fc;
-  --linen: #ede9df;
-  --hero-ink: #f4f6ff;
-  --hero-muted: #d4def5;
-  --hero-rule: #7389bb;
+  --paper: #F7F8F3;
+  --surface: #FFFFFF;
+  --ink: #20352D;
+  --muted: #4D6458;
+  --border: #CFDDD4;
+  --strong-border: #657E71;
+  --accent: #2F6B56;
+  --accent-hover: #173B31;
+  --tint: #DDECE2;
+  --wash: #EFF4EF;
+  --linen: #E8EFE7;
   --success: #24583e;
   --success-bg: #e9f4eb;
   --success-line: #6d977d;
@@ -26,8 +23,10 @@
   --warning: #6d501d;
   --warning-bg: #faf3e3;
   --warning-line: #a88b53;
-  --scrim: rgb(20 31 59 / 55%);
-  --shadow: 0 14px 36px rgb(24 42 86 / 10%);
+  --scrim: rgb(23 59 49 / 55%);
+  --shadow: 0 14px 36px rgb(23 59 49 / 10%);
+  --card-shadow: 0 6px 22px rgb(23 59 49 / 7%);
+  --radius-feature: 1.25rem;
   --radius: 14px;
   --radius-control: 8px;
   --gutter: clamp(1rem, 3vw, 2.5rem);
@@ -58,6 +57,27 @@ a { color: inherit; text-underline-offset: .2em; }
 h1, h2, h3 { text-wrap: balance; }
 p { text-wrap: pretty; }
 img { max-inline-size: 100%; }
+.ui-icon { flex: none; width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.icon-tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--icon-tile-size, 3rem);
+  aspect-ratio: 1;
+  border-radius: .85rem;
+  color: var(--accent);
+  background: var(--tint);
+}
+.icon-tile .ui-icon { width: 58%; height: 58%; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 ::selection { color: var(--accent-hover); background: var(--tint); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 :where([id]) { scroll-margin-block-start: 1rem; }

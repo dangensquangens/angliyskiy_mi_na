@@ -14,11 +14,11 @@
   display: inline-flex;
   flex: 1;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   min-width: 0;
   min-height: var(--touch);
   color: var(--ink);
-  font-size: clamp(.875rem, 1.6vw, 1.0625rem);
+  font-size: clamp(.9375rem, 1.35vw, 1.125rem);
   line-height: 1.2;
   font-weight: 700;
   text-decoration: none;
@@ -26,7 +26,7 @@
 
 .site-header .brand-mark {
   flex: none;
-  border-radius: var(--radius-control);
+  border-radius: 50%;
 }
 
 .site-nav {
@@ -38,6 +38,7 @@
 }
 
 .site-nav a,
+.nav-learning > summary,
 .site-menu-toggle {
   display: inline-flex;
   align-items: center;
@@ -52,20 +53,71 @@
 }
 
 .site-nav a:hover,
+.nav-learning > summary:hover,
 .site-menu-toggle:hover { background: var(--wash); }
 
 .site-nav a[aria-current="page"],
+.nav-learning.nav-current > summary,
+.nav-learning[open] > summary,
 .site-menu-toggle[aria-expanded="true"] {
   color: var(--accent-hover);
   background: var(--tint);
   text-decoration: underline;
 }
 
-.site-nav .nav-work:not([aria-current="page"]) { color: var(--accent-hover); }
+.nav-learning { min-width: 0; }
+.nav-learning > summary {
+  display: inline-flex;
+  gap: .5rem;
+  cursor: pointer;
+  list-style: none;
+}
+.nav-learning > summary::-webkit-details-marker { display: none; }
+.nav-learning > summary::after {
+  width: .5rem;
+  height: .5rem;
+  margin-block-start: -.25rem;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  content: "";
+  transform: rotate(45deg);
+}
+.nav-learning[open] > summary::after { margin-block-start: .25rem; transform: rotate(225deg); }
+.nav-learning-links { display: grid; padding-inline-start: var(--space-3); }
+.nav-learning-links a { min-width: 0; }
+.site-nav .nav-work {
+  justify-content: center;
+  gap: .5rem;
+  color: var(--surface);
+  background: var(--accent);
+}
+.site-nav .nav-work:hover,
+.site-nav .nav-work[aria-current="page"] {
+  color: var(--surface);
+  background: var(--accent-hover);
+}
 .site-menu-toggle {
-  border: 1px solid var(--strong-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch);
+  padding-inline: 0;
+  border: 1px solid transparent;
   color: var(--accent-hover);
-  background: var(--surface);
+  background: var(--tint);
+}
+.site-menu-icon {
+  width: 1.25rem;
+  height: .875rem;
+  border-block: 2px solid currentColor;
+  position: relative;
+}
+.site-menu-icon::after {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(50% - 1px);
+  border-block-start: 2px solid currentColor;
+  content: "";
 }
 
 .site-footer-public {
@@ -101,16 +153,35 @@
 @media (width > 880px) {
   .site-header { flex-wrap: nowrap; }
   .site-menu-toggle { display: none; }
-  .site-nav { flex: 0 0 auto; flex-direction: row; align-items: center; padding: 0; }
+  .site-nav { flex: 0 0 auto; flex-direction: row; align-items: center; gap: clamp(.25rem, 1vw, 1rem); padding: 0; }
   .site-nav a { white-space: nowrap; }
-  .site-nav .nav-work:not([aria-current="page"]) { background: var(--tint); }
-  .site-nav .nav-work:hover { background: var(--wash); }
+  .nav-learning { position: relative; }
+  .nav-learning-links {
+    position: absolute;
+    z-index: 5;
+    inset-block-start: calc(100% + .25rem);
+    inset-inline-start: 0;
+    min-width: 13rem;
+    padding: .375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .nav-learning-links a { width: 100%; }
 }
 
 @media (880px < width < 64rem) {
   .site-nav { gap: .125rem; }
-  .site-nav a { padding-inline: .3125rem; font-size: .875rem; }
+  .site-nav > a, .nav-learning > summary { padding-inline: .3125rem; font-size: .875rem; }
+  .site-nav .nav-work { padding-inline: .75rem; }
   .site-header .brand { font-size: .9375rem; }
+}
+
+@media (min-width: 64rem) {
+  .site-header .brand { flex: 0 1 auto; font-family: var(--display); }
+  .site-nav { flex: 1 1 auto; min-width: 0; gap: clamp(.5rem, 1.5vw, 1.5rem); padding-inline-start: clamp(1rem, 6vw, 6rem); }
+  .site-nav .nav-work { margin-inline-start: auto; padding-inline: var(--space-3); }
 }
 
 @media print {

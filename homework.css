@@ -2,8 +2,8 @@ main { min-height: 65vh; padding-block: clamp(1.5rem, 4.5vw, 3.75rem) var(--sect
 .intro { max-width: 45rem; margin-block-end: var(--space-4); }
 .intro > p { margin: var(--space-2) 0 0; color: var(--muted); font-size: 1.125rem; }
 #student-view:has(#student-dashboard:not([hidden]), #student-work:not([hidden])) .intro-description { display: none; }
-h1 { margin: 0; font-size: var(--heading); line-height: 1.1; letter-spacing: -.035em; overflow-wrap: break-word; }
-h2 { margin: 0; font-size: var(--subheading); line-height: 1.2; font-weight: 650; }
+h1 { margin: 0; font: 700 var(--heading)/1.1 var(--display); letter-spacing: -.035em; overflow-wrap: break-word; }
+h2 { margin: 0; font: 700 var(--subheading)/1.2 var(--display); }
 h3 { margin: 0; font-size: 1.125rem; line-height: 1.3; }
 .muted { margin: .375rem 0 0; color: var(--muted); font-size: .9375rem; overflow-wrap: anywhere; }
 
@@ -13,6 +13,7 @@ h3 { margin: 0; font-size: 1.125rem; line-height: 1.3; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--card-shadow);
 }
 .narrow { max-width: 32rem; }
 .student-entry { display: grid; align-items: start; gap: var(--space-3); }
@@ -90,13 +91,17 @@ input:disabled { opacity: 1; color: var(--ink); background: var(--wash); }
 }
 .cabinet-sidebar strong { overflow-wrap: anywhere; }
 .work-nav { justify-content: start; }
-.admin-toolbar { align-items: stretch; flex-direction: column; }
+.admin-toolbar { align-items: stretch; flex-direction: column; background: var(--tint); }
 .admin-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: .25rem;
 }
 .admin-tabs [role="tab"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
   min-height: var(--touch);
   padding: .5rem .25rem;
   border: 1px solid transparent;
@@ -106,14 +111,81 @@ input:disabled { opacity: 1; color: var(--ink); background: var(--wash); }
   font-size: .9375rem;
   line-height: 1.2;
   font-weight: 650;
+  text-align: start;
   overflow-wrap: anywhere;
 }
 .admin-tabs [role="tab"]:hover { background: var(--surface); }
-.admin-tabs [aria-selected="true"] { border-color: var(--strong-border); background: var(--tint); }
+.admin-tabs [aria-selected="true"], .admin-tabs [aria-selected="true"]:hover {
+  border-color: var(--accent);
+  color: var(--surface);
+  background: var(--accent);
+}
 .admin-tabs [role="tab"]:focus-visible { outline-offset: -2px; }
+.admin-tabs [aria-selected="true"]:focus-visible { outline-color: var(--surface); }
+.admin-subnav { display: none; }
 .section-actions { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.section-actions .ui-icon { margin-inline-end: .375rem; }
 .admin-panel { display: grid; gap: var(--space-3); align-items: start; }
 #saved-assignments-title, #student-assignments-title, #assigned-list-title { margin-block-end: var(--space-3); }
+
+.admin-main .intro { margin-block-end: var(--space-4); }
+.admin-overview {
+  display: grid;
+  align-items: start;
+  gap: var(--space-3);
+  grid-template-areas: "metrics" "quick" "recent" "submitted";
+}
+.admin-overview > * { min-width: 0; }
+.admin-metrics {
+  display: grid;
+  grid-area: metrics;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-metrics:not(:has(.admin-metric:not([hidden]))) { display: none; }
+.admin-metric {
+  --icon-tile-size: 2.25rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: var(--space-1);
+}
+.admin-metric-value { display: block; color: var(--accent-hover); font: 700 clamp(1.35rem, 2.2vw, 2rem)/1.12 var(--display); font-variant-numeric: tabular-nums; }
+.admin-metric-label { display: block; color: var(--muted); font-size: .875rem; line-height: 1.18; overflow-wrap: anywhere; }
+.admin-quick { grid-area: quick; }
+.admin-recent { grid-area: recent; }
+.admin-submitted { grid-area: submitted; }
+.admin-quick-actions { display: grid; gap: var(--space-1); margin-block-start: var(--space-3); }
+.admin-quick-actions .button { justify-content: flex-start; text-align: start; }
+.admin-quick-actions .secondary:not(:hover) { border-color: transparent; }
+.admin-card-heading { display: flex; align-items: center; justify-content: space-between; gap: .25rem var(--space-1); flex-wrap: wrap; }
+.admin-card-heading .text-button { gap: .375rem; padding-inline: .25rem; }
+.admin-card-heading .text-button .ui-icon { order: 1; }
+.admin-card-heading + :is(.empty-message, .data-table, .admin-submission-list) { margin-block-start: var(--space-1); }
+.admin-works-table { font-size: .9375rem; }
+.admin-works-table thead th:first-child { width: 46%; }
+.admin-works-table thead th:nth-child(2) { width: 23%; }
+.admin-works-table tbody th { color: var(--ink); background: transparent; }
+.admin-works-table .assignment-badge { padding: .25rem .4rem; font-size: .875rem; }
+.admin-submission-list { margin: 0; padding: 0; list-style: none; }
+.admin-submission { display: flex; align-items: center; justify-content: space-between; gap: var(--space-1); padding-block: var(--space-1); border-block-end: 1px solid var(--border); }
+.admin-submission > div { min-width: 0; overflow-wrap: anywhere; }
+.admin-submission .muted { display: block; }
+
+@media (max-width: 430px) {
+  .admin-works-table { font-size: .875rem; }
+  .admin-works-table :is(th, td) { padding-inline: .375rem; }
+}
+
+@media (max-width: 359px) {
+  .admin-metric { --icon-tile-size: 2rem; }
+  .admin-works-table { table-layout: auto; }
+  .admin-works-table thead th:nth-child(-n+2) { width: auto; white-space: nowrap; }
+  .admin-works-table tbody th { font-size: .8125rem; }
+}
 
 .work-summary, .assignment-top, .student-assignment {
   display: flex;
@@ -237,6 +309,9 @@ input:disabled { opacity: 1; color: var(--ink); background: var(--wash); }
   .answer-cell { grid-column: auto; }
   .create-form { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
   .inline-form { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+  .admin-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .admin-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .admin-quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (min-width: 761px) {
@@ -248,11 +323,25 @@ input:disabled { opacity: 1; color: var(--ink); background: var(--wash); }
   .cabinet-layout { grid-template-columns: minmax(11.5rem, 15rem) minmax(0, 1fr); }
   .cabinet-sidebar { flex-direction: column; align-items: stretch; }
   .admin-tabs { grid-template-columns: minmax(0, 1fr); }
-  .admin-tabs [role="tab"] { padding-inline: var(--space-2); text-align: start; }
+  .admin-tabs [role="tab"] { justify-content: flex-start; gap: var(--space-1); padding-inline: var(--space-2); }
+  .admin-subnav { display: grid; padding-inline-start: var(--space-3); }
+  .admin-subnav .text-button { padding-inline-end: 0; line-height: 1.2; }
   .admin-toolbar .section-actions { border-block-start: 1px solid var(--border); padding-block-start: var(--space-2); }
+  .admin-dashboard { grid-template-columns: minmax(11.5rem, 14rem) minmax(0, 1fr); }
+  .admin-toolbar { position: sticky; top: var(--space-3); padding: var(--space-2); }
+  .shell:has(#admin-work:not([hidden])) { max-width: 94rem; }
 }
 
 @media (min-width: 70rem) {
   .admin-assignments { grid-template-columns: minmax(15rem, .75fr) minmax(0, 1fr); }
   .create-form { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; }
+}
+
+@media (min-width: 76rem) {
+  .admin-overview {
+    grid-template-columns: minmax(0, 1.9fr) minmax(16rem, 1fr);
+    grid-template-areas: "metrics quick" "recent quick" "recent submitted";
+  }
+  .admin-quick-actions { grid-template-columns: minmax(0, 1fr); }
+  .admin-metric { --icon-tile-size: 2.65rem; padding: var(--space-2); }
 }

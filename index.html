@@ -5,7 +5,7 @@
   <script src="legacy-links.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Упражнения по фонетике и грамматике, словарь Oxford 3000 и домашние задания. Сайт преподавателя Анастасии Миролюбовой.">
-  <meta name="theme-color" content="#f8f7f3">
+  <meta name="theme-color" content="#F7F8F3">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Английский с Анастасией Миролюбовой">
   <meta property="og:description" content="Упражнения по фонетике и грамматике, словарь Oxford 3000 и домашние задания. Сайт преподавателя Анастасии Миролюбовой.">
@@ -14,11 +14,11 @@
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=PT+Serif&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=1">
-  <link rel="stylesheet" href="site-nav.css?v=4">
-  <link rel="stylesheet" href="public.css?v=1">
-  <script src="site-nav.js?v=3" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css?v=2">
+  <link rel="stylesheet" href="site-nav.css?v=5">
+  <link rel="stylesheet" href="public.css?v=2">
+  <script src="site-nav.js?v=4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -28,71 +28,95 @@
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
         <span>Анастасия Миролюбова</span>
       </a>
-      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden><span class="site-menu-icon" aria-hidden="true"></span><span class="visually-hidden">Меню</span></button>
       <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
         <a href="./" aria-current="page">Главная</a>
-        <a href="learning.html">Обучение</a>
-        <a href="grammar.html">Грамматика</a>
-        <a href="phonetics.html">Фонетика</a>
-        <a href="dictionary.html">Словарь</a>
+        <details class="nav-learning">
+          <summary>Обучение</summary>
+          <div class="nav-learning-links">
+            <a href="learning.html">Все разделы обучения</a>
+            <a href="grammar.html">Грамматика</a>
+            <a href="phonetics.html">Фонетика</a>
+            <a href="dictionary.html">Словарь</a>
+          </div>
+        </details>
         <a href="about.html">О преподавателе</a>
         <a href="contacts.html">Контакты</a>
-        <a href="homework.html?v=12" class="nav-work">Домашние задания</a>
+        <a href="homework.html?v=12" class="nav-work"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#cap"></use></svg>Домашние задания</a>
       </nav>
     </header>
-    <main id="main" class="page-content public-page" tabindex="-1">
+    <main id="main" class="page-content public-page home-page" tabindex="-1">
       <section class="public-hero" aria-labelledby="page-title">
-        <div>
-          <h1 id="page-title"><span class="hero-title-break">Английский</span> с Анастасией Миролюбовой</h1>
+        <div class="home-hero-copy">
+          <h1 id="page-title">Английский <span>с Анастасией</span> <span>Миролюбовой</span></h1>
           <p class="public-lead">Практикуйте грамматику и произношение, ищите слова в словаре и выполняйте домашние задания.</p>
           <div class="public-actions">
-            <a class="button button-primary" href="phonetics.html">К упражнениям</a>
-            <a class="button button-outline" href="learning.html">Все разделы</a>
+            <a class="button button-primary" href="phonetics.html"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#arrow"></use></svg>К упражнениям</a>
+            <a class="button button-outline" href="learning.html"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#grid"></use></svg>Все разделы</a>
           </div>
         </div>
-        <figure class="lesson-sample">
-          <figcaption>Пример британской транскрипции</figcaption>
-          <div>
-            <span class="sample-word" lang="en">ship</span>
-            <span class="sample-ipa" lang="en-fonipa">/ʃɪp/</span>
-          </div>
-        </figure>
+        <div class="hero-art" aria-hidden="true">
+          <picture>
+            <source media="(width < 48rem)" srcset="hero-study-mobile.webp" width="576" height="720">
+            <img src="hero-study.webp" srcset="hero-study-small.webp 640w, hero-study.webp 1280w" sizes="(min-width: 90rem) 44vw, 50vw" alt="" width="1280" height="640" fetchpriority="high">
+          </picture>
+        </div>
       </section>
 
-      <section class="public-section" aria-labelledby="sections-title">
+      <section class="public-section home-learning" aria-labelledby="sections-title">
         <div class="section-heading"><h2 id="sections-title">Учебные разделы</h2></div>
         <div class="resource-grid">
           <a class="resource-card" href="grammar.html" aria-labelledby="resource-link-0">
-            <h3 class="resource-title">Грамматика</h3>
-            <span class="resource-arrow" aria-hidden="true"></span>
-            <span class="resource-copy">Правила употребления английских времён и упражнения с проверкой.</span>
-            <span class="resource-link" id="resource-link-0">Открыть грамматику</span>
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#layers"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Грамматика</h3>
+              <p class="resource-copy">Правила английских времён и упражнения.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-0">Открыть грамматику</span>
           </a>
           <a class="resource-card" href="phonetics.html" aria-labelledby="resource-link-1">
-            <h3 class="resource-title">Фонетика</h3>
-            <span class="resource-arrow" aria-hidden="true"></span>
-            <span class="resource-copy">Британская транскрипция, чтение слов и тренировка похожих звуков.</span>
-            <span class="resource-link" id="resource-link-1">Открыть тренажёр</span>
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#headphones"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Фонетика</h3>
+              <p class="resource-copy">Чтение и запись британской транскрипции.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-1">Открыть тренажёр</span>
           </a>
           <a class="resource-card" href="dictionary.html" aria-labelledby="resource-link-2">
-            <h3 class="resource-title">Словарь</h3>
-            <span class="resource-arrow" aria-hidden="true"></span>
-            <span class="resource-copy">Слова Oxford 3000 уровней A1 и A2. Поиск по написанию и транскрипции.</span>
-            <span class="resource-link" id="resource-link-2">Открыть словарь</span>
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#book"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Словарь</h3>
+              <p class="resource-copy">Слова Oxford 3000 с транскрипцией.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-2">Открыть словарь</span>
+          </a>
+          <a class="resource-card resource-card-mobile" href="homework.html?v=12" aria-labelledby="resource-link-3">
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#clipboard"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Домашние задания</h3>
+              <p class="resource-copy">Войдите в кабинет или откройте задание по коду.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-3">Открыть домашние задания</span>
           </a>
         </div>
       </section>
 
-      <section class="public-section access-band" aria-labelledby="access-title">
-        <div>
-          <h2 id="access-title">Домашние задания</h2>
-          <p>Войдите в кабинет ученика, чтобы посмотреть задания, или откройте работу по коду преподавателя.</p>
-        </div>
-        <div class="public-actions">
-          <a class="button button-primary" href="homework.html?v=12">Кабинет ученика</a>
-          <a class="button button-outline" href="homework.html?admin=1&amp;v=12">Для преподавателя</a>
-        </div>
-      </section>
+      <nav id="access-title" class="public-section access-band" aria-label="Личные кабинеты">
+        <a class="access-link" href="homework.html?v=12">
+          <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#cap"></use></svg></span>
+          <div><h2>Кабинет ученика</h2><p>Выполняйте задания и смотрите результаты.</p></div>
+          <svg class="ui-icon access-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+        </a>
+        <a class="access-link" href="homework.html?admin=1&amp;v=12">
+          <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#board"></use></svg></span>
+          <div><h2>Кабинет преподавателя</h2><p>Назначайте задания и проверяйте ответы учеников.</p></div>
+          <svg class="ui-icon access-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+        </a>
+      </nav>
 
       <div class="public-section profile-grid">
         <section class="profile-item" aria-labelledby="teacher-title">

@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Грамматика, фонетика и словарь Oxford 3000. Выберите тему или откройте тренажёр.">
-  <meta name="theme-color" content="#f8f7f3">
+  <meta name="theme-color" content="#F7F8F3">
   <title>Обучение · Миролюбова Анастасия</title>
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=PT+Serif&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css?v=1">
-  <link rel="stylesheet" href="site-nav.css?v=4">
-  <link rel="stylesheet" href="public.css?v=1">
-  <script src="site-nav.js?v=3" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css?v=2">
+  <link rel="stylesheet" href="site-nav.css?v=5">
+  <link rel="stylesheet" href="public.css?v=2">
+  <script src="site-nav.js?v=4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -23,16 +23,21 @@
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
         <span>Анастасия Миролюбова</span>
       </a>
-      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden><span class="site-menu-icon" aria-hidden="true"></span><span class="visually-hidden">Меню</span></button>
       <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
         <a href="./">Главная</a>
-        <a href="learning.html" aria-current="page">Обучение</a>
-        <a href="grammar.html">Грамматика</a>
-        <a href="phonetics.html">Фонетика</a>
-        <a href="dictionary.html">Словарь</a>
+        <details class="nav-learning nav-current">
+          <summary>Обучение</summary>
+          <div class="nav-learning-links">
+            <a href="learning.html" aria-current="page">Все разделы обучения</a>
+            <a href="grammar.html">Грамматика</a>
+            <a href="phonetics.html">Фонетика</a>
+            <a href="dictionary.html">Словарь</a>
+          </div>
+        </details>
         <a href="about.html">О преподавателе</a>
         <a href="contacts.html">Контакты</a>
-        <a href="homework.html?v=12" class="nav-work">Домашние задания</a>
+        <a href="homework.html?v=12" class="nav-work"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#cap"></use></svg>Домашние задания</a>
       </nav>
     </header>
     <main id="main" class="page-content public-page" tabindex="-1">
@@ -44,22 +49,31 @@
         <div class="section-heading"><h2 id="learning-tools">Учебные инструменты</h2></div>
         <div class="resource-grid">
           <a class="resource-card" href="grammar.html" aria-labelledby="resource-link-0">
-            <h3 class="resource-title">Грамматика</h3>
-            <span class="resource-arrow" aria-hidden="true"></span>
-            <span class="resource-copy">Правила употребления английских времён и упражнения с проверкой.</span>
-            <span class="resource-link" id="resource-link-0">Открыть грамматику</span>
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#layers"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Грамматика</h3>
+              <p class="resource-copy">Правила английских времён и упражнения.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-0">Открыть грамматику</span>
           </a>
           <a class="resource-card" href="phonetics.html" aria-labelledby="resource-link-1">
-            <h3 class="resource-title">Фонетика</h3>
-            <span class="resource-arrow" aria-hidden="true"></span>
-            <span class="resource-copy">Британская транскрипция, чтение слов и тренировка похожих звуков.</span>
-            <span class="resource-link" id="resource-link-1">Открыть тренажёр</span>
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#headphones"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Фонетика</h3>
+              <p class="resource-copy">Чтение и запись британской транскрипции.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-1">Открыть тренажёр</span>
           </a>
           <a class="resource-card" href="dictionary.html" aria-labelledby="resource-link-2">
-            <h3 class="resource-title">Словарь</h3>
-            <span class="resource-arrow" aria-hidden="true"></span>
-            <span class="resource-copy">Слова Oxford 3000 уровней A1 и A2. Поиск по написанию и транскрипции.</span>
-            <span class="resource-link" id="resource-link-2">Открыть словарь</span>
+            <span class="icon-tile"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="ui-icons.svg#book"></use></svg></span>
+            <div class="resource-body">
+              <h3 class="resource-title">Словарь</h3>
+              <p class="resource-copy">Слова Oxford 3000 с транскрипцией.</p>
+            </div>
+            <svg class="ui-icon resource-arrow" aria-hidden="true" focusable="false"><use href="ui-icons.svg#chevron"></use></svg>
+            <span class="visually-hidden" id="resource-link-2">Открыть словарь</span>
           </a>
         </div>
       </section>
