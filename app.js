@@ -17,12 +17,12 @@
   const exercises = [
     {
       title: 'Запишите транскрипцию',
-      instructions: 'Прочитайте слово и запишите его британскую транскрипцию. Косые черты можно опустить.',
+      instructions: 'Запишите британскую транскрипцию слова. Косые черты можно опустить.',
       placeholder: 'Транскрипция',
     },
     {
       title: 'Запишите слово',
-      instructions: 'Прочитайте транскрипцию и запишите слово по-английски.',
+      instructions: 'Запишите английское слово по транскрипции.',
       placeholder: 'Слово',
     },
   ];
@@ -160,7 +160,7 @@
     levelSelect.value = worksheet.level;
     wordCount.max = availableCount(worksheet.level);
     wordCount.value = worksheet.items[0].length;
-    $('worksheet-meta').textContent = `${levels[worksheet.level]} · ${worksheet.items[0].length} в каждом задании`;
+    $('worksheet-meta').textContent = `${levels[worksheet.level]} · по ${worksheet.items[0].length} в каждом упражнении`;
     $('settings-note').textContent = '';
     actionStatus.textContent = '';
     renderPrint();
@@ -282,7 +282,7 @@
     addPrompt(label, word, mode);
     input.addEventListener('focus', () => {
       activeInput = input;
-      $('ipa-target').textContent = `Символы вставляются в строку ${index + 1}`;
+      $('ipa-target').textContent = `Строка ${index + 1}`;
     });
     input.addEventListener('input', () => inputChanged(index, input));
     cell.append(input, feedback);
@@ -309,7 +309,7 @@
     first.lang = second.lang = 'en';
     $('exercise-example').replaceChildren('Например, ', first, ' → ', second);
     $('ipa-keyboard').hidden = mode === 1;
-    $('ipa-target').textContent = 'Символы вставляются в строку 1';
+    $('ipa-target').textContent = 'Строка 1';
     activeInput = undefined;
     checkResult.textContent = '';
     renderedRows = worksheet.items[mode].map(renderRow);
@@ -355,7 +355,7 @@
       if (!grouped.has(group)) grouped.set(group, []);
       grouped.get(group).push(entry);
     }
-    $('word-groups-note').textContent = `${entries.length.toLocaleString('ru-RU')} слов и выражений Oxford 3000 уровня A1–A2. Нажмите на группу, чтобы открыть список.`;
+    $('word-groups-note').textContent = `${entries.length.toLocaleString('ru-RU')} слов и выражений Oxford 3000 уровня A1–A2. Откройте группу, чтобы посмотреть слова.`;
     container.replaceChildren();
     for (const [group, title] of Object.entries(groups)) {
       if (!grouped.has(group)) continue;
@@ -401,8 +401,8 @@
 
   function responseSheet() {
     return {
-      title: 'Слова и звуки',
-      subtitle: `Ответы ученика · ${levels[worksheet.level]}`,
+      title: 'Ответы к упражнениям',
+      subtitle: levels[worksheet.level],
       filename: `Ответы-${variantId()}.pdf`,
       sections: worksheet.items.map((wordsForExercise, index) => ({
         title: `${index + 1}. ${exercises[index].title}`,
@@ -445,7 +445,7 @@
     } else if (!worksheet || /^v[123]\./.test(fragment)) {
       const historyMethod = $(fragment) ? undefined : 'replaceState';
       applyWorksheet(generate(10, 'all'), historyMethod);
-      if (/^v[123]\./.test(fragment)) $('settings-note').textContent = 'Эта ссылка не открылась. Создан новый вариант.';
+      if (/^v[123]\./.test(fragment)) $('settings-note').textContent = 'Не удалось открыть вариант по ссылке. Вместо него открыт новый вариант.';
     }
   }
 
@@ -488,7 +488,7 @@
       await globalThis.downloadWorksheetResponses(responseSheet());
       actionStatus.textContent = 'PDF готов.';
     } catch {
-      actionStatus.textContent = 'Не удалось скачать PDF. Проверьте подключение и попробуйте ещё раз.';
+      actionStatus.textContent = 'Не удалось скачать PDF. Проверьте интернет и попробуйте ещё раз.';
     } finally {
       downloadResponses.disabled = false;
     }

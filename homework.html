@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="homework.css?v=6">
   <script src="homework-config.js?v=2" defer></script>
-  <script src="homework.js?v=7" defer></script>
+  <script src="homework.js?v=8" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -23,13 +23,13 @@
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
         <span>Миролюбова Анастасия</span>
       </a>
-      <a class="back-link" href="index.html#practice">К обычной практике <span aria-hidden="true">↗</span></a>
+      <a class="back-link" href="index.html#practice">К тренажёру <span aria-hidden="true">↗</span></a>
     </header>
 
     <main id="main" tabindex="-1">
       <section id="student-view" hidden>
-        <div class="intro"><p class="eyebrow">ДОМАШНЕЕ ЗАДАНИЕ</p><h1>Слова и звуки</h1><p>Выполните задание и отправьте ответы на проверку.</p></div>
-        <section id="student-login-panel" class="card narrow"><h2>Вход ученика</h2><form id="student-login" class="stack-form"><div class="field"><label for="student-login-name">Логин</label><input id="student-login-name" autocomplete="username" required></div><div class="field"><label for="student-password">Пароль</label><input id="student-password" type="password" autocomplete="current-password" required></div><button class="button primary">Войти</button></form></section>
+        <div class="intro"><p class="eyebrow">ДОМАШНЕЕ ЗАДАНИЕ</p><h1>Слова и звуки</h1><p>Войдите, чтобы посмотреть свои задания, или откройте задание по коду.</p></div>
+        <section id="student-login-panel" class="card narrow"><h2>Войти в профиль</h2><form id="student-login" class="stack-form"><div class="field"><label for="student-login-name">Логин</label><input id="student-login-name" autocomplete="username" required></div><div class="field"><label for="student-password">Пароль</label><input id="student-password" type="password" autocomplete="current-password" required></div><button class="button primary">Войти</button></form></section>
         <section id="student-dashboard" class="card" hidden><div class="section-row"><h2 id="student-name"></h2><button type="button" id="student-logout" class="text-button">Выйти</button></div><div id="student-list" class="assignment-list"></div></section>
         <section id="code-panel" class="card narrow" aria-labelledby="code-title" hidden>
           <h2 id="code-title">Открыть задание</h2>
@@ -42,18 +42,18 @@
         <p id="student-status" class="status" role="status" aria-live="polite"></p>
         <div id="student-work" hidden>
           <button type="button" id="student-back" class="text-button" hidden>К моим заданиям</button>
-          <div class="work-summary"><div><p class="eyebrow">ВАШ ВАРИАНТ</p><h2>Задание <span id="work-code"></span></h2><p id="work-meta" class="muted"></p></div><span id="work-state" class="state-badge">В процессе</span></div>
+          <div class="work-summary"><div><p class="eyebrow">ВАШ ВАРИАНТ</p><h2>Задание <span id="work-code"></span></h2><p id="work-meta" class="muted"></p></div><span id="work-state" class="state-badge">В работе</span></div>
           <div id="result-summary" class="result-summary" role="status" tabindex="-1" hidden></div>
           <section id="exercise-0" class="card exercise" aria-labelledby="exercise-one-title">
-            <div class="exercise-heading"><div><p class="eyebrow">УПРАЖНЕНИЕ 1</p><h2 id="exercise-one-title">Слово → транскрипция</h2><p class="muted">Прочитайте слово и запишите британскую транскрипцию.</p></div></div>
+            <div class="exercise-heading"><div><p class="eyebrow">УПРАЖНЕНИЕ 1</p><h2 id="exercise-one-title">Слово → транскрипция</h2><p class="muted">Запишите британскую транскрипцию слова.</p></div></div>
             <div id="ipa-keyboard" class="keyboard"><div class="keyboard-header"><strong>Символы IPA</strong><span id="ipa-target">Выберите поле ответа</span></div><div id="ipa-keys" class="keys" aria-label="Символы транскрипции"></div></div>
             <ol id="rows-0" class="answer-list"></ol>
           </section>
           <section id="exercise-1" class="card exercise" aria-labelledby="exercise-two-title">
-            <div class="exercise-heading"><div><p class="eyebrow">УПРАЖНЕНИЕ 2</p><h2 id="exercise-two-title">Транскрипция → слово</h2><p class="muted">Прочитайте транскрипцию и запишите слово по-английски.</p></div></div>
+            <div class="exercise-heading"><div><p class="eyebrow">УПРАЖНЕНИЕ 2</p><h2 id="exercise-two-title">Транскрипция → слово</h2><p class="muted">Запишите английское слово по транскрипции.</p></div></div>
             <ol id="rows-1" class="answer-list"></ol>
           </section>
-          <div class="submit-row"><button id="submit-work" class="button primary" type="button">Сдать и проверить <span aria-hidden="true">↗</span></button><p id="submit-note" class="muted">Все ответы отправятся одновременно.</p></div>
+          <div class="submit-row"><button id="submit-work" class="button primary" type="button">Сдать и проверить <span aria-hidden="true">↗</span></button><p id="submit-note" class="muted">После сдачи ответы уже нельзя будет изменить.</p></div>
         </div>
       </section>
 
@@ -69,7 +69,7 @@
             <div class="admin-tabs" role="tablist" aria-label="Разделы кабинета">
               <button id="tab-students" type="button" role="tab" aria-selected="true" aria-controls="panel-students">Ученики</button>
               <button id="tab-works" type="button" role="tab" aria-selected="false" aria-controls="panel-works" tabindex="-1">Задания</button>
-              <button id="tab-assignments" type="button" role="tab" aria-selected="false" aria-controls="panel-assignments" tabindex="-1">Назначения</button>
+              <button id="tab-assignments" type="button" role="tab" aria-selected="false" aria-controls="panel-assignments" tabindex="-1">Задания учеников</button>
             </div>
             <div class="section-actions">
               <button id="refresh-list" class="button secondary" type="button">Обновить</button>
@@ -77,11 +77,11 @@
             </div>
           </div>
           <div id="panel-students" class="admin-panel" role="tabpanel" aria-labelledby="tab-students">
-          <section class="card"><h2>Ученики</h2><form id="student-create" class="stack-form"><div class="field"><label for="new-name">Имя</label><input id="new-name" maxlength="100" required></div><div class="field"><label for="new-login">Логин</label><input id="new-login" maxlength="64" pattern="[A-Za-z0-9_.\-]+" aria-describedby="login-hint" required><p id="login-hint" class="muted">Латинские буквы, цифры, точка, дефис и подчёркивание.</p></div><div class="field"><label for="new-password">Начальный пароль</label><input id="new-password" type="password" autocomplete="new-password" maxlength="256" required></div><button class="button primary">Создать профиль</button></form><div id="admin-students"></div></section>
+          <section class="card"><h2>Ученики</h2><form id="student-create" class="stack-form"><div class="field"><label for="new-name">Имя</label><input id="new-name" maxlength="100" required></div><div class="field"><label for="new-login">Логин</label><input id="new-login" maxlength="64" pattern="[A-Za-z0-9_.\-]+" aria-describedby="login-hint" required><p id="login-hint" class="muted">Можно использовать латинские буквы, цифры, точку, дефис и нижнее подчёркивание.</p></div><div class="field"><label for="new-password">Начальный пароль</label><input id="new-password" type="password" autocomplete="new-password" maxlength="256" required></div><button class="button primary">Создать профиль</button></form><div id="admin-students"></div></section>
           </div>
           <div id="panel-works" class="admin-panel" role="tabpanel" aria-labelledby="tab-works" hidden>
           <section class="card create-card" aria-labelledby="create-title">
-            <div><h2 id="create-title">Новое задание</h2><p class="muted">Сохраните вариант, чтобы назначить его ученикам. Укажите 0, чтобы пропустить упражнение.</p></div>
+            <div><h2 id="create-title">Новое задание</h2><p class="muted">Укажите, сколько слов нужно в каждом упражнении. Если упражнение не нужно, поставьте 0.</p></div>
             <form id="create-form" class="create-form">
               <div class="field"><label for="count-0">Слово → транскрипция</label><input id="count-0" type="number" min="0" step="1" value="10" required></div>
               <div class="field"><label for="count-1">Транскрипция → слово</label><input id="count-1" type="number" min="0" step="1" value="10" required></div>
@@ -90,7 +90,7 @@
             </form>
             <section id="assignment-preview" class="assignment-preview" aria-labelledby="preview-title" hidden>
               <h3 id="preview-title" tabindex="-1">Слова для задания</h3>
-              <p class="muted">Чтобы заменить слово, начните вводить другое и выберите его из словаря.</p>
+              <p class="muted">Чтобы заменить слово, начните вводить новое и выберите его из списка.</p>
               <datalist id="preview-choices"></datalist>
               <div id="preview-groups" class="preview-groups"></div>
               <p id="preview-status" class="status" role="status"></p>
@@ -103,15 +103,15 @@
             </section>
           </div>
           <div id="panel-assignments" class="admin-panel" role="tabpanel" aria-labelledby="tab-assignments" hidden>
-            <section class="card"><h2>Назначить задание</h2><form id="assign-form" class="stack-form"><div class="field"><label for="assign-code">Задание</label><select id="assign-code" required></select></div><fieldset id="assign-students" class="student-options"><legend>Ученики</legend></fieldset><label id="import-result-option" class="checkbox-label" hidden><input id="import-result" type="checkbox"> Перенести сданную работу и её результат выбранному ученику</label><button class="button primary">Назначить</button></form></section>
+            <section class="card"><h2>Назначить задание</h2><form id="assign-form" class="stack-form"><div class="field"><label for="assign-code">Задание</label><select id="assign-code" required></select></div><fieldset id="assign-students" class="student-options"><legend>Ученики</legend></fieldset><label id="import-result-option" class="checkbox-label" hidden><input id="import-result" type="checkbox"> Перенести сданную работу с результатом в профиль ученика</label><button class="button primary">Назначить</button></form></section>
             <section class="card"><h2>Назначенные задания</h2><div id="assigned-list" class="assignment-list"></div></section>
           </div>
         </div>
       </section>
     </main>
-    <footer class="footer"><span>Миролюбова Анастасия</span><a id="admin-link" href="homework.html?admin=1&amp;v=7">Кабинет репетитора</a></footer>
+    <footer class="footer"><span>Миролюбова Анастасия</span><a id="admin-link" href="homework.html?admin=1&amp;v=8">Кабинет преподавателя</a></footer>
   </div>
-  <dialog id="copy-dialog" class="dialog" aria-labelledby="copy-title"><div class="dialog-inner"><h2 id="copy-title">Скопируйте ссылку</h2><p class="muted">Выделите ссылку и скопируйте её.</p><textarea id="copy-value" rows="3" readonly aria-label="Ссылка на задание"></textarea><button id="copy-close" class="button secondary" type="button">Закрыть</button></div></dialog>
+  <dialog id="copy-dialog" class="dialog" aria-labelledby="copy-title"><div class="dialog-inner"><h2 id="copy-title">Скопируйте ссылку</h2><textarea id="copy-value" rows="3" readonly aria-label="Ссылка на задание"></textarea><button id="copy-close" class="button secondary" type="button">Закрыть</button></div></dialog>
   <dialog id="delete-dialog" class="dialog" aria-labelledby="delete-title" aria-describedby="delete-warning">
     <form id="delete-form" class="dialog-inner">
       <h2 id="delete-title">Удалить задание?</h2>

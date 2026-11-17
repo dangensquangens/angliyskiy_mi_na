@@ -69,12 +69,12 @@
         signal: AbortSignal.timeout(20000),
       });
     } catch {
-      throw new Error('Не удалось связаться с сервисом. Проверьте подключение и попробуйте ещё раз.');
+      throw new Error('Не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.');
     }
     let data;
-    try { data = await response.json(); } catch { throw new Error('Сервис вернул непонятный ответ. Попробуйте ещё раз.'); }
+    try { data = await response.json(); } catch { throw new Error('Сервер прислал ответ, который не удалось прочитать. Попробуйте ещё раз.'); }
     if (!response.ok) {
-      const error = new Error(typeof data.error === 'string' ? data.error : 'Не удалось выполнить запрос. Попробуйте ещё раз.');
+      const error = new Error(typeof data.error === 'string' ? data.error : 'Что-то пошло не так. Попробуйте ещё раз.');
       error.status = response.status;
       throw error;
     }
@@ -97,7 +97,7 @@
       return;
     }
     if (!writeStorage(localStorage, draftPrefix + currentAssignment.code, JSON.stringify(answers))) {
-      $('submit-note').textContent = 'Автоматически сохранить черновик на этом устройстве не удалось.';
+      $('submit-note').textContent = 'На этом устройстве не удалось сохранить черновик.';
     }
   }
 
@@ -124,7 +124,7 @@
   }
 
   function drawStudent(assignment) {
-    if (!validAssignment(assignment)) throw new Error('Задание получено не полностью. Попробуйте открыть его ещё раз.');
+    if (!validAssignment(assignment)) throw new Error('Задание загрузилось не целиком. Откройте его ещё раз.');
     currentAssignment = assignment;
     const submitted = Boolean(assignment.submittedAt);
     answers = (submitted || assignment.id) && Array.isArray(assignment.answers)
@@ -135,13 +135,13 @@
     $('student-work').hidden = false;
     $('work-code').textContent = assignment.code;
     $('work-meta').textContent = `${levels[assignment.level] || assignment.level || ''} · ${formatCounts(assignment)}`;
-    $('work-state').textContent = assignment.id ? stateLabel(assignment) : submitted ? 'Сдано' : 'В процессе';
+    $('work-state').textContent = assignment.id ? stateLabel(assignment) : submitted ? 'Сдано' : 'В работе';
     $('work-state').classList.toggle('done', submitted);
     $('result-summary').hidden = !submitted;
     $('result-summary').textContent = submitted ? `Результат: ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : '';
     $('submit-work').hidden = submitted;
     $('ipa-keyboard').hidden = submitted;
-    $('submit-note').textContent = submitted ? 'Ответы отправлены преподавателю.' : 'Все ответы отправятся одновременно.';
+    $('submit-note').textContent = submitted ? 'Ответы отправлены преподавателю.' : 'После сдачи ответы уже нельзя будет изменить.';
     activeInput = null;
 
     assignment.items.forEach((group, mode) => {
@@ -168,7 +168,7 @@
         input.addEventListener('focus', () => {
           if (mode === 0) {
             activeInput = input;
-            $('ipa-target').textContent = `Символы вставляются в строку ${index + 1}`;
+            $('ipa-target').textContent = `Строка ${index + 1}`;
           }
         });
         input.addEventListener('input', () => {
@@ -232,7 +232,7 @@
         return;
       }
       const data = await request(`/api/assignments/${encodeURIComponent(code)}/submit`, { method: 'POST', body: { answers } });
-      if (!data.assignment?.submittedAt) throw new Error('Сервис не подтвердил отправку. Попробуйте ещё раз.');
+      if (!data.assignment?.submittedAt) throw new Error('Не удалось подтвердить отправку ответов. Попробуйте ещё раз.');
       drawStudent(data.assignment);
       status('student-status', '');
       $('result-summary').focus();
@@ -244,7 +244,7 @@
           : await request(`/api/assignments/${encodeURIComponent(code)}`);
         if (data.assignment?.submittedAt && data.assignment.attempt === currentAssignment.attempt) {
           drawStudent(data.assignment);
-          status('student-status', 'Ответы успешно отправлены.', 'success');
+          status('student-status', 'Ответы отправлены.', 'success');
           return;
         }
       } catch { /* Keep the original error and the local draft. */ }
@@ -322,7 +322,7 @@
   }
 
   function adminError(error) {
-    if (error.status === 401) logout('Сессия завершилась. Войдите ещё раз.');
+    if (error.status === 401) logout('Войдите ещё раз, чтобы продолжить.');
     else status('admin-status', error.message);
   }
 
@@ -379,7 +379,7 @@
     const list = $('assignment-list');
     list.replaceChildren();
     if (!assignments.length) {
-      list.append(element('p', 'empty', 'Заданий пока нет. Создайте первое задание выше.'));
+      list.append(element('p', 'empty', 'Здесь появятся задания, которые вы сохраните.'));
       return;
     }
     for (const assignment of assignments) {
@@ -392,7 +392,7 @@
       description.append(element('p', 'muted', `${levels[assignment.level] || assignment.level || ''}${countText ? ` · ${countText}` : ''}${created ? ` · ${created}` : ''}`));
       const submitted = Boolean(assignment.submittedAt);
       if (submitted) description.append(element('p', 'muted', `Сдано ${formatDate(assignment.submittedAt)}`));
-      const badgeText = assignment.private ? 'Сохранено' : submitted ? `Сдано · ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : 'Ожидает ответа';
+      const badgeText = assignment.private ? 'Сохранено' : submitted ? `Сдано · ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : 'Ждёт ответа';
       top.append(description, element('span', `assignment-badge${submitted ? ' done' : ''}`, badgeText));
       card.append(top);
       const actions = element('div', 'assignment-actions');
@@ -472,7 +472,7 @@
         method: 'POST', authenticated: true, body: { action: 'delete', code },
       });
       if (currentToken !== token) return;
-      if (data.deleted !== true || data.code !== code) throw new Error('Сервис не подтвердил удаление. Попробуйте ещё раз.');
+      if (data.deleted !== true || data.code !== code) throw new Error('Не удалось подтвердить удаление. Попробуйте ещё раз.');
       latestRefresh++;
       dialog.close();
       drawAssignments(adminAssignments.filter(assignment => assignment.code !== code));
@@ -563,7 +563,7 @@
 
   async function saveStudentDraft() {
     draftPromise = draftPromise.then(async () => {
-      if (draftBlocked) throw new Error('Черновик изменён на другом устройстве. Вернитесь к списку и откройте задание снова.');
+      if (draftBlocked) throw new Error('Черновик изменился на другом устройстве. Вернитесь к списку и откройте задание снова.');
       while (draftDirty) {
         draftDirty = false;
         const snapshot = answers.map(group => [...group]);
@@ -575,7 +575,7 @@
         } catch (error) {
           draftDirty = true;
           if (error.status === 409) draftBlocked = true;
-          status('student-status', draftBlocked ? 'Черновик изменён на другом устройстве. Вернитесь к списку и откройте задание снова.' : `Черновик не сохранён. ${error.message}`);
+          status('student-status', draftBlocked ? 'Черновик изменился на другом устройстве. Вернитесь к списку и откройте задание снова.' : `Черновик не сохранён. ${error.message}`);
           throw error;
         }
       }
@@ -615,7 +615,7 @@
       });
       item.append(button); $('student-list').append(item);
     }
-    if (!data.assignments.length) $('student-list').append(element('p', 'muted', 'Пока нет назначенных заданий.'));
+    if (!data.assignments.length) $('student-list').append(element('p', 'muted', 'Здесь появятся назначенные задания.'));
   }
 
   async function refreshProfiles() {
@@ -638,7 +638,7 @@
       if (adminAssignments.some(assignment => assignment.code === activeCode)) $('assign-code').value = activeCode;
       updateImportOption();
       $('assigned-list').replaceChildren();
-      if (!assigned.assignments.length) $('assigned-list').append(element('p', 'muted', 'Пока нет назначенных заданий.'));
+      if (!assigned.assignments.length) $('assigned-list').append(element('p', 'muted', 'Здесь появятся назначенные задания.'));
       for (const assignment of assigned.assignments) {
         const item = element('div', 'assignment');
         item.append(element('p', '', `${assignment.studentName} · ${assignment.code} · ${stateLabel(assignment)}${assignment.status === 'submitted' ? ` · ${assignment.score} из ${assignment.total}` : ''}`));
@@ -746,10 +746,10 @@
     event.preventDefault();
     const button = event.currentTarget.querySelector('button');
     button.disabled = true;
-    status('admin-status', 'Выполняется вход…', 'success');
+    status('admin-status', 'Проверяем пароль…', 'success');
     try {
       const data = await request('/api/login', { method: 'POST', body: { password: $('password').value } });
-      if (typeof data.token !== 'string' || !data.token) throw new Error('Сервис не подтвердил вход.');
+      if (typeof data.token !== 'string' || !data.token) throw new Error('Не удалось войти. Попробуйте ещё раз.');
       token = data.token;
       writeStorage(sessionStorage, tokenKey, token);
       $('password').value = '';
@@ -768,7 +768,7 @@
     const counts = controls.slice(0, 2).map(input => input.valueAsNumber);
     const settings = { counts, level: $('level').value };
     if (!counts.every(value => Number.isSafeInteger(value) && value >= 0) || counts.every(value => value === 0)) {
-      status('admin-status', 'Укажите целое неотрицательное число для каждого упражнения. Хотя бы в одном упражнении должно быть слово.');
+      status('admin-status', 'Укажите целые числа от 0. Хотя бы в одном упражнении должно быть слово.');
       return;
     }
     clearPreview();
@@ -812,7 +812,7 @@
         body: { action: 'create-preview', private: true, settings: draft.settings, revision: draft.revision, selections },
       });
       if (currentToken !== token) return;
-      if (!data.assignment?.code) throw new Error('Сервис не подтвердил создание задания.');
+      if (!data.assignment?.code) throw new Error('Не удалось подтвердить, что задание сохранено.');
       clearPreview();
       const refreshed = await refreshAssignments();
       await refreshProfiles();

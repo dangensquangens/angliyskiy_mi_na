@@ -109,7 +109,7 @@
       }
       if (y + 13 > bottom) newPage();
       setText(8, [117, 115, 130]);
-      doc.text(lines('Задание', promptWidth), promptX, y);
+      doc.text(lines('Слово или транскрипция', promptWidth), promptX, y);
       doc.text(lines('Ваш ответ', answerWidth), answerX, y);
       y += 3;
       doc.setDrawColor(222, 220, 228);
@@ -166,7 +166,7 @@
       y += 2;
     }
 
-    writeWrapped(title || 'Ответы к заданиям', right - left, 18, [36, 38, 59], 2);
+    writeWrapped(title || 'Ответы к упражнениям', right - left, 18, [36, 38, 59], 2);
     if (subtitle) writeWrapped(subtitle, right - left, 9, [117, 115, 130], 4);
     else y += 4;
     for (const section of sections) {

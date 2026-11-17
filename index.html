@@ -21,8 +21,8 @@
   <script src="words.js" defer></script>
   <script src="catalog.js" defer></script>
   <script src="reading-rules.js" defer></script>
-  <script src="responses-pdf.js" defer></script>
-  <script src="app.js?v=6" defer></script>
+  <script src="responses-pdf.js?v=2" defer></script>
+  <script src="app.js?v=7" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#exercise-panel" data-section>К заданиям</a>
@@ -43,12 +43,12 @@
         <div class="hero-copy">
           <p class="hero-context">A1–A2 <span aria-hidden="true">·</span> Британский английский</p>
           <h1 id="page-title">Читайте английский<br>по транскрипции</h1>
-          <p class="page-intro">Записывайте звуки по слову и учитесь узнавать слово по его транскрипции.</p>
+          <p class="page-intro">Запишите транскрипцию слова или прочитайте слово по транскрипции.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#practice" data-section>К упражнениям <span aria-hidden="true">↓</span></a>
             <p class="hero-source"><strong>1&nbsp;693</strong> слова и выражения Oxford 3000</p>
           </div>
-          <p class="homework-entry"><a href="homework.html?v=5">Открыть домашнее задание по коду</a></p>
+          <p class="homework-entry"><a href="homework.html?v=8">Открыть домашнее задание</a></p>
         </div>
       </section>
 
@@ -56,17 +56,17 @@
         <div class="workspace">
           <section class="variant-card" aria-labelledby="settings-title">
             <div>
-              <h2 id="settings-title">Ваш вариант</h2>
+              <h2 id="settings-title">Настройки варианта</h2>
               <p id="worksheet-meta" class="muted"></p>
               <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
             </div>
             <form id="settings" aria-labelledby="settings-title">
               <div class="settings-field">
-                <label class="field-label" for="word-count">Слов на упражнение</label>
+                <label class="field-label" for="word-count">Слов в каждом упражнении</label>
                 <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
               </div>
               <div class="settings-field">
-                <label class="field-label" for="level">Уровень слов</label>
+                <label class="field-label" for="level">Уровень</label>
                 <select id="level" name="level">
                   <option value="all">A1 и A2</option>
                   <option value="A1">A1</option>
@@ -90,7 +90,7 @@
               <div class="exercise-heading">
                 <div>
                   <h2 id="exercise-title">Запишите транскрипцию</h2>
-                  <p id="instructions" class="instructions">Прочитайте слово и запишите его транскрипцию.</p>
+                  <p id="instructions" class="instructions">Запишите британскую транскрипцию слова. Косые черты можно опустить.</p>
                 </div>
                 <p id="answer-progress" class="progress" aria-live="polite"></p>
               </div>
@@ -99,12 +99,12 @@
               <section id="ipa-keyboard" class="keyboard" aria-labelledby="ipa-heading">
                 <div class="keyboard-heading">
                   <h3 id="ipa-heading">Символы IPA</h3>
-                  <span id="ipa-target">Символы вставляются в строку 1</span>
+                  <span id="ipa-target">Строка 1</span>
                 </div>
                 <div id="ipa-keys" class="ipa-keys" role="group" aria-label="Символы транскрипции"></div>
               </section>
 
-              <ol id="answer-list" class="answer-list" aria-label="Слова для упражнения"></ol>
+              <ol id="answer-list" class="answer-list" aria-label="Список заданий"></ol>
               <div class="check-bar">
                 <button id="check-answers" class="button button-primary" type="button">Проверить ответы</button>
                 <p id="check-result" class="check-result" role="status" aria-live="polite"></p>
@@ -113,8 +113,8 @@
           </section>
 
           <aside class="side-card actions-card" aria-labelledby="actions-title">
-            <h2 id="actions-title">Вариант и ответы</h2>
-            <p class="muted">В PDF будут оба упражнения и введённые ответы.</p>
+            <h2 id="actions-title">Скачать и поделиться</h2>
+            <p class="muted">В PDF сохранятся оба упражнения и ваши ответы.</p>
             <div class="action-buttons">
               <button id="download-responses" class="button button-secondary" type="button">Скачать ответы в PDF <span aria-hidden="true">↓</span></button>
               <button id="print-worksheet" class="button button-outline" type="button">Распечатать задания</button>
