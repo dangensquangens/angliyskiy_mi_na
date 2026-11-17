@@ -269,31 +269,6 @@
     setMode(draft.mode, draft.reviewing === true);
   }
 
-  function revealStudyTip() {
-    if (reducedMotion.matches || !('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver(entries => {
-      for (const { target, isIntersecting } of entries) {
-        if (!isIntersecting) continue;
-        target.removeAttribute('data-pending');
-        observer.unobserve(target);
-      }
-    }, { rootMargin: '0px 0px -12% 0px' });
-    let position = 0;
-    for (const line of document.querySelectorAll('.tip-line')) {
-      const words = line.textContent.trim().split(/\s+/);
-      line.replaceChildren();
-      for (const [index, word] of words.entries()) {
-        if (index > 0) line.append(' ');
-        const span = element('span', 'tip-word', word);
-        span.dataset.pending = '';
-        span.style.transitionDelay = `${position * 32}ms`;
-        position += 1;
-        line.append(span);
-        observer.observe(span);
-      }
-    }
-  }
-
   function currentPrompt(word, index) {
     return index === 0 ? (word.display ?? word.word) : `/${word.ipa}/`;
   }
@@ -643,7 +618,25 @@
     if (mobileLayout.matches) tabs[index].closest('.worksheet').scrollIntoView({ block: 'start' });
   }
 
-  mobileLayout.addEventListener('change', closeInlineKeyboard);
+  const variantPanel = $('variant-settings');
+  variantPanel.open = !mobileLayout.matches;
+  mobileLayout.addEventListener('change', () => {
+    const focused = document.activeElement;
+    const keyboardFocused = keyboard.contains(focused) || focused === openIpaToggle;
+    closeInlineKeyboard();
+    if (keyboardFocused) {
+      const row = renderedRows.find(({ input }) => input === activeInput) ?? renderedRows[0];
+      const target = mobileLayout.matches ? row?.ipaToggle : row?.input;
+      target?.focus({ preventScroll: true });
+    }
+    if (!mobileLayout.matches || !variantPanel.contains(document.activeElement)) variantPanel.open = !mobileLayout.matches;
+  });
+
+  $('answer-list').addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !openIpaToggle) return;
+    openIpaToggle.focus();
+    closeInlineKeyboard();
+  });
   for (const [index, tab] of tabs.entries()) {
     tab.addEventListener('click', () => switchExercise(index));
     tab.addEventListener('keydown', event => {
@@ -703,5 +696,4 @@
 
   setupSoundFilters();
   openLocation();
-  revealStudyTip();
 })();

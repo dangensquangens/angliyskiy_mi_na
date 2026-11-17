@@ -11,10 +11,13 @@
   const gradeLabels = { correct: 'Верно', incorrect: 'Есть ошибка', empty: 'Нет ответа' };
   const levels = { all: 'A1 и A2', A1: 'A1', A2: 'A2' };
   const exerciseNames = ['Слово → транскрипция', 'Транскрипция → слово'];
+  const keyboard = $('ipa-keyboard');
+  const inlineKeyboard = matchMedia('(max-width: 740px)');
   let token = readStorage(sessionStorage, tokenKey) || '';
   let currentAssignment = null;
   let answers = [[], []];
   let activeInput = null;
+  let openIpaToggle = null;
   let studentLoading = false;
   let submitting = false;
   let adminAssignments = [];
@@ -141,12 +144,15 @@
     $('result-summary').hidden = !submitted;
     $('result-summary').textContent = submitted ? `Результат: ${assignment.score ?? '—'} из ${assignment.total ?? '—'}` : '';
     $('submit-work').hidden = submitted;
-    $('ipa-keyboard').hidden = submitted;
+    closeInlineKeyboard();
+    keyboard.hidden = submitted;
     $('submit-note').textContent = submitted ? 'Ответы отправлены преподавателю.' : 'После сдачи ответы уже нельзя будет изменить.';
     activeInput = null;
+    $('ipa-target').textContent = 'Выберите поле ответа';
 
     assignment.items.forEach((group, mode) => {
       $(`exercise-${mode}`).hidden = group.length === 0;
+      $(`work-link-${mode}`).hidden = group.length === 0;
       const list = $(`rows-${mode}`);
       list.replaceChildren();
       group.forEach((item, index) => {
@@ -162,11 +168,14 @@
         input.id = id;
         input.type = 'text';
         input.autocomplete = 'off';
+        input.autocapitalize = 'none';
+        input.setAttribute('autocorrect', 'off');
         input.spellcheck = false;
         input.placeholder = mode === 0 ? 'Транскрипция' : 'Слово';
         input.value = answers[mode][index];
         input.disabled = submitted;
         input.addEventListener('focus', () => {
+          if (activeInput !== input) closeInlineKeyboard();
           if (mode === 0) {
             activeInput = input;
             $('ipa-target').textContent = `Строка ${index + 1}`;
@@ -177,7 +186,27 @@
           persistDraft();
         });
         const cell = element('div', 'answer-cell');
-        cell.append(input);
+        const controls = element('div', 'answer-controls');
+        controls.append(input);
+        if (mode === 0 && !submitted) {
+          const toggle = element('button', 'button outline answer-ipa-toggle', 'IPA');
+          toggle.type = 'button';
+          toggle.setAttribute('aria-label', `Символы IPA для строки ${index + 1}`);
+          toggle.setAttribute('aria-controls', keyboard.id);
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.addEventListener('click', () => {
+            const wasOpen = openIpaToggle === toggle;
+            closeInlineKeyboard();
+            if (wasOpen) return;
+            activeInput = input;
+            $('ipa-target').textContent = `Строка ${index + 1}`;
+            openIpaToggle = toggle;
+            toggle.setAttribute('aria-expanded', 'true');
+            row.append(keyboard);
+          });
+          controls.append(toggle);
+        }
+        cell.append(controls);
         const grade = assignment.grades?.[mode]?.[index];
         if (submitted && gradeLabels[grade]) {
           row.dataset.grade = grade;
@@ -203,6 +232,7 @@
     try {
       const data = await request(`/api/assignments/${encodeURIComponent(cleaned)}`);
       drawStudent(data.assignment);
+      $('work-title').focus();
       updateStudentUrl(data.assignment.code);
       status('student-status', '');
     } catch (error) {
@@ -230,6 +260,7 @@
         const data = await request(`/api/student/assignments/${encodeURIComponent(currentAssignment.id)}/submit`, { method: 'POST', student: true, body: { answers, revision: currentAssignment.revision, attempt: currentAssignment.attempt } });
         drawStudent(data.assignment);
         status('student-status', 'Ответы отправлены.', 'success');
+        $('result-summary').focus();
         return;
       }
       const data = await request(`/api/assignments/${encodeURIComponent(code)}/submit`, { method: 'POST', body: { answers } });
@@ -246,10 +277,12 @@
         if (data.assignment?.submittedAt && data.assignment.attempt === currentAssignment.attempt) {
           drawStudent(data.assignment);
           status('student-status', 'Ответы отправлены.', 'success');
+          $('result-summary').focus();
           return;
         }
       } catch { /* Keep the original error and the local draft. */ }
       status('student-status', error.message);
+      $('student-status').focus();
     } finally {
       submitting = false;
       $('submit-work').disabled = false;
@@ -257,7 +290,29 @@
     }
   }
 
+  function closeInlineKeyboard() {
+    if (!openIpaToggle) return;
+    openIpaToggle.setAttribute('aria-expanded', 'false');
+    openIpaToggle = null;
+    $('homework-ipa-home').append(keyboard);
+  }
+
   function prepareKeyboard() {
+    inlineKeyboard.addEventListener('change', () => {
+      const hadFocus = keyboard.contains(document.activeElement) || document.activeElement === openIpaToggle;
+      closeInlineKeyboard();
+      if (!hadFocus) return;
+      const input = activeInput || $('rows-0').querySelector('input:not(:disabled)');
+      const focusTarget = inlineKeyboard.matches
+        ? input?.closest('.answer-controls').querySelector('.answer-ipa-toggle')
+        : input;
+      focusTarget?.focus({ preventScroll: true });
+    });
+    $('rows-0').addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !openIpaToggle) return;
+      openIpaToggle.focus();
+      closeInlineKeyboard();
+    });
     for (const symbol of symbols) {
       const key = element('button', 'ipa-key', symbol);
       key.type = 'button';
@@ -266,7 +321,7 @@
       key.addEventListener('click', () => {
         const input = activeInput || $('rows-0').querySelector('input:not(:disabled)');
         if (!input || input.disabled) return;
-        input.focus();
+        if (!openIpaToggle) input.focus();
         const start = input.selectionStart ?? input.value.length;
         const end = input.selectionEnd ?? start;
         input.setRangeText(symbol, start, end, 'end');
@@ -293,7 +348,12 @@
   }
 
   function prepareAdminTabs() {
-    const tabs = [...$('admin-work').querySelectorAll('[role="tab"]')];
+    const tabList = $('admin-tabs');
+    const tabs = [...tabList.querySelectorAll('[role="tab"]')];
+    const sidebar = matchMedia('(min-width: 57rem)');
+    const applyOrientation = () => tabList.setAttribute('aria-orientation', sidebar.matches ? 'vertical' : 'horizontal');
+    sidebar.addEventListener('change', applyOrientation);
+    applyOrientation();
     function selectTab(selected) {
       for (const tab of tabs) {
         const active = tab === selected;
@@ -307,8 +367,11 @@
       tab.addEventListener('click', () => selectTab(tab));
       tab.addEventListener('keydown', event => {
         let nextIndex;
+        if (!sidebar.matches && ['ArrowDown', 'ArrowUp'].includes(event.key)) return;
         switch (event.key) {
+          case 'ArrowDown':
           case 'ArrowRight': nextIndex = (index + 1) % tabs.length; break;
+          case 'ArrowUp':
           case 'ArrowLeft': nextIndex = (index - 1 + tabs.length) % tabs.length; break;
           case 'Home': nextIndex = 0; break;
           case 'End': nextIndex = tabs.length - 1; break;
@@ -400,7 +463,7 @@
     const list = $('assignment-list');
     list.replaceChildren();
     if (!assignments.length) {
-      list.append(element('p', 'empty', 'Здесь появятся задания, которые вы сохраните.'));
+      list.append(element('p', 'empty-message', 'Здесь появятся задания, которые вы сохраните.'));
       return;
     }
     for (const assignment of assignments) {
@@ -616,8 +679,13 @@
     $('student-back').hidden = true;
     $('student-list').replaceChildren();
     for (const assignment of data.assignments) {
-      const item = element('div', 'assignment');
-      item.append(element('p', '', `${assignment.code} · ${stateLabel(assignment)}${assignment.status === 'submitted' ? ` · ${assignment.score} из ${assignment.total}` : ''}`));
+      const item = element('article', 'assignment student-assignment');
+      const details = element('div');
+      details.append(
+        element('h3', 'assignment-code', `Задание ${assignment.code}`),
+        element('p', 'muted', `${stateLabel(assignment)}${assignment.status === 'submitted' ? ` · ${assignment.score} из ${assignment.total}` : ''}`)
+      );
+      item.append(details);
       const button = element('button', 'button secondary', 'Открыть');
       button.type = 'button';
       button.addEventListener('click', async () => {
@@ -629,6 +697,7 @@
           $('student-back').hidden = false;
           drawStudent(result.assignment);
           status('student-status', '');
+          $('work-title').focus();
         } catch (error) { status('student-status', error.message); }
         finally { button.disabled = false; }
       });
@@ -641,7 +710,14 @@
     if (!token) return;
     try {
       const [profiles, assigned] = await Promise.all([request('/api/admin/students', { authenticated: true }), request('/api/admin/student-assignments', { authenticated: true })]);
-      $('admin-students').replaceChildren(...profiles.students.map(student => element('p', '', `${student.name} · ${student.login}`)));
+      $('admin-students').replaceChildren(...profiles.students.map(student => {
+        const profile = element('tr');
+        profile.append(element('td', '', student.name), element('td', '', student.login));
+        return profile;
+      }));
+      $('students-table').hidden = !profiles.students.length;
+      $('students-empty').textContent = 'Создайте профиль, чтобы добавить ученика.';
+      $('students-empty').hidden = Boolean(profiles.students.length);
       const fieldset = $('assign-students');
       const checked = new Set([...fieldset.querySelectorAll('input:checked')].map(input => input.value));
       const activeCode = $('assign-code').value;
@@ -652,12 +728,14 @@
         label.append(box, document.createTextNode(` ${student.name} `)); fieldset.append(label);
       }
       $('assign-code').replaceChildren(...adminAssignments.map(assignment => {
-        const option = element('option', '', `${assignment.code} · ${formatCounts(assignment)}`); option.value = assignment.code; return option;
+        const option = element('option', '', `Код ${assignment.code}`);
+        option.value = assignment.code;
+        return option;
       }));
       if (adminAssignments.some(assignment => assignment.code === activeCode)) $('assign-code').value = activeCode;
       updateImportOption();
       $('assigned-list').replaceChildren();
-      if (!assigned.assignments.length) $('assigned-list').append(element('p', 'muted', 'Здесь появятся назначенные задания.'));
+      if (!assigned.assignments.length) $('assigned-list').append(element('p', 'empty-message', 'Здесь появятся назначенные задания.'));
       for (const assignment of assigned.assignments) {
         const item = element('div', 'assignment');
         item.append(element('p', '', `${assignment.studentName} · ${assignment.code} · ${stateLabel(assignment)}${assignment.status === 'submitted' ? ` · ${assignment.score} из ${assignment.total}` : ''}`));
@@ -680,11 +758,15 @@
         }
         $('assigned-list').append(item);
       }
-    } catch (error) { status('admin-status', error.message); }
+    } catch (error) {
+      if ($('students-table').hidden) $('students-empty').textContent = 'Не удалось загрузить список. Нажмите «Обновить».';
+      status('admin-status', error.message);
+    }
   }
 
   function updateImportOption() {
     const selected = adminAssignments.find(assignment => assignment.code === $('assign-code').value);
+    $('assign-meta').textContent = selected ? formatCounts(selected) : 'Сначала сохраните задание во вкладке «Задания».';
     const available = Boolean(selected?.submittedAt && !selected.private);
     $('import-result-option').hidden = !available;
     if (!available) $('import-result').checked = false;
@@ -705,6 +787,7 @@
       clearPassword('student-password');
       await showStudentDashboard();
       status('student-status', '');
+      $('student-assignments-title').focus();
     } catch (error) { status('student-status', error.message); }
   });
   $('student-logout').addEventListener('click', async () => {
@@ -714,6 +797,7 @@
     $('student-dashboard').hidden = true;
     $('student-login-panel').hidden = false;
     $('code-panel').hidden = false;
+    $('student-login-title').focus();
   });
   $('student-back').addEventListener('click', async event => {
     const button = event.currentTarget;
@@ -724,11 +808,12 @@
       await showStudentDashboard();
       currentAssignment = null;
       status('student-status', '');
+      $('student-assignments-title').focus();
     } catch (error) { status('student-status', error.message); }
     finally { button.disabled = false; }
   });
-  document.querySelector('.site-header')?.addEventListener('click', async event => {
-    const link = event.target.closest('a[href]');
+  document.addEventListener('click', async event => {
+    const link = event.target.closest('.site-header a[href], .site-footer a[href]');
     if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
       || !currentAssignment?.id || currentAssignment.submittedAt) return;
 
@@ -802,6 +887,7 @@
       writeStorage(sessionStorage, tokenKey, token);
       clearPassword('password');
       showAdmin(true);
+      $('admin-tabs').querySelector('[aria-selected="true"]').focus();
       await refreshAssignments();
       await refreshProfiles();
     } catch (error) { status('admin-status', error.message); }
@@ -887,6 +973,7 @@
   $('logout').addEventListener('click', () => {
     request('/api/admin/logout', { method: 'POST', authenticated: true }).catch(() => {});
     logout();
+    $('login-title').focus();
   });
   $('copy-close').addEventListener('click', () => $('copy-dialog').close());
   $('delete-form').addEventListener('submit', confirmDeletion);

@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Тренажёр британской транскрипции для A1–A2. Два упражнения по словам Oxford 3000, клавиатура IPA и PDF с ответами.">
-  <meta name="theme-color" content="#f6f6ef">
+  <meta name="theme-color" content="#f8f7f3">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Фонетика · Миролюбова Анастасия">
   <meta property="og:description" content="Тренажёр чтения и британской транскрипции по словам Oxford 3000 для A1–A2.">
@@ -16,15 +16,16 @@
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=11">
-  <link rel="stylesheet" href="site-nav.css?v=3">
-  <script src="site-nav.js?v=2" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css?v=1">
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="site-nav.css?v=4">
+  <script src="site-nav.js?v=3" defer></script>
   <script src="words.js" defer></script>
   <script src="catalog.js" defer></script>
   <script src="reading-rules.js?v=3" defer></script>
   <script src="responses-pdf.js?v=2" defer></script>
-  <script src="app.js?v=14" defer></script>
+  <script src="app.js?v=15" defer></script>
   <script src="sound-pairs.js?v=3" defer></script>
 </head>
 <body class="phonetics-page">
@@ -33,70 +34,75 @@
     <header class="site-header">
       <a class="brand" href="./">
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
-        <span>Миролюбова Анастасия</span>
+        <span>Анастасия Миролюбова</span>
       </a>
       <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
       <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
         <a href="./">Главная</a>
-        <a href="phonetics.html" aria-current="page">Фонетика</a>
+        <a href="learning.html">Обучение</a>
         <a href="grammar.html">Грамматика</a>
+        <a href="phonetics.html" aria-current="page">Фонетика</a>
         <a href="dictionary.html">Словарь</a>
-        <a href="homework.html?v=11">Домашние задания</a>
+        <a href="about.html">О преподавателе</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="homework.html?v=12" class="nav-work">Домашние задания</a>
       </nav>
     </header>
 
     <main class="page-content">
+      <nav class="breadcrumbs" aria-label="Путь к разделу"><a href="learning.html">Обучение</a><span aria-hidden="true">/</span><span aria-current="page">Фонетика</span></nav>
       <section class="page-heading" aria-labelledby="page-title">
         <div class="hero-copy">
-          <p class="hero-context">A1–A2 <span aria-hidden="true">·</span> Британский английский</p>
-          <h1 id="page-title">Читайте английский<br>по транскрипции</h1>
-          <p class="page-intro">Запишите транскрипцию слова или прочитайте слово по транскрипции.</p>
+          <h1 id="page-title">Чтение и транскрипция</h1>
+          <p class="page-intro">Практикуйте британское произношение по словам уровней A1 и A2.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#practice" data-section>К упражнениям <span aria-hidden="true">↓</span></a>
+            <a class="button button-primary" href="#exercise-panel" data-section>К упражнениям <span aria-hidden="true">↓</span></a>
             <p class="hero-source"><strong>1&nbsp;693</strong> слова и выражения Oxford 3000</p>
           </div>
-          <p class="homework-entry"><a href="homework.html?v=11">Открыть домашнее задание</a></p>
+          <p class="tool-shortcuts">
+            <a href="#actions-title" data-section>PDF и печать</a>
+            <a href="homework.html?v=12">Открыть домашнее задание</a>
+          </p>
         </div>
       </section>
 
       <section id="practice" class="practice" tabindex="-1" aria-label="Практика чтения и транскрипции">
         <div class="workspace">
-          <section class="variant-card" aria-labelledby="settings-title">
-            <div>
-              <h2 id="settings-title">Настройки варианта</h2>
-              <p id="worksheet-meta" class="muted"></p>
+          <details id="variant-settings" class="variant-card" open>
+            <summary id="settings-title">Настройки варианта <span id="worksheet-meta" class="muted"></span></summary>
+            <div class="variant-settings-content">
               <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
               <a class="pair-jump" href="#sound-pairs" data-section>К сложным парам <span aria-hidden="true">↓</span></a>
-            </div>
-            <form id="settings" aria-labelledby="settings-title">
-              <div class="settings-field">
-                <label class="field-label" for="word-count">Слов в каждом упражнении</label>
-                <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
-              </div>
-              <div class="settings-field">
-                <label class="field-label" for="level">Уровень</label>
-                <select id="level" name="level">
-                  <option value="all">A1 и A2</option>
-                  <option value="A1">A1</option>
-                  <option value="A2">A2</option>
-                </select>
-              </div>
-              <details id="sound-filters" class="sound-filters">
-                <summary>Фильтр по звукам</summary>
+              <form id="settings" aria-labelledby="settings-title">
                 <div class="settings-field">
-                  <label class="field-label" for="phoneme">Звук IPA</label>
-                  <select id="phoneme"><option value="">Не выбран</option></select>
+                  <label class="field-label" for="word-count">Слов в каждом упражнении</label>
+                  <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
                 </div>
-                <fieldset id="sound-groups" class="sound-groups">
-                  <legend class="field-label">Группы звуков</legend>
-                  <label><input id="all-sound-groups" type="checkbox"> Все группы</label>
-                </fieldset>
-                <p class="muted sound-help">Подойдут слова, в которых есть хотя бы один выбранный звук.</p>
-              </details>
-              <p id="available-prompts" class="muted" role="status"></p>
-              <button id="generate-worksheet" class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
-            </form>
-          </section>
+                <div class="settings-field">
+                  <label class="field-label" for="level">Уровень</label>
+                  <select id="level" name="level">
+                    <option value="all">A1 и A2</option>
+                    <option value="A1">A1</option>
+                    <option value="A2">A2</option>
+                  </select>
+                </div>
+                <details id="sound-filters" class="sound-filters">
+                  <summary>Фильтр по звукам</summary>
+                  <div class="settings-field">
+                    <label class="field-label" for="phoneme">Звук IPA</label>
+                    <select id="phoneme"><option value="">Не выбран</option></select>
+                  </div>
+                  <fieldset id="sound-groups" class="sound-groups">
+                    <legend class="field-label">Группы звуков</legend>
+                    <label><input id="all-sound-groups" type="checkbox"> Все группы</label>
+                  </fieldset>
+                  <p class="muted sound-help">Подойдут слова, в которых есть хотя бы один выбранный звук.</p>
+                </details>
+                <p id="available-prompts" class="muted" role="status"></p>
+                <button id="generate-worksheet" class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
+              </form>
+            </div>
+          </details>
           <section class="worksheet" aria-label="Упражнения">
             <div class="tabs" role="tablist" aria-label="Выберите упражнение">
               <button id="tab-0" class="tab" type="button" role="tab" data-mode="0" aria-controls="exercise-panel" aria-selected="true" tabindex="0">
@@ -138,7 +144,7 @@
           </section>
 
           <aside class="side-card actions-card" aria-labelledby="actions-title">
-            <h2 id="actions-title">Скачать и поделиться</h2>
+            <h2 id="actions-title" tabindex="-1">Скачать и поделиться</h2>
             <p class="muted">В PDF сохранятся оба упражнения и ваши ответы.</p>
             <div class="action-buttons">
               <button id="download-responses" class="button button-secondary" type="button">Скачать ответы в PDF <span aria-hidden="true">↓</span></button>
@@ -170,7 +176,7 @@
       </section>
 
       <div class="study-tip">
-        <p><span class="tip-line">Если сомневаетесь в звуке,</span> <span class="tip-line">сравните слова из одной группы.</span></p>
+        <p>Если сомневаетесь в звуке, сравните слова из одной группы.</p>
       </div>
 
     </main>
