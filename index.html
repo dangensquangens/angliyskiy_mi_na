@@ -3,82 +3,119 @@
 <head>
   <meta charset="utf-8">
   <script src="legacy-links.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Упражнения по фонетике и грамматике, словарь Oxford 3000 и домашние задания. Сайт преподавателя Анастасии Миролюбовой.">
-  <meta name="theme-color" content="#f6f6ef">
+  <meta name="theme-color" content="#f8f7f3">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Английский с Анастасией Миролюбовой">
-  <meta property="og:description" content="Упражнения по британской фонетике и английской грамматике, словарь Oxford 3000 и домашние задания.">
+  <meta property="og:description" content="Упражнения по фонетике и грамматике, словарь Oxford 3000 и домашние задания. Сайт преподавателя Анастасии Миролюбовой.">
   <meta property="og:url" content="https://dangensquangens.github.io/angliyskiy_mi_na/">
   <title>Английский с Анастасией Миролюбовой</title>
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
-  <link rel="stylesheet" href="site-nav.css?v=3">
-  <script src="site-nav.js?v=2" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif&amp;family=Source+Sans+3:wght@400..700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css?v=1">
+  <link rel="stylesheet" href="site-nav.css?v=4">
+  <link rel="stylesheet" href="public.css?v=1">
+  <script src="site-nav.js?v=3" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
-  <div id="site-top" class="site-shell home-page">
+  <div id="site-top" class="site-shell">
     <header class="site-header">
       <a class="brand" href="./">
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
-        <span>Миролюбова Анастасия</span>
+        <span>Анастасия Миролюбова</span>
       </a>
       <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
       <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
         <a href="./" aria-current="page">Главная</a>
-        <a href="phonetics.html">Фонетика</a>
+        <a href="learning.html">Обучение</a>
         <a href="grammar.html">Грамматика</a>
+        <a href="phonetics.html">Фонетика</a>
         <a href="dictionary.html">Словарь</a>
-        <a href="homework.html?v=11">Домашние задания</a>
+        <a href="about.html">О преподавателе</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="homework.html?v=12" class="nav-work">Домашние задания</a>
       </nav>
     </header>
-
-    <main id="main" class="page-content" tabindex="-1">
-      <section class="page-heading home-intro" aria-labelledby="page-title">
-        <div class="hero-copy">
-          <h1 id="page-title">Английский с Анастасией Миролюбовой</h1>
-          <p class="page-intro">Я преподаю английский. Здесь можно заниматься самостоятельно и сдавать домашние задания.</p>
-          <div class="hero-actions">
+    <main id="main" class="page-content public-page" tabindex="-1">
+      <section class="public-hero" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title"><span class="hero-title-break">Английский</span> с Анастасией Миролюбовой</h1>
+          <p class="public-lead">Практикуйте грамматику и произношение, ищите слова в словаре и выполняйте домашние задания.</p>
+          <div class="public-actions">
             <a class="button button-primary" href="phonetics.html">К упражнениям</a>
+            <a class="button button-outline" href="learning.html">Все разделы</a>
           </div>
         </div>
+        <figure class="lesson-sample">
+          <figcaption>Пример британской транскрипции</figcaption>
+          <div>
+            <span class="sample-word" lang="en">ship</span>
+            <span class="sample-ipa" lang="en-fonipa">/ʃɪp/</span>
+          </div>
+        </figure>
       </section>
 
-      <section class="home-sections" aria-labelledby="sections-title">
-        <h2 id="sections-title">Учебные разделы</h2>
-        <div class="home-grid">
-          <article class="side-card home-card">
-            <h3>Фонетика</h3>
-            <p>Запишите британскую транскрипцию или прочитайте по ней слово. Для похожих звуков есть отдельные задания.</p>
-            <a href="phonetics.html">Открыть тренажёр</a>
-          </article>
-          <article class="side-card home-card">
-            <h3>Грамматика</h3>
-            <p>Краткие пояснения и упражнения на все двенадцать английских времён.</p>
-            <a href="grammar.html">Открыть грамматику</a>
-          </article>
-          <article class="side-card home-card">
-            <h3>Словарь</h3>
-            <p>Ищите слова Oxford 3000 по написанию или транскрипции. Поиск можно ограничить уровнем A1 или A2.</p>
-            <a href="dictionary.html">Открыть словарь</a>
-          </article>
-          <article class="side-card home-card">
-            <h3>Домашние задания</h3>
-            <p>Войдите в кабинет ученика или откройте задание по коду преподавателя.</p>
-            <a href="homework.html?v=11">Открыть домашнее задание</a>
-          </article>
+      <section class="public-section" aria-labelledby="sections-title">
+        <div class="section-heading"><h2 id="sections-title">Учебные разделы</h2></div>
+        <div class="resource-grid">
+          <a class="resource-card" href="grammar.html" aria-labelledby="resource-link-0">
+            <h3 class="resource-title">Грамматика</h3>
+            <span class="resource-arrow" aria-hidden="true"></span>
+            <span class="resource-copy">Правила употребления английских времён и упражнения с проверкой.</span>
+            <span class="resource-link" id="resource-link-0">Открыть грамматику</span>
+          </a>
+          <a class="resource-card" href="phonetics.html" aria-labelledby="resource-link-1">
+            <h3 class="resource-title">Фонетика</h3>
+            <span class="resource-arrow" aria-hidden="true"></span>
+            <span class="resource-copy">Британская транскрипция, чтение слов и тренировка похожих звуков.</span>
+            <span class="resource-link" id="resource-link-1">Открыть тренажёр</span>
+          </a>
+          <a class="resource-card" href="dictionary.html" aria-labelledby="resource-link-2">
+            <h3 class="resource-title">Словарь</h3>
+            <span class="resource-arrow" aria-hidden="true"></span>
+            <span class="resource-copy">Слова Oxford 3000 уровней A1 и A2. Поиск по написанию и транскрипции.</span>
+            <span class="resource-link" id="resource-link-2">Открыть словарь</span>
+          </a>
         </div>
       </section>
 
-      <section class="home-lessons" aria-labelledby="lessons-title">
-        <h2 id="lessons-title">О занятиях</h2>
-        <p>Информация о занятиях появится здесь.</p>
+      <section class="public-section access-band" aria-labelledby="access-title">
+        <div>
+          <h2 id="access-title">Домашние задания</h2>
+          <p>Войдите в кабинет ученика, чтобы посмотреть задания, или откройте работу по коду преподавателя.</p>
+        </div>
+        <div class="public-actions">
+          <a class="button button-primary" href="homework.html?v=12">Кабинет ученика</a>
+          <a class="button button-outline" href="homework.html?admin=1&amp;v=12">Для преподавателя</a>
+        </div>
       </section>
+
+      <div class="public-section profile-grid">
+        <section class="profile-item" aria-labelledby="teacher-title">
+          <h2 id="teacher-title">О преподавателе</h2>
+          <p>Анастасия Миролюбова преподаёт английский язык.</p>
+          <a class="public-link" href="about.html">Страница преподавателя</a>
+        </section>
+        <section class="profile-item" aria-labelledby="lessons-title">
+          <h2 id="lessons-title">О занятиях</h2>
+          <p>Информация о занятиях появится в разделе записи.</p>
+          <a class="public-link" href="contacts.html">Контакты и запись</a>
+        </section>
+      </div>
     </main>
+    <footer class="site-footer site-footer-public">
+      <a class="footer-brand" href="./">Английский с Анастасией Миролюбовой</a>
+      <nav class="footer-links" aria-label="Ссылки в подвале сайта">
+        <a href="learning.html">Все разделы обучения</a>
+        <a href="about.html">О преподавателе</a>
+        <a href="contacts.html">Контакты и запись</a>
+        <a href="homework.html?admin=1&amp;v=12">Кабинет преподавателя</a>
+      </nav>
+    </footer>
   </div>
 </body>
 </html>
