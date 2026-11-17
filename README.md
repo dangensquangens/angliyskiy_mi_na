@@ -14,7 +14,7 @@
 
 ## Методика
 
-- [Cambridge English](https://www.cambridgeenglish.org/learning-english/activities-for-learners/a2p056-sit-or-seat) даёт короткие упражнения на различение близких гласных для A1–A2. В подборке представлены, в частности, короткое /ɪ/ и долгое /iː/.
+- В [Cambridge Dictionary](https://dictionary.cambridge.org/help/phonetics.html) можно послушать примеры для символов IPA, в том числе британские /ɪ/ и /iː/.
 - [University of Florida Literacy Institute](https://ufli.education.ufl.edu/resources/teaching-resources/instructional-activities/) связывает практику чтения и письма с уже пройденными соответствиями между буквами и звуками. Здесь один и тот же набор правил отрабатывается в обоих направлениях.
 - [Florida State University, Florida Center for Reading Research](https://fcrr.org/student-center-activities/teacher-resource-guide) предлагает подбирать задания по тому, какие буквенные сочетания ученик уже освоил. Группировка показывает репетитору, какие сочетания покрывает набор.
 

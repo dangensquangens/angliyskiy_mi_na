@@ -417,7 +417,7 @@
   }
 
   function worksheetUrl() {
-    const url = new URL(location.href);
+    const url = new URL('./', location.href);
     url.hash = encode(worksheet);
     return url.href;
   }
