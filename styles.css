@@ -41,51 +41,6 @@ p { text-wrap: pretty; }
 .skip-link:focus { transform: translateY(0); }
 .site-shell { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 
-.site-header {
-  position: sticky;
-  z-index: 2;
-  top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  margin-top: 24px;
-  padding: 8px 16px 8px 8px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: rgb(255 255 255 / 90%);
-  box-shadow: 0 8px 24px rgb(41 62 48 / 5%);
-  backdrop-filter: blur(12px);
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--ink);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.brand-mark {
-  flex: none;
-  border-radius: 8px;
-}
-
-.site-nav { display: flex; flex: none; gap: 4px; }
-.site-nav a {
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  text-decoration: none;
-}
-.site-nav a:hover { background: var(--sage-light); color: var(--accent-hover); }
-
 .page-content { padding: 40px 0 64px; }
 .page-heading { margin-bottom: 32px; text-align: center; }
 .page-heading .hero-copy h1, .page-heading .page-intro { margin-inline: auto; }
@@ -131,6 +86,40 @@ p { text-wrap: pretty; }
 .hero-source strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .homework-entry { margin: 16px 0 0; color: var(--accent); font-size: 14px; line-height: 20px; font-weight: 600; }
 .homework-entry a { text-underline-offset: 4px; }
+
+.home-page .page-content { max-width: 1088px; margin-inline: auto; }
+.home-intro { padding: 32px 0 48px; }
+.home-sections h2, .home-lessons h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.home-card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+.home-card h3 { margin: 0; font-size: 20px; line-height: 28px; }
+.home-card p, .home-lessons p { margin: 8px 0 0; color: var(--muted); line-height: 24px; }
+.home-card a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: auto;
+  padding: 8px 0;
+  color: var(--accent);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+.home-card p { margin-bottom: 8px; }
+.home-lessons { margin-top: 48px; }
+.home-lessons h2 { margin-bottom: 8px; }
 
 .variant-card, .worksheet, .side-card, .word-groups-panel {
   border: 1px solid var(--border);
@@ -437,6 +426,7 @@ p { text-wrap: pretty; }
 
 @media (max-width: 1060px) {
   .hero-copy h1 { font-size: 48px; line-height: 1; }
+  .home-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 900px) {
@@ -462,9 +452,6 @@ p { text-wrap: pretty; }
 
 @media (max-width: 740px) {
   .site-shell { padding: 0 16px; }
-  .site-header { gap: 8px; margin-top: 12px; padding: 8px; }
-  .brand { gap: 8px; }
-  .site-nav a { padding: 8px; }
   .page-content { padding: 32px 0 48px; }
   .page-heading { margin-bottom: 24px; }
   .hero-copy h1 { font-size: 36px; line-height: 40px; }
@@ -480,14 +467,15 @@ p { text-wrap: pretty; }
   .ipa-key { min-width: 44px; min-height: 48px; }
   .answer-controls .answer-ipa-toggle { display: inline-flex; flex: none; min-width: 48px; }
   .answer-ipa-toggle[aria-expanded="true"] { border-color: var(--accent); background: var(--sage); }
-  .site-nav a, .pair-jump { display: inline-flex; align-items: center; min-height: 44px; }
+  .pair-jump { display: inline-flex; align-items: center; min-height: 44px; }
+  .home-intro { padding: 16px 0 24px; }
+  .home-grid { grid-template-columns: minmax(0, 1fr); }
   .study-tip { margin: 32px 0 24px; padding: 24px 16px; }
   .study-tip p { font-size: 36px; line-height: 40px; }
   .word-groups-panel { padding: 16px; }
 }
 
 @media (max-width: 480px) {
-  .site-nav a, .brand { font-size: 12px; line-height: 16px; }
   .hero-copy h1 { letter-spacing: -.04em; }
   .page-heading .hero-actions { flex-direction: column; gap: 8px; }
   .tab { padding: 8px; overflow-wrap: anywhere; }
@@ -519,7 +507,7 @@ p { text-wrap: pretty; }
 
 @media print {
   :root { background: white; color: black; }
-  body > :not(#print-work) { display: none !important; }
+  .phonetics-page > :not(#print-work) { display: none !important; }
   #print-work { display: block; font-family: Arial, sans-serif; font-size: 11pt; }
   #print-work h2 { font-size: 16pt; }
   .print-section { margin-bottom: 20pt; }

@@ -18,6 +18,8 @@
   const keyboardHome = $('ipa-keyboard-home');
   const actionStatus = $('action-status');
   const downloadResponses = $('download-responses');
+  const sitePath = new URL('./', location.href).pathname;
+  const lastVariantKey = `english-reading-last:${sitePath}`;
   const baseLimit = Number(wordCount.max);
   const starterWords = globalThis.WORDS;
   const catalog = globalThis.OXFORD_CATALOG;
@@ -34,25 +36,7 @@
       placeholder: 'Слово',
     },
   ];
-  const groups = {
-    'short-a': 'Короткая a · /æ/', 'short-e': 'Короткая e · /e/',
-    'short-i': 'Короткая i · /ɪ/', 'short-o': 'Короткая o · /ɒ/',
-    'short-u': 'Короткая u · /ʌ/', 'a-e': 'a + согласная + e · /eɪ/',
-    'i-e': 'i + согласная + e · /aɪ/', 'o-e': 'o + согласная + e · /əʊ/',
-    sh: 'sh · /ʃ/', ch: 'ch · /tʃ/', 'th-voiceless': 'Глухое th · /θ/',
-    'th-voiced': 'Звонкое th · /ð/', ee: 'ee · /iː/',
-    'oo-long': 'oo · /uː/', 'oo-short': 'oo · /ʊ/', oa: 'oa · /əʊ/',
-    ai: 'ai · /eɪ/', ou: 'ou · /aʊ/',
-    'ea-long': 'ea · /iː/', 'ea-short': 'ea · /e/', 'ay': 'ay · /eɪ/',
-    'ow-long': 'ow · /əʊ/', 'ow-short': 'ow · /aʊ/', igh: 'igh · /aɪ/',
-    oi: 'oi / oy · /ɔɪ/', ar: 'ar · /ɑː/', or: 'or · /ɔː/',
-    'er-ir-ur': 'er / ir / ur · /ɜː/', 'u-e': 'u + согласная + e · /uː/ или /juː/',
-    wh: 'wh · /w/', kn: 'kn · /n/', wr: 'wr · /r/', ph: 'ph · /f/',
-    ng: 'ng · /ŋ/', ck: 'ck · /k/', tion: 'tion · /ʃən/',
-    'other-short': 'Другие односложные слова', other: 'Другие многосложные слова',
-    phrases: 'Словосочетания',
-  };
-  const { choose, hasLevel, isCorrect, ipaSearchKey, ipaTokens } = globalThis.READING_RULES;
+  const { choose, hasLevel, isCorrect, ipaTokens } = globalThis.READING_RULES;
   const soundGroups = [['θ', 'ð'], ['ɪ', 'iː'], ['æ', 'e'], ['ʃ', 'tʃ'], ['ʊ', 'uː']];
   const soundGroupControls = new Map();
 
@@ -182,8 +166,8 @@
     return { level, edition: legacy ? 'starter' : 'catalog', items };
   }
 
-  function storageKey() {
-    return `english-reading:${location.pathname}:${encode(worksheet)}`;
+  function storageKey(path = location.pathname) {
+    return `english-reading:${path}:${encode(worksheet)}`;
   }
 
   function blankDraft() {
@@ -191,13 +175,15 @@
   }
 
   function readDraft() {
-    try {
-      const record = JSON.parse(sessionStorage.getItem(storageKey()));
-      if (record && [0, 1].includes(record.mode) && record.checked?.length === 2
-        && record.responses?.length === 2
-        && record.responses.every((row, index) => Array.isArray(row) && row.length === worksheet.items[index].length
-          && row.every(answer => typeof answer === 'string' && answer.length <= 64))) return record;
-    } catch { /* The current page remains usable when session storage is unavailable. */ }
+    for (const path of [location.pathname, sitePath, `${sitePath}index.html`]) {
+      try {
+        const record = JSON.parse(sessionStorage.getItem(storageKey(path)));
+        if (record && [0, 1].includes(record.mode) && record.checked?.length === 2
+          && Array.isArray(record.responses) && record.responses.length === 2
+          && record.responses.every((row, index) => Array.isArray(row) && row.length === worksheet.items[index].length
+            && row.every(answer => typeof answer === 'string' && answer.length <= 64))) return record;
+      } catch { /* Try the next key when a record is unreadable. */ }
+    }
     return blankDraft();
   }
 
@@ -224,7 +210,6 @@
   };
 
   function reviewKey(index) {
-    const sitePath = new URL('./', location.href).pathname;
     return `english-reading-mistakes:v1:${sitePath}:${encode(worksheet)}:${index}`;
   }
 
@@ -270,6 +255,8 @@
   function applyWorksheet(value, historyMethod) {
     worksheet = value;
     if (historyMethod) history[historyMethod](null, '', `#${encode(worksheet)}`);
+    try { sessionStorage.setItem(lastVariantKey, encode(worksheet)); }
+    catch { /* The variant stays open when storage is unavailable. */ }
     draft = readDraft();
     reviewDrafts = worksheet.items.map(readReview);
     levelSelect.value = worksheet.level;
@@ -548,83 +535,6 @@
     }
   }
 
-  function setupDictionary() {
-    const container = $('word-groups');
-    const grouped = new Map();
-    for (const entry of catalog.words) {
-      const group = Object.hasOwn(groups, entry.group) ? entry.group : 'other';
-      if (!grouped.has(group)) grouped.set(group, []);
-      grouped.get(group).push(entry);
-    }
-    const spellingKey = text => text.toLowerCase().normalize('NFC').trim().replace(/’/g, "'").replace(/\s+/g, ' ');
-    const resultGroups = [];
-    for (const [group, title] of Object.entries(groups)) {
-      if (!grouped.has(group)) continue;
-      const section = element('details', 'word-group');
-      const heading = element('summary', null, title);
-      const count = element('small');
-      heading.append(count);
-      const items = element('ul', 'word-group-list');
-      const entries = grouped.get(group).map(word => {
-        const variants = [word.ipa, ...(word.alternatives ?? [])];
-        const display = word.display ?? word.word;
-        const row = element('li', 'word-chip');
-        const label = element('span', null, display);
-        label.lang = 'en';
-        row.append(label, element('span', 'word-chip-ipa', variants.map(ipa => `/${ipa}/`).join(' · ')),
-          element('small', null, (word.levels ?? [word.level]).join(' · ')));
-        items.append(row);
-        return { row, word, spellings: [word.word, display].map(spellingKey), pronunciations: variants.map(ipaSearchKey) };
-      });
-      section.append(heading, items);
-      resultGroups.push({ section, count, entries });
-    }
-    container.replaceChildren(...resultGroups.map(({ section }) => section));
-
-    const search = $('dictionary-search');
-    const level = $('dictionary-level');
-    const total = catalog.words.length.toLocaleString('ru-RU');
-    let openBeforeSearch;
-
-    function updateResults() {
-      const spelling = spellingKey(search.value);
-      const ipa = ipaSearchKey(search.value);
-      if (spelling && !openBeforeSearch) {
-        openBeforeSearch = new Set(resultGroups.filter(group => group.section.open));
-      }
-      let totalMatches = 0;
-      for (const group of resultGroups) {
-        let matches = 0;
-        for (const { word, row, spellings, pronunciations } of group.entries) {
-          const visible = hasLevel(word, level.value) && (!spelling
-            || spellings.some(key => key.includes(spelling))
-            || (ipa && pronunciations.some(key => key.includes(ipa))));
-          row.hidden = !visible;
-          if (visible) matches += 1;
-        }
-        group.count.textContent = String(matches);
-        group.section.hidden = matches === 0;
-        if (spelling) group.section.open = matches > 0;
-        else if (openBeforeSearch) group.section.open = openBeforeSearch.has(group);
-        totalMatches += matches;
-      }
-      if (!spelling) openBeforeSearch = undefined;
-      $('word-groups-note').textContent = totalMatches
-        ? `Найдено ${totalMatches.toLocaleString('ru-RU')} из ${total}.`
-        : 'Найдено 0 слов. Попробуйте изменить запрос или уровень.';
-    }
-
-    search.addEventListener('input', updateResults);
-    level.addEventListener('change', updateResults);
-    $('dictionary-reset').addEventListener('click', () => {
-      search.value = '';
-      level.value = 'all';
-      updateResults();
-      search.focus();
-    });
-    updateResults();
-  }
-
   function variantId() {
     return idFor(encode(worksheet)).toUpperCase();
   }
@@ -667,7 +577,7 @@
   }
 
   function worksheetUrl() {
-    const url = new URL('./', location.href);
+    const url = new URL('phonetics.html', location.href);
     url.hash = encode(worksheet);
     return url.href;
   }
@@ -689,15 +599,22 @@
 
   function openLocation() {
     const fragment = location.hash.slice(1);
+    if (fragment === 'sound-pairs') $('sound-pairs').open = true;
     const fromLink = decode(fragment);
     if (fromLink) {
       clearSoundFilters();
       applyWorksheet(fromLink);
     } else if (!worksheet || /^v[123]\./.test(fragment)) {
+      const invalidLink = /^v[123]\./.test(fragment);
+      let saved;
+      if (!invalidLink) {
+        try { saved = decode(sessionStorage.getItem(lastVariantKey) ?? ''); }
+        catch { /* Open a new variant when storage is unavailable. */ }
+      }
       clearSoundFilters();
       const historyMethod = $(fragment) ? undefined : 'replaceState';
-      applyWorksheet(generate(10, 'all'), historyMethod);
-      if (/^v[123]\./.test(fragment)) $('settings-note').textContent = 'Не удалось открыть вариант по ссылке. Вместо него открыт новый вариант.';
+      applyWorksheet(saved ?? generate(10, 'all'), historyMethod);
+      if (invalidLink) $('settings-note').textContent = 'Не удалось открыть вариант по ссылке. Вместо него открыт новый вариант.';
     }
   }
 
@@ -784,7 +701,6 @@
   }
   window.addEventListener('hashchange', openLocation);
 
-  setupDictionary();
   setupSoundFilters();
   openLocation();
   revealStudyTip();

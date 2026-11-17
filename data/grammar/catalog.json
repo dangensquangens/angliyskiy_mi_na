@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "simple",
+      "title": "Simple",
+      "description": "Привычки, факты и события прошлого.",
+      "topics": [
+        {
+          "id": "present-simple",
+          "title": "Present Simple",
+          "description": "Регулярные действия, привычки и факты.",
+          "count": 250
+        },
+        {
+          "id": "past-simple",
+          "title": "Past Simple",
+          "description": "Завершённые действия и события в прошлом.",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "id": "continuous",
+      "title": "Continuous",
+      "description": "Действия в процессе в настоящем и прошлом.",
+      "topics": [
+        {
+          "id": "present-continuous",
+          "title": "Present Continuous",
+          "description": "Действия, которые происходят сейчас или продолжаются в текущий период.",
+          "count": 250
+        },
+        {
+          "id": "past-continuous",
+          "title": "Past Continuous",
+          "description": "Действия, которые шли в определённый момент в прошлом.",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "id": "perfect",
+      "title": "Perfect",
+      "description": "Опыт и результаты к настоящему или прошлому моменту.",
+      "topics": [
+        {
+          "id": "present-perfect",
+          "title": "Present Perfect",
+          "description": "Прошлые действия, связанные с настоящим через результат или опыт.",
+          "count": 250
+        },
+        {
+          "id": "past-perfect",
+          "title": "Past Perfect",
+          "description": "Действия, которые произошли до другого события или момента в прошлом.",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "id": "perfect-continuous",
+      "title": "Perfect Continuous",
+      "description": "Длительность действий к настоящему или прошлому моменту.",
+      "topics": [
+        {
+          "id": "present-perfect-continuous",
+          "title": "Present Perfect Continuous",
+          "description": "Действия, которые начались раньше и всё ещё идут или только что закончились.",
+          "count": 250
+        },
+        {
+          "id": "past-perfect-continuous",
+          "title": "Past Perfect Continuous",
+          "description": "Действия, которые длились до определённого момента в прошлом.",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "id": "future",
+      "title": "Future",
+      "description": "Будущие события и действия в процессе.",
+      "topics": [
+        {
+          "id": "future-simple",
+          "title": "Future Simple",
+          "description": "Прогнозы, обещания и решения, принятые в момент речи.",
+          "count": 250
+        },
+        {
+          "id": "future-continuous",
+          "title": "Future Continuous",
+          "description": "Действия, которые будут идти в определённый момент в будущем.",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "id": "future-perfect",
+      "title": "Future Perfect",
+      "description": "Результат и длительность действий к будущему моменту.",
+      "topics": [
+        {
+          "id": "future-perfect",
+          "title": "Future Perfect",
+          "description": "Действия, которые закончатся к определённому моменту в будущем.",
+          "count": 250
+        },
+        {
+          "id": "future-perfect-continuous",
+          "title": "Future Perfect Continuous",
+          "description": "Сколько времени действие будет длиться к определённому моменту в будущем.",
+          "count": 250
+        }
+      ]
+    }
+  ]
+}

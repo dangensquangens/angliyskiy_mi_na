@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Словарь Oxford 3000 для уровней A1 и A2. Поиск по английским словам и британской транскрипции.">
+  <meta name="theme-color" content="#f6f6ef">
+  <title>Словарь Oxford 3000 · Миролюбова Анастасия</title>
+  <link rel="icon" href="brand-mark.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="site-nav.css?v=3">
+  <script src="site-nav.js?v=2" defer></script>
+  <script src="catalog.js" defer></script>
+  <script src="reading-rules.js?v=3" defer></script>
+  <script src="dictionary.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="./">
+        <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
+        <span>Миролюбова Анастасия</span>
+      </a>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
+        <a href="./">Главная</a>
+        <a href="phonetics.html">Фонетика</a>
+        <a href="grammar.html">Грамматика</a>
+        <a href="dictionary.html" aria-current="page">Словарь</a>
+        <a href="homework.html?v=11">Домашние задания</a>
+      </nav>
+    </header>
+
+    <main id="main" class="page-content" tabindex="-1">
+      <section class="page-heading" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <h1 id="page-title">Словарь Oxford 3000</h1>
+          <p class="page-intro">Слова и выражения уровней A1 и A2 с британской транскрипцией. Найдите нужное слово или выберите группу звуков.</p>
+        </div>
+      </section>
+
+      <details id="dictionary" class="word-groups-panel" tabindex="-1" open>
+        <summary>Слова по группам</summary>
+        <div class="dictionary-controls" role="group" aria-label="Поиск по словарю">
+          <div class="settings-field">
+            <label class="field-label" for="dictionary-search">Слово или транскрипция</label>
+            <input id="dictionary-search" type="search" spellcheck="false" autocomplete="off" autocapitalize="none" autocorrect="off">
+          </div>
+          <div class="settings-field">
+            <label class="field-label" for="dictionary-level">Уровень</label>
+            <select id="dictionary-level">
+              <option value="all">A1 и A2</option>
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+            </select>
+          </div>
+          <button id="dictionary-reset" class="button button-outline" type="button">Сбросить фильтры</button>
+        </div>
+        <p id="word-groups-note" class="muted" role="status"></p>
+        <div id="word-groups" class="word-groups"></div>
+      </details>
+    </main>
+    <footer class="site-footer">
+      <span>Слова для практики · Oxford 3000</span>
+      <div class="footer-links">
+        <a href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noopener noreferrer">Oxford 3000 <span aria-hidden="true">↗</span></a>
+        <a href="https://dictionary.cambridge.org/help/phonetics.html" target="_blank" rel="noopener noreferrer">Cambridge Dictionary <span aria-hidden="true">↗</span></a>
+        <a href="https://ufli.education.ufl.edu/resources/teaching-resources/instructional-activities/" target="_blank" rel="noopener noreferrer">UF Literacy Institute <span aria-hidden="true">↗</span></a>
+        <a href="https://fcrr.org/student-center-activities/teacher-resource-guide" target="_blank" rel="noopener noreferrer">Florida Center for Reading Research <span aria-hidden="true">↗</span></a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

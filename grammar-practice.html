@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Тренажёр английской грамматики по двенадцати временам с проверкой ответов и повторением ошибок.">
+  <meta name="theme-color" content="#f6f6ef">
+  <title>Тренажёр грамматики · Миролюбова Анастасия</title>
+  <link rel="icon" href="brand-mark.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="site-nav.css?v=3">
+  <link rel="stylesheet" href="grammar.css?v=2">
+  <link rel="stylesheet" href="grammar-practice.css">
+  <script src="site-nav.js?v=2" defer></script>
+  <script src="grammar-practice.js?v=2" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="./">
+        <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
+        <span>Миролюбова Анастасия</span>
+      </a>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
+        <a href="./">Главная</a>
+        <a href="phonetics.html">Фонетика</a>
+        <a href="grammar.html" aria-current="page">Грамматика</a>
+        <a href="dictionary.html">Словарь</a>
+        <a href="homework.html?v=11">Домашние задания</a>
+      </nav>
+    </header>
+
+    <main id="main" class="page-content grammar-page" tabindex="-1">
+      <a class="trainer-back" href="grammar.html">К каталогу грамматики</a>
+      <div class="hero-copy grammar-heading">
+        <h1>Тренажёр грамматики</h1>
+      </div>
+      <p id="trainer-status" class="grammar-status" role="status" tabindex="-1" hidden></p>
+      <p id="storage-status" class="grammar-status" role="status" hidden>Не удалось сохранить прогресс в браузере. Текущая тренировка доступна до закрытия или обновления страницы.</p>
+      <noscript>
+        <p class="grammar-status">Включите JavaScript в браузере, чтобы пользоваться тренажёром.</p>
+      </noscript>
+
+      <div id="trainer-history" class="trainer-history" hidden>
+        <details id="trainer-drafts" class="trainer-panel" hidden>
+          <summary>Продолжить начатое</summary>
+          <ul id="draft-list"></ul>
+        </details>
+        <details id="trainer-results" class="trainer-panel" hidden>
+          <summary>История тренировок</summary>
+          <ul id="result-list"></ul>
+        </details>
+      </div>
+
+      <section id="trainer-settings" class="trainer-panel" aria-labelledby="settings-title" hidden>
+        <h2 id="settings-title" tabindex="-1">Настройки тренировки</h2>
+        <form id="trainer-form">
+          <details id="trainer-topic-details" class="trainer-topic-field">
+            <summary>Времена <span id="topic-selection"></span></summary>
+            <div id="trainer-topics" class="trainer-topics"></div>
+          </details>
+          <div class="trainer-options">
+            <div class="trainer-field">
+              <label for="trainer-count">Количество заданий</label>
+              <select id="trainer-count" name="count">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">Все доступные</option>
+              </select>
+            </div>
+            <div class="trainer-field">
+              <label for="trainer-mode">Режим</label>
+              <select id="trainer-mode" name="mode" aria-describedby="mode-note">
+                <option value="practice">Тренировка</option>
+                <option value="test">Контрольная</option>
+                <option value="solutions">Просмотр решений</option>
+              </select>
+            </div>
+          </div>
+          <p id="mode-note" class="trainer-note"></p>
+          <div class="trainer-actions">
+            <button id="trainer-start" class="button button-primary" type="submit" disabled>Начать</button>
+            <p id="selection-note" class="trainer-note" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <section id="trainer-session" aria-labelledby="session-title" hidden>
+        <div class="trainer-session-heading">
+          <div>
+            <h2 id="session-title" tabindex="-1"></h2>
+            <p id="session-topics" class="trainer-note" lang="en"></p>
+          </div>
+          <button id="trainer-settings-button" class="button button-outline" type="button">К настройкам</button>
+        </div>
+        <p id="session-mode-note" class="trainer-note" hidden></p>
+        <div id="session-result" class="trainer-panel trainer-result" hidden>
+          <h3 id="result-title" tabindex="-1">Результат</h3>
+          <p id="result-summary" role="status"></p>
+          <button id="repeat-mistakes" class="button button-secondary" type="button" hidden>Повторить ошибки</button>
+        </div>
+        <p id="session-progress" class="trainer-note" aria-live="polite"></p>
+        <div id="trainer-questions" class="trainer-questions"></div>
+        <div class="trainer-footer trainer-actions">
+          <button id="check-page" class="button button-secondary" type="button" hidden>Проверить страницу</button>
+          <button id="finish-session" class="button button-primary" type="button" hidden></button>
+          <button id="restart-session" class="button button-outline" type="button">Начать заново</button>
+        </div>
+        <p id="page-feedback" class="trainer-note" role="status"></p>
+        <nav id="trainer-pagination" class="trainer-pagination" aria-label="Страницы заданий" hidden>
+          <button id="previous-page" class="button button-outline" type="button">Назад</button>
+          <form id="page-form" class="trainer-page-form">
+            <label for="page-number">Страница</label>
+            <input id="page-number" type="number" min="1" required>
+            <span id="page-total"></span>
+            <button class="button button-outline" type="submit">Перейти</button>
+          </form>
+          <button id="next-page" class="button button-outline" type="button">Дальше</button>
+        </nav>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

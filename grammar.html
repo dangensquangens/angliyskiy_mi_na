@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Каталог английской грамматики. Двенадцать времён в шести категориях с краткими пояснениями.">
+  <meta name="theme-color" content="#f6f6ef">
+  <title>Грамматика английского · Миролюбова Анастасия</title>
+  <link rel="icon" href="brand-mark.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="site-nav.css?v=3">
+  <link rel="stylesheet" href="grammar.css?v=2">
+  <script src="site-nav.js?v=2" defer></script>
+  <script src="grammar-catalog.js?v=3" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="./">
+        <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
+        <span>Миролюбова Анастасия</span>
+      </a>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
+        <a href="./">Главная</a>
+        <a href="phonetics.html">Фонетика</a>
+        <a href="grammar.html" aria-current="page">Грамматика</a>
+        <a href="dictionary.html">Словарь</a>
+        <a href="homework.html?v=11">Домашние задания</a>
+      </nav>
+    </header>
+
+    <main id="main" class="page-content grammar-page" tabindex="-1">
+      <div class="hero-copy grammar-heading">
+        <h1 id="page-title">Грамматика английского</h1>
+        <p id="grammar-intro" class="page-intro">Выберите категорию или сразу откройте нужное время.</p>
+        <a id="catalog-practice" class="button button-primary grammar-practice-link" href="grammar-practice.html" hidden>Настроить тренировку</a>
+      </div>
+      <nav id="grammar-nav" class="grammar-nav" aria-label="Категории грамматики" hidden></nav>
+      <p id="grammar-status" class="grammar-status" role="status" hidden>Загружаем каталог…</p>
+      <noscript>
+        <p class="grammar-status">Включите JavaScript в браузере, чтобы открыть каталог.</p>
+      </noscript>
+      <div id="grammar-catalog" class="grammar-grid"></div>
+    </main>
+  </div>
+</body>
+</html>

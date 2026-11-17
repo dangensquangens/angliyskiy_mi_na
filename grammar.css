@@ -1,0 +1,83 @@
+.grammar-page { max-width: 1088px; margin-inline: auto; }
+.grammar-heading { margin-bottom: 24px; }
+.grammar-practice-link { margin-top: 16px; }
+
+.grammar-nav, .grammar-topic-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.grammar-nav {
+  margin-bottom: 24px;
+}
+
+.grammar-nav a,
+.grammar-topic-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.grammar-nav a:hover,
+.grammar-nav a[aria-current="page"],
+.grammar-topic-links a:hover {
+  border-color: var(--strong-border);
+  background: var(--sage);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.grammar-status {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--sage-light);
+  color: var(--muted);
+  line-height: 24px;
+}
+
+.grammar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.grammar-grid-topics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.grammar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  scroll-margin-top: 96px;
+}
+
+.grammar-card:target,
+.grammar-card:focus { border-color: var(--accent); }
+.grammar-card h2 { margin: 0; font-size: 24px; line-height: 32px; font-weight: 600; }
+.grammar-card h2 a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 4px; }
+.grammar-description { margin: 0; color: var(--muted); line-height: 24px; }
+.grammar-topic-links { margin: auto 0 0; padding: 4px 0 0; list-style: none; }
+.grammar-count { margin: auto 0 0; color: var(--accent); font-weight: 600; }
+
+@media (max-width: 960px) {
+  .grammar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 580px) {
+  .grammar-grid { grid-template-columns: minmax(0, 1fr); }
+  .grammar-card { padding: 16px; }
+}

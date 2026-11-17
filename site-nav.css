@@ -1,0 +1,109 @@
+.site-header {
+  position: sticky;
+  z-index: 2;
+  top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 8px 16px 8px 8px;
+  border: 1px solid #d9e2da;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 8px 24px rgb(41 62 48 / 5%);
+  backdrop-filter: blur(12px);
+}
+
+.site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #222c25;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-header .brand-mark {
+  flex: none;
+  border-radius: 8px;
+}
+
+.site-nav {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+.site-nav a,
+.site-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #3d4e43;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-menu-toggle:hover {
+  background: #f0f5ef;
+}
+
+.site-nav a[aria-current="page"],
+.site-menu-toggle[aria-expanded="true"] {
+  background: #e2eee6;
+  color: #163e34;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.site-menu-toggle {
+  display: none;
+  border: 1px solid #a4b7aa;
+  background: #fff;
+}
+
+@media (max-width: 880px) {
+  .site-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px;
+  }
+
+  .site-header .brand {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .site-menu-toggle { display: inline-flex; }
+
+  .site-nav {
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+  }
+
+  .site-menu-toggle:not([hidden])[aria-expanded="false"] + .site-nav { display: none; }
+  .site-menu-toggle:not([hidden]) + .site-nav {
+    flex-flow: column nowrap;
+    max-height: calc(100vh - 88px);
+    max-height: calc(100dvh - 88px);
+    padding: 6px;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+
+  .site-nav a { flex-shrink: 0; }
+}
+
+@media print {
+  .site-header { display: none; }
+}

@@ -23,6 +23,7 @@
   let previewDraft = null;
   let studentToken = readStorage(sessionStorage, 'student-token') || '';
   let draftTimer, draftPromise = Promise.resolve(), draftDirty = false, draftBlocked = false;
+  let savingBeforeNavigation = false;
 
   function readStorage(storage, key) {
     try { return storage.getItem(key); } catch { return null; }
@@ -725,6 +726,24 @@
       status('student-status', '');
     } catch (error) { status('student-status', error.message); }
     finally { button.disabled = false; }
+  });
+  document.querySelector('.site-header')?.addEventListener('click', async event => {
+    const link = event.target.closest('a[href]');
+    if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
+      || !currentAssignment?.id || currentAssignment.submittedAt) return;
+
+    event.preventDefault();
+    if (savingBeforeNavigation || submitting) return;
+    savingBeforeNavigation = true;
+    clearTimeout(draftTimer);
+    try {
+      await saveStudentDraft();
+      location.assign(link.href);
+    } catch {
+      $('student-status').focus();
+    } finally {
+      savingBeforeNavigation = false;
+    }
   });
   $('student-create').addEventListener('submit', async event => {
     event.preventDefault();

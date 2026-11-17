@@ -2,211 +2,83 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
+  <script src="legacy-links.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Тренажёр британской транскрипции для A1–A2. Два упражнения по словам Oxford 3000, клавиатура IPA и PDF с ответами.">
+  <meta name="description" content="Английский с Анастасией Миролюбовой. Британская фонетика, каталог грамматики, словарь Oxford 3000 и домашние задания.">
   <meta name="theme-color" content="#f6f6ef">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Миролюбова Анастасия">
-  <meta property="og:description" content="Тренажёр чтения и британской транскрипции по словам Oxford 3000 для A1–A2.">
+  <meta property="og:title" content="Английский с Анастасией Миролюбовой">
+  <meta property="og:description" content="Британская фонетика, каталог грамматики, словарь Oxford 3000 и домашние задания.">
   <meta property="og:url" content="https://dangensquangens.github.io/angliyskiy_mi_na/">
-  <meta property="og:image" content="https://dangensquangens.github.io/angliyskiy_mi_na/share-preview.png?v=5">
-  <meta property="og:image:alt" content="Миролюбова Анастасия. Тренажёр чтения и транскрипции для A1–A2.">
-  <meta name="twitter:card" content="summary_large_image">
-  <title>Миролюбова Анастасия</title>
+  <title>Английский с Анастасией Миролюбовой</title>
   <link rel="icon" href="brand-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=10">
-  <script src="words.js" defer></script>
-  <script src="catalog.js" defer></script>
-  <script src="reading-rules.js?v=3" defer></script>
-  <script src="responses-pdf.js?v=2" defer></script>
-  <script src="app.js?v=12" defer></script>
-  <script src="sound-pairs.js?v=2" defer></script>
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="site-nav.css?v=3">
+  <script src="site-nav.js?v=2" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#exercise-panel" data-section>К заданиям</a>
-  <div id="site-top" class="site-shell" tabindex="-1">
+  <a class="skip-link" href="#main">К содержимому</a>
+  <div id="site-top" class="site-shell home-page">
     <header class="site-header">
-      <a class="brand" href="#site-top" data-section aria-label="Миролюбова Анастасия, к началу страницы">
+      <a class="brand" href="./">
         <img class="brand-mark" src="brand-mark.png" alt="" width="40" height="40">
         <span>Миролюбова Анастасия</span>
       </a>
-      <nav class="site-nav" aria-label="По разделам">
-        <a href="#practice" data-section>Практика</a>
-        <a href="#dictionary" data-section>Словарь</a>
+      <button class="site-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>Меню</button>
+      <nav id="site-nav" class="site-nav" aria-label="Основные разделы">
+        <a href="./" aria-current="page">Главная</a>
+        <a href="phonetics.html">Фонетика</a>
+        <a href="grammar.html">Грамматика</a>
+        <a href="dictionary.html">Словарь</a>
+        <a href="homework.html?v=11">Домашние задания</a>
       </nav>
     </header>
 
-    <main class="page-content">
-      <section class="page-heading" aria-labelledby="page-title">
+    <main id="main" class="page-content" tabindex="-1">
+      <section class="page-heading home-intro" aria-labelledby="page-title">
         <div class="hero-copy">
-          <p class="hero-context">A1–A2 <span aria-hidden="true">·</span> Британский английский</p>
-          <h1 id="page-title">Читайте английский<br>по транскрипции</h1>
-          <p class="page-intro">Запишите транскрипцию слова или прочитайте слово по транскрипции.</p>
+          <h1 id="page-title">Английский с Анастасией Миролюбовой</h1>
+          <p class="page-intro">Я Анастасия Миролюбова, преподаватель английского. Здесь можно потренироваться в чтении транскрипции, найти слова для практики и выполнить домашнюю работу.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#practice" data-section>К упражнениям <span aria-hidden="true">↓</span></a>
-            <p class="hero-source"><strong>1&nbsp;693</strong> слова и выражения Oxford 3000</p>
+            <a class="button button-primary" href="phonetics.html">К упражнениям</a>
           </div>
-          <p class="homework-entry"><a href="homework.html?v=10">Открыть домашнее задание</a></p>
         </div>
       </section>
 
-      <section id="practice" class="practice" tabindex="-1" aria-label="Практика чтения и транскрипции">
-        <div class="workspace">
-          <section class="variant-card" aria-labelledby="settings-title">
-            <div>
-              <h2 id="settings-title">Настройки варианта</h2>
-              <p id="worksheet-meta" class="muted"></p>
-              <p id="settings-note" class="form-note" role="status" aria-live="polite"></p>
-              <a class="pair-jump" href="#sound-pairs" data-section>К сложным парам <span aria-hidden="true">↓</span></a>
-            </div>
-            <form id="settings" aria-labelledby="settings-title">
-              <div class="settings-field">
-                <label class="field-label" for="word-count">Слов в каждом упражнении</label>
-                <input id="word-count" name="word-count" type="number" min="1" max="15" value="10" required>
-              </div>
-              <div class="settings-field">
-                <label class="field-label" for="level">Уровень</label>
-                <select id="level" name="level">
-                  <option value="all">A1 и A2</option>
-                  <option value="A1">A1</option>
-                  <option value="A2">A2</option>
-                </select>
-              </div>
-              <details id="sound-filters" class="sound-filters">
-                <summary>Фильтр по звукам</summary>
-                <div class="settings-field">
-                  <label class="field-label" for="phoneme">Звук IPA</label>
-                  <select id="phoneme"><option value="">Не выбран</option></select>
-                </div>
-                <fieldset id="sound-groups" class="sound-groups">
-                  <legend class="field-label">Группы звуков</legend>
-                  <label><input id="all-sound-groups" type="checkbox"> Все группы</label>
-                </fieldset>
-                <p class="muted sound-help">Подойдут слова, в которых есть хотя бы один выбранный звук.</p>
-              </details>
-              <p id="available-prompts" class="muted" role="status"></p>
-              <button id="generate-worksheet" class="button button-secondary" type="submit">Новый вариант <span aria-hidden="true">↻</span></button>
-            </form>
-          </section>
-          <section class="worksheet" aria-label="Упражнения">
-            <div class="tabs" role="tablist" aria-label="Выберите упражнение">
-              <button id="tab-0" class="tab" type="button" role="tab" data-mode="0" aria-controls="exercise-panel" aria-selected="true" tabindex="0">
-                <span>Слово <span aria-hidden="true">→</span> транскрипция</span>
-              </button>
-              <button id="tab-1" class="tab" type="button" role="tab" data-mode="1" aria-controls="exercise-panel" aria-selected="false" tabindex="-1">
-                <span>Транскрипция <span aria-hidden="true">→</span> слово</span>
-              </button>
-            </div>
-
-            <div id="exercise-panel" class="exercise-panel" role="tabpanel" aria-labelledby="tab-0" tabindex="0">
-              <div class="exercise-heading">
-                <div>
-                  <h2 id="exercise-title" tabindex="-1">Запишите транскрипцию</h2>
-                  <p id="instructions" class="instructions">Запишите британскую транскрипцию слова. Косые черты можно опустить.</p>
-                </div>
-                <p id="answer-progress" class="progress" aria-live="polite"></p>
-              </div>
-              <p id="exercise-example" class="example"></p>
-
-              <div id="ipa-keyboard-home">
-                <section id="ipa-keyboard" class="keyboard" aria-labelledby="ipa-heading">
-                  <div class="keyboard-heading">
-                    <h3 id="ipa-heading">Символы IPA</h3>
-                    <span id="ipa-target">Строка 1</span>
-                  </div>
-                  <div id="ipa-keys" class="ipa-keys" role="group" aria-label="Символы транскрипции"></div>
-                </section>
-              </div>
-
-              <ol id="answer-list" class="answer-list" aria-label="Список заданий"></ol>
-              <div class="check-bar">
-                <button id="check-answers" class="button button-primary" type="button">Проверить ответы</button>
-                <button id="repeat-errors" class="button button-secondary" type="button" hidden>Повторить ошибки</button>
-                <button id="return-from-review" class="button button-outline" type="button" hidden>К исходному упражнению</button>
-                <p id="check-result" class="check-result" role="status" aria-live="polite" tabindex="-1"></p>
-              </div>
-            </div>
-          </section>
-
-          <aside class="side-card actions-card" aria-labelledby="actions-title">
-            <h2 id="actions-title">Скачать и поделиться</h2>
-            <p class="muted">В PDF сохранятся оба упражнения и ваши ответы.</p>
-            <div class="action-buttons">
-              <button id="download-responses" class="button button-secondary" type="button">Скачать ответы в PDF <span aria-hidden="true">↓</span></button>
-              <button id="print-worksheet" class="button button-outline" type="button">Распечатать задания</button>
-              <button id="copy-link" class="button button-outline" type="button">Скопировать ссылку</button>
-            </div>
-            <p id="action-status" class="form-note" role="status" aria-live="polite"></p>
-          </aside>
+      <section class="home-sections" aria-labelledby="sections-title">
+        <h2 id="sections-title">Учебные разделы</h2>
+        <div class="home-grid">
+          <article class="side-card home-card">
+            <h3>Фонетика</h3>
+            <p>Записывайте британскую транскрипцию, узнавайте слова по звукам и тренируйтесь различать сложные пары.</p>
+            <a href="phonetics.html">Открыть тренажёр</a>
+          </article>
+          <article class="side-card home-card">
+            <h3>Грамматика</h3>
+            <p>Двенадцать английских времён с пояснениями, когда их употреблять.</p>
+            <a href="grammar.html">Открыть грамматику</a>
+          </article>
+          <article class="side-card home-card">
+            <h3>Словарь</h3>
+            <p>Ищите слова Oxford 3000 по написанию и транскрипции. Выбирайте уровень A1 или A2.</p>
+            <a href="dictionary.html">Открыть словарь</a>
+          </article>
+          <article class="side-card home-card">
+            <h3>Домашние задания</h3>
+            <p>Войдите в кабинет ученика или откройте задание по коду преподавателя.</p>
+            <a href="homework.html?v=11">Открыть домашнее задание</a>
+          </article>
         </div>
-        <details id="sound-pairs" class="side-card sound-pairs" tabindex="-1">
-          <summary>Сложные пары</summary>
-          <p class="muted">Выберите слово для каждой транскрипции.</p>
-          <form id="sound-pair-settings" class="pair-settings" aria-label="Настройки сложных пар">
-            <div class="settings-field">
-              <label class="field-label" for="sound-pair-contrast">Пара звуков</label>
-              <select id="sound-pair-contrast"></select>
-            </div>
-            <button class="button button-secondary" type="submit">Начать тренировку</button>
-          </form>
-          <form id="sound-pair-quiz" class="pair-quiz" aria-labelledby="sound-pair-title" hidden>
-            <h3 id="sound-pair-title" tabindex="-1"></h3>
-            <div id="sound-pair-questions" class="pair-questions"></div>
-            <div class="check-bar">
-              <button class="button button-primary" type="submit">Проверить ответы</button>
-              <p id="sound-pair-result" class="check-result" role="status"></p>
-            </div>
-          </form>
-        </details>
       </section>
 
-      <div class="study-tip">
-        <p><span class="tip-line">Если сомневаетесь в звуке,</span> <span class="tip-line">сравните слова из одной группы.</span></p>
-      </div>
-
-      <details id="dictionary" class="word-groups-panel" tabindex="-1" open>
-        <summary>Слова по группам</summary>
-        <div class="dictionary-controls" role="group" aria-label="Поиск по словарю">
-          <div class="settings-field">
-            <label class="field-label" for="dictionary-search">Слово или транскрипция</label>
-            <input id="dictionary-search" type="search" spellcheck="false" autocomplete="off" autocapitalize="none" autocorrect="off">
-          </div>
-          <div class="settings-field">
-            <label class="field-label" for="dictionary-level">Уровень</label>
-            <select id="dictionary-level">
-              <option value="all">A1 и A2</option>
-              <option value="A1">A1</option>
-              <option value="A2">A2</option>
-            </select>
-          </div>
-          <button id="dictionary-reset" class="button button-outline" type="button">Сбросить фильтры</button>
-        </div>
-        <p id="word-groups-note" class="muted" role="status"></p>
-        <div id="word-groups" class="word-groups"></div>
-      </details>
+      <section class="home-lessons" aria-labelledby="lessons-title">
+        <h2 id="lessons-title">О занятиях</h2>
+        <p>Информация о занятиях появится здесь.</p>
+      </section>
     </main>
-    <footer class="site-footer">
-      <span>Слова для практики · Oxford 3000</span>
-      <div class="footer-links">
-        <a href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noopener noreferrer">Oxford 3000 <span aria-hidden="true">↗</span></a>
-        <a href="https://dictionary.cambridge.org/help/phonetics.html" target="_blank" rel="noopener noreferrer">Cambridge Dictionary <span aria-hidden="true">↗</span></a>
-        <a href="https://ufli.education.ufl.edu/resources/teaching-resources/instructional-activities/" target="_blank" rel="noopener noreferrer">UF Literacy Institute <span aria-hidden="true">↗</span></a>
-        <a href="https://fcrr.org/student-center-activities/teacher-resource-guide" target="_blank" rel="noopener noreferrer">Florida Center for Reading Research <span aria-hidden="true">↗</span></a>
-      </div>
-    </footer>
   </div>
-
-  <dialog id="share-fallback" class="dialog" aria-labelledby="share-title">
-    <div class="dialog-content">
-      <h2 id="share-title">Скопируйте текст</h2>
-      <p>Выделите текст и скопируйте его.</p>
-      <textarea id="share-value" rows="7" aria-label="Текст для копирования" readonly></textarea>
-      <button id="close-share" class="button button-primary" type="button">Закрыть</button>
-    </div>
-  </dialog>
-  <div id="print-work" aria-label="Версия для печати"></div>
 </body>
 </html>
