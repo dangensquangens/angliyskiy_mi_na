@@ -117,14 +117,14 @@ async function openCatalog() {
       startPractice.href = practiceUrl({ topics: category.topics.filter(topic => topic.count > 0).map(topic => topic.id) });
     }
     if (requested !== null && !category) {
-      status.textContent = 'Категория не найдена. Выберите её из списка ниже.';
+      status.textContent = 'Категория не найдена. Выберите другую из списка.';
     } else if (!available) {
-      status.textContent = 'Задания появятся после добавления учебных материалов.';
+      status.textContent = 'В этом разделе пока нет заданий.';
     } else {
       status.hidden = true;
     }
   } catch {
-    status.textContent = 'Не удалось загрузить каталог. Обновите страницу, чтобы попробовать ещё раз.';
+    status.textContent = 'Не удалось загрузить каталог. Обновите страницу.';
   }
 }
 

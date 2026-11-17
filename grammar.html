@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Каталог английской грамматики. Двенадцать времён в шести категориях с краткими пояснениями.">
+  <meta name="description" content="Двенадцать английских времён. Посмотрите, когда их употребляют, и выберите задания для тренировки.">
   <meta name="theme-color" content="#f6f6ef">
   <title>Грамматика английского · Миролюбова Анастасия</title>
   <link rel="icon" href="brand-mark.png" type="image/png">
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="site-nav.css?v=3">
   <link rel="stylesheet" href="grammar.css?v=2">
   <script src="site-nav.js?v=2" defer></script>
-  <script src="grammar-catalog.js?v=3" type="module"></script>
+  <script src="grammar-catalog.js?v=4" type="module"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">К содержимому</a>
@@ -37,13 +37,13 @@
     <main id="main" class="page-content grammar-page" tabindex="-1">
       <div class="hero-copy grammar-heading">
         <h1 id="page-title">Грамматика английского</h1>
-        <p id="grammar-intro" class="page-intro">Выберите категорию или сразу откройте нужное время.</p>
+        <p id="grammar-intro" class="page-intro">Откройте категорию или выберите время.</p>
         <a id="catalog-practice" class="button button-primary grammar-practice-link" href="grammar-practice.html" hidden>Настроить тренировку</a>
       </div>
       <nav id="grammar-nav" class="grammar-nav" aria-label="Категории грамматики" hidden></nav>
       <p id="grammar-status" class="grammar-status" role="status" hidden>Загружаем каталог…</p>
       <noscript>
-        <p class="grammar-status">Включите JavaScript в браузере, чтобы открыть каталог.</p>
+        <p class="grammar-status">Чтобы открыть каталог, включите JavaScript в браузере.</p>
       </noscript>
       <div id="grammar-catalog" class="grammar-grid"></div>
     </main>

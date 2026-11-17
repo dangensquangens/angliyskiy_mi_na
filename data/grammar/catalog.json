@@ -4,18 +4,18 @@
     {
       "id": "simple",
       "title": "Simple",
-      "description": "Привычки, факты и события прошлого.",
+      "description": "Привычки, факты и события в прошлом.",
       "topics": [
         {
           "id": "present-simple",
           "title": "Present Simple",
-          "description": "Регулярные действия, привычки и факты.",
+          "description": "Привычные действия и общие факты.",
           "count": 250
         },
         {
           "id": "past-simple",
           "title": "Past Simple",
-          "description": "Завершённые действия и события в прошлом.",
+          "description": "Что произошло или закончилось в прошлом.",
           "count": 250
         }
       ]
@@ -23,18 +23,18 @@
     {
       "id": "continuous",
       "title": "Continuous",
-      "description": "Действия в процессе в настоящем и прошлом.",
+      "description": "Что происходит сейчас и что происходило в определённый момент в прошлом.",
       "topics": [
         {
           "id": "present-continuous",
           "title": "Present Continuous",
-          "description": "Действия, которые происходят сейчас или продолжаются в текущий период.",
+          "description": "Действия, которые происходят сейчас или в этот период.",
           "count": 250
         },
         {
           "id": "past-continuous",
           "title": "Past Continuous",
-          "description": "Действия, которые шли в определённый момент в прошлом.",
+          "description": "Что происходило в определённый момент в прошлом.",
           "count": 250
         }
       ]
@@ -47,13 +47,13 @@
         {
           "id": "present-perfect",
           "title": "Present Perfect",
-          "description": "Прошлые действия, связанные с настоящим через результат или опыт.",
+          "description": "Прошлый опыт или результат, важный сейчас.",
           "count": 250
         },
         {
           "id": "past-perfect",
           "title": "Past Perfect",
-          "description": "Действия, которые произошли до другого события или момента в прошлом.",
+          "description": "Что уже произошло к тому моменту в прошлом.",
           "count": 250
         }
       ]
@@ -61,18 +61,18 @@
     {
       "id": "perfect-continuous",
       "title": "Perfect Continuous",
-      "description": "Длительность действий к настоящему или прошлому моменту.",
+      "description": "Как долго идёт или шло действие.",
       "topics": [
         {
           "id": "present-perfect-continuous",
           "title": "Present Perfect Continuous",
-          "description": "Действия, которые начались раньше и всё ещё идут или только что закончились.",
+          "description": "Что началось раньше и всё ещё продолжается или только что закончилось.",
           "count": 250
         },
         {
           "id": "past-perfect-continuous",
           "title": "Past Perfect Continuous",
-          "description": "Действия, которые длились до определённого момента в прошлом.",
+          "description": "Как долго шло действие к определённому моменту в прошлом.",
           "count": 250
         }
       ]
@@ -80,7 +80,7 @@
     {
       "id": "future",
       "title": "Future",
-      "description": "Будущие события и действия в процессе.",
+      "description": "Что произойдёт или будет происходить в будущем.",
       "topics": [
         {
           "id": "future-simple",
@@ -91,7 +91,7 @@
         {
           "id": "future-continuous",
           "title": "Future Continuous",
-          "description": "Действия, которые будут идти в определённый момент в будущем.",
+          "description": "Что будет происходить в определённый момент в будущем.",
           "count": 250
         }
       ]
@@ -99,18 +99,18 @@
     {
       "id": "future-perfect",
       "title": "Future Perfect",
-      "description": "Результат и длительность действий к будущему моменту.",
+      "description": "Что закончится к сроку и как долго к тому моменту будет идти действие.",
       "topics": [
         {
           "id": "future-perfect",
           "title": "Future Perfect",
-          "description": "Действия, которые закончатся к определённому моменту в будущем.",
+          "description": "Что закончится к определённому моменту в будущем.",
           "count": 250
         },
         {
           "id": "future-perfect-continuous",
           "title": "Future Perfect Continuous",
-          "description": "Сколько времени действие будет длиться к определённому моменту в будущем.",
+          "description": "Как долго будет длиться действие к определённому моменту в будущем.",
           "count": 250
         }
       ]

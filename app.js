@@ -614,7 +614,7 @@
       clearSoundFilters();
       const historyMethod = $(fragment) ? undefined : 'replaceState';
       applyWorksheet(saved ?? generate(10, 'all'), historyMethod);
-      if (invalidLink) $('settings-note').textContent = 'Не удалось открыть вариант по ссылке. Вместо него открыт новый вариант.';
+      if (invalidLink) $('settings-note').textContent = 'Не удалось открыть вариант по ссылке. Показываем новый.';
     }
   }
 

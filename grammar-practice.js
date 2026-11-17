@@ -18,9 +18,9 @@ const store = createGrammarStore({ onUnavailable: () => { $('storage-status').hi
 const number = new Intl.NumberFormat('ru');
 const date = new Intl.DateTimeFormat('ru', { dateStyle: 'short', timeStyle: 'short' });
 const modeNotes = {
-  practice: 'Проверяйте ответы по страницам и возвращайтесь к ошибкам.',
-  test: 'Решения появятся в интерфейсе после завершения. Контрольная работает в браузере и подходит для самопроверки.',
-  solutions: 'Задания и ответы из материалов показаны рядом.',
+  practice: 'Проверяйте ответы на каждой странице. В конце можно повторить задания, в которых ошиблись.',
+  test: 'Это контрольная для самопроверки. Тренажёр покажет решения, когда вы её завершите.',
+  solutions: 'Решения будут рядом с заданиями.',
 };
 const gradeLabels = { correct: 'Верно', incorrect: 'Ошибка', empty: 'Без ответа', review: 'Нужно сверить' };
 
@@ -184,7 +184,7 @@ function newAttempt(config, selected, { id = newAttemptId(), startedAt = Date.no
 async function restore(id) {
   const saved = store.read(id);
   if (!saved) {
-    showStatus('Сохранённая попытка недоступна в этом браузере.');
+    showStatus('В этом браузере нет такой попытки.');
     return;
   }
   loading = true;
@@ -194,12 +194,12 @@ async function restore(id) {
     const byId = new Map((await loadTopics(saved.topics)).flat().map(exercise => [exercise.id, exercise]));
     const ordered = saved.questions.map(id => byId.get(id));
     if (ordered.some(exercise => !exercise)) {
-      showStatus('Часть заданий сохранённой попытки больше не найдена. Можно начать новую тренировку.');
+      showStatus('Некоторые задания из этой попытки больше недоступны. Можно начать новую тренировку.');
       return;
     }
     activate(saved, ordered, { persist: false });
   } catch {
-    showStatus('Не удалось загрузить задания. Попробуйте открыть попытку ещё раз.');
+    showStatus('Не удалось загрузить задания. Откройте попытку ещё раз.');
   } finally {
     loading = false;
     updateSettings();
@@ -250,7 +250,7 @@ function makeQuestion(exercise, index) {
   } else {
     for (let slot = 0; slot < slots; slot++) {
       const field = element('div', 'trainer-field');
-      const text = exercise.answerMode === 'sentence' ? 'Ответ целиком' : slots === 1 ? 'Пропуск' : `Пропуск ${slot + 1}`;
+      const text = exercise.answerMode === 'sentence' ? 'Предложение целиком' : slots === 1 ? 'Пропуск' : `Пропуск ${slot + 1}`;
       const label = element('label', null, text);
       const input = element('input');
       input.id = `trainer-answer-${index}-${slot}`;
@@ -383,7 +383,7 @@ $('trainer-form').addEventListener('submit', async event => {
     if (!selected.length) throw new Error('No exercises');
     activate(newAttempt(config, selected), selected);
   } catch {
-    showStatus('Не удалось открыть задания для выбранных времён. Попробуйте ещё раз.');
+    showStatus('Не удалось открыть задания. Попробуйте ещё раз.');
     status.focus();
   } finally {
     loading = false;
@@ -439,7 +439,7 @@ async function initialize() {
     showStatus('');
     if (params.has('attempt')) await restore(params.get('attempt'));
   } catch {
-    showStatus('Не удалось загрузить список времён. Обновите страницу, чтобы попробовать ещё раз.');
+    showStatus('Не удалось загрузить список времён. Обновите страницу.');
   }
 }
 
