@@ -688,7 +688,7 @@
       event.preventDefault();
       if (target instanceof HTMLDetailsElement) target.open = true;
       target.focus({ preventScroll: true });
-      const instant = reducedMotion.matches || link.classList.contains('skip-link');
+      const instant = event.detail === 0 || reducedMotion.matches || link.classList.contains('skip-link');
       target.scrollIntoView({ behavior: instant ? 'auto' : 'smooth' });
     });
   }

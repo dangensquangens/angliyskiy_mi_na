@@ -233,6 +233,7 @@ function makeQuestion(exercise, index) {
   if (!/[А-Яа-яЁё]/.test(exercise.prompt)) prompt.lang = 'en';
   const answer = element('div', 'trainer-answer');
   const feedback = element('div', 'trainer-feedback');
+  feedback.id = `trainer-feedback-${index}`;
   feedback.hidden = true;
   const slots = answerSlotCount(exercise);
   const values = Array.from({ length: slots }, (_, slot) => attempt.responses[exercise.id]?.[slot] ?? '');
@@ -259,7 +260,7 @@ function makeQuestion(exercise, index) {
       input.autocomplete = 'off';
       input.spellcheck = false;
       input.value = values[slot];
-      input.setAttribute('aria-describedby', prompt.id);
+      input.setAttribute('aria-describedby', `${prompt.id} ${feedback.id}`);
       label.htmlFor = input.id;
       field.append(label, input);
       inputs.push(input);

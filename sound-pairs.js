@@ -60,6 +60,7 @@
     });
     const feedback = document.createElement('p');
     feedback.className = 'pair-feedback';
+    feedback.id = `sound-pair-feedback-${index}`;
     feedback.hidden = true;
     row.append(legend, choices, feedback);
     return { id, row, inputs, answer, feedback, reversed: options[0] !== pair[0] };
@@ -135,6 +136,7 @@
         feedback.replaceChildren('Правильный ответ — ', word);
       }
       feedback.hidden = false;
+      row.setAttribute('aria-describedby', feedback.id);
     }
     const missing = unanswered ? ` Без ответа — ${unanswered}.` : '';
     result.textContent = `Верно ${correct} из ${rows.length}.${missing}`;
@@ -152,6 +154,7 @@
       for (const { row, feedback } of rows) {
         delete row.dataset.result;
         feedback.hidden = true;
+        row.removeAttribute('aria-describedby');
       }
     }
     save();

@@ -40,7 +40,10 @@
   --heading: clamp(2rem, 4vw, 3.5rem);
   --subheading: clamp(1.375rem, 2vw, 1.75rem);
   --section-space: clamp(2.25rem, 6vw, 5.5rem);
-  --curve: cubic-bezier(.22, 1, .36, 1);
+  --curve: cubic-bezier(.23, 1, .32, 1);
+  --motion-press: 120ms;
+  --motion-feedback: 160ms;
+  --motion-reduced: 100ms;
   color: var(--ink);
   background: var(--paper);
   line-height: 1.5;
@@ -179,8 +182,16 @@ summary { min-block-size: var(--touch); padding-block: .625rem; }
   .dialog { border: 1px solid CanvasText; }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .button { transition: transform var(--motion-press) var(--curve); }
+  .button:active:not(:disabled):not(:focus-visible) { transform: scale(.98); }
+  .button:focus-visible { transition: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  html { scroll-behavior: auto; }
+  .button { transition: background-color var(--motion-reduced) var(--curve), border-color var(--motion-reduced) var(--curve); }
+  .button:focus-visible { transition: none; }
 }
 
 @media print {
